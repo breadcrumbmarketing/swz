@@ -1,0 +1,236 @@
+/*
+Theme Name: SWZ (Sport Wagen Zentrum)
+Theme URI: https://breadcrumb.de/swz-theme/
+Author: Breadcrumb (Hamy Vosugh)
+Author URI: https://breadcrumb.de/
+Description: 
+SWZ is a custom WordPress theme developed exclusively for Sport Wagen Zentrum in Aschaffenburg. 
+The theme is designed to showcase high-performance sports cars with a clean and modern layout. 
+It includes dynamic car filtering, customizable sections, and responsive design to ensure seamless user experience 
+across all devices. All copyrights and development rights are reserved by Breadcrumb Company, Hanau.
+
+Version: 1.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tags: responsive, car dealership, custom layout, clean design, bootstrap, SEO-friendly, customizable, modern design
+Text Domain: swz
+Domain Path: /languages
+
+Contributors: breadcrumb, hamyvosugh
+Requires at least: 5.9
+Tested up to: 6.4
+Requires PHP: 7.4
+Theme Features: 
+- Dynamic Car Listings
+- Advanced Filtering Options
+- Customizable Home Page Sections
+- Fully Responsive Design
+- WooCommerce Compatibility
+- Integrated Breadcrumb Navigation
+- SEO Optimization
+- Translation Ready
+- Custom Widgets for Car Showroom
+- Multi-Language Support
+
+Changelog:
+1.0 – Initial release.
+
+Credits:
+Design & Development: Hamy Vosugh
+Company: Breadcrumb (https://breadcrumb.de)
+Special Project for: Sport Wagen Zentrum, Aschaffenburg
+*/
+
+/* Porsche Next Font - Define all font faces */
+@font-face {
+    font-family: 'Porsche Next';
+    src: url('assets/font/porsche-next-tt.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Porsche Next';
+    src: url('assets/font/porsche-next-tt-bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Porsche Next';
+    src: url('assets/font/porsche-next-tt-italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Porsche Next';
+    src: url('assets/font/porsche-next-tt-bold-italic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Porsche Next';
+    src: url('assets/font/porsche-next-tt-thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Porsche Next';
+    src: url('assets/font/porsche-next-tt-thin-italic.ttf') format('truetype');
+    font-weight: 100;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Porsche Next';
+    src: url('assets/font/porsche-next-tt-thin-bold.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+
+html, body {
+    margin: 0; /* Remove any default margins */
+    padding: 0;
+    box-sizing: border-box; /* Ensure box-sizing is consistent */
+}
+
+body {
+    padding: 0  0px; /* Add 10px padding on left and right */
+    padding-top: var(--total-header-height, calc(5vh + 71px));
+
+    background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%);
+    background-attachment: fixed;
+    font-family: 'Porsche Next', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Headings */
+h1 {
+    font-family: 'Porsche Next', sans-serif;
+    font-weight: bold;
+    font-size: 48px;
+    line-height: 1.2;
+    color: white;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-family: 'Porsche Next', sans-serif;
+    font-weight: bold ;
+    font-size: 36px;
+    line-height: 1.3;
+    color: white;
+    margin-bottom: 18px;
+}
+
+h3 {
+    font-family: 'Porsche Next', sans-serif;
+    font-weight: bold;
+    font-size: 28px;
+    line-height: 1.4;
+    color: white;
+    margin-bottom: 16px;
+}
+
+h4 {
+    font-family: 'Porsche Next', sans-serif;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 1.5;
+    color: white;
+    margin-bottom: 14px;
+}
+
+h5 {
+    font-family: 'Porsche Next', sans-serif;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 1.6;
+    color: white;
+    margin-bottom: 12px;
+}
+
+h6 {
+    font-family: 'Porsche Next', sans-serif;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 1.7;
+    color: white;
+    margin-bottom: 10px;
+}
+
+/* Paragraphs */
+p {
+    font-family: 'Porsche Next', sans-serif;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 1.8;
+    color: white;
+    margin-bottom: 12px;
+}
+
+/* Span */
+span {
+    font-family: 'Porsche Next', sans-serif;
+    font-weight: normal;
+    font-size: 14px;
+    color: white;
+}
+
+/* Links */
+a {
+    font-family: 'Porsche Next', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    color: #9bdeff; /* Highlighted blue links */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #ff1010; /* Change color on hover */
+}
+
+/* Buttons */
+button, input[type="submit"] {
+    font-family: 'Porsche Next', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    color: #fff;
+    background-color: #333;
+    border: 2px solid white;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: white;
+    color: black;
+}
+
+/* Textarea and Inputs */
+input, textarea {
+    font-family: 'Porsche Next', sans-serif;
+    font-weight: normal;
+    font-size: 14px;
+    color: white;
+    background-color: #222;
+    border: 1px solid #555;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input:focus, textarea:focus {
+    border-color: #747474;
+    outline: none;
+}
+

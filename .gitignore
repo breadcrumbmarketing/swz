@@ -1,0 +1,28 @@
+# WordPress Core Files
+wp-config.php
+wp-config-sample.php
+/wp-admin/
+/wp-includes/
+# Ignore all uploads
+/wp-content/uploads/
+# Node and Vendor
+/node_modules/
+/vendor/
+package-lock.json
+yarn.lock
+# Cache and Build Files
+/dist/
+*.min.css
+*.min.js
+*.map
+# OS/System Files
+.DS_Store
+Thumbs.db
+*.log
+*.bak
+# IDE Folders
+.vscode/
+.idea/
+# Languages and Backups
+/languages/*.pot
+*.sql

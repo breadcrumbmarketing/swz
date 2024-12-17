@@ -1,0 +1,386 @@
+/* === General Hero Section Styles === */
+.hero-section {
+    padding-top: 0; /* Remove padding gap */
+    margin-top: 0; /* Ensure no margin */
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    min-height: 960px;
+    min-width: 100%;
+}
+
+/* === Hero Slider Container === */
+.hero-slider {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    max-height: calc((100vw * 9) / 16);
+    margin: 0 auto;
+}
+
+/* === Slide Transitions === */
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(100%);
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.slide.slide-up {
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+}
+
+.slide.slide-down {
+    transform: translateY(100%);
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* === Media Container and Scaling === */
+.media-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.media {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    object-fit: cover; /* Ensures media fills container */
+    background: #000;
+}
+
+.scale-up {
+    transform: translate(-50%, -50%) scale(1.2);
+    transition: transform 0.5s ease;
+}
+
+.scale-down {
+    transform: translate(-50%, -50%) scale(0.8);
+    transition: transform 0.5s ease;
+}
+
+/* === Scroll Indicator === */
+.scroll-indicator {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-80%);
+    text-align: center;
+    color: #fff;
+    z-index: 10;
+
+}
+
+.scroll-arrow {
+    width: 30px;
+    height: 30px;
+    margin: 0 auto;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg);
+    animation: scroll-arrow 2s infinite;
+}
+
+@keyframes scroll-arrow {
+    0% { transform: rotate(-45deg) translate(0, 0); }
+    50% { transform: rotate(-45deg) translate(10px, 10px); }
+    100% { transform: rotate(-45deg) translate(0, 0); }
+}
+
+/* === Elementor Compatibility === */
+.elementor-section-wrap {
+    position: relative;
+    z-index: 1;
+}
+
+.page-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* === Slide Content and Text === */
+.slide-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    z-index: 999;
+    pointer-events: none;
+}
+
+.content-wrapper {
+    width: 90%;
+    max-width: 600px;
+    margin-left: 10%;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    padding-bottom: 20%;
+}
+
+.slide.active .content-wrapper {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.slide-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.slide-description {
+    font-size: 1.25rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 500px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+
+
+
+
+
+/* === Main CTA slider  === */
+
+.cta-button-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 16px 36px;
+    border: 4px solid;
+    border-color: transparent;
+    font-size: 16px;
+    background-color: inherit;
+    border-radius: 100px;
+    font-weight: 600;
+    color: greenyellow;
+    box-shadow: 0 0 0 2px rgb(7, 182, 62);
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .cta-button-hero svg {
+    position: absolute;
+    width: 24px;
+    fill: greenyellow;
+    z-index: 9;
+    transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .cta-button-hero .arr-1 {
+    right: 16px;
+  }
+  
+  .cta-button-hero .arr-2 {
+    left: -25%;
+  }
+  
+  .cta-button-hero .circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background-color: rgb(7, 182, 62);
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .cta-button-hero .text {
+    position: relative;
+    z-index: 1;
+    transform: translateX(-12px);
+    transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .cta-button-hero:hover {
+    box-shadow: 0 0 0 12px transparent;
+    color: #212121;
+    border-radius: 12px;
+  }
+  
+  .cta-button-hero:hover .arr-1 {
+    right: -25%;
+  }
+  
+  .cta-button-hero:hover .arr-2 {
+    left: 16px;
+  }
+  
+  .cta-button-hero:hover .text {
+    transform: translateX(12px);
+  }
+  
+  .cta-button-hero:hover svg {
+    fill: #212121;
+  }
+  
+  .cta-button-hero:active {
+    scale: 0.95;
+    box-shadow: 0 0 0 4px rgb(255, 14, 14);
+  }
+  
+  .cta-button-hero:hover .circle {
+    width: 220px;
+    height: 220px;
+    opacity: 1;
+  }
+  
+/* === Search Filter Styles === */
+.search-filter {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 30%;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    z-index: 999999999;
+    margin-right: 170px;
+    margin-top: 90px;
+    border-radius: 15px;
+}
+
+.filter-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-container label,
+.filter-container select,
+.filter-container input[type=range],
+.filter-container button {
+    margin-bottom: 10px;
+    border-radius: 9px;
+}
+
+.filter-container select,
+.filter-container input[type=range],
+.filter-container button {
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.filter-container button {
+    background-color: #1cc568;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.filter-container button:hover {
+    background-color: #05bf46;
+}
+
+/* === Pagination (Progress Indicator) === */
+.slide-progress {
+    position: absolute;
+    top: 12rem;
+    right: 2rem;
+    width: 48px;
+    height: 48px;
+    z-index: 9999;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.slide-progress:hover {
+    transform: scale(1.1);
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+}
+
+.progress-ring-background,
+.progress-ring-circle {
+    fill: none;
+    stroke-width: 2;
+}
+
+.progress-ring-background {
+    stroke: rgba(255, 255, 255, 0.2);
+}
+
+.progress-ring-circle {
+    stroke: #fff;
+    stroke-linecap: round;
+    stroke-dasharray: 125.6;
+    stroke-dashoffset: 125.6;
+    transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;
+}
+
+.slide-progress:hover .progress-ring-circle {
+    stroke: #fff;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+}
+
+.slide-counter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.875rem;
+    color: #fff;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+}
+
+.slide-counter .current {
+    font-size: 1rem;
+    margin-bottom: 2px;
+}
+
+.slide-counter .total {
+    opacity: 0.6;
+    font-size: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .slide-progress {
+        top: 1rem;
+        right: 1rem;
+    }
+}

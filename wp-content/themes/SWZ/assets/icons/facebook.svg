@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 99 99">
+  <!-- Generator: Adobe Illustrator 29.1.0, SVG Export Plug-In . SVG Version: 2.1.0 Build 142)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #010101;
+        fill-rule: evenodd;
+      }
+
+      .st1 {
+        fill: none;
+        stroke: #000;
+        stroke-linecap: round;
+        stroke-miterlimit: 1.33;
+        stroke-width: 4px;
+      }
+    </style>
+  </defs>
+  <rect id="frame" class="st1" x="3.86" y="3.36" width="91.28" height="92.29" rx="3.87" ry="3.87"/>
+  <g id="facebook">
+    <g id="Page-1">
+      <g id="Dribbble-Light-Preview">
+        <g id="icons">
+          <path id="facebook-_x5B__x23_176_x5D_" class="st0" d="M57.06,93.99v-37.34h11.34l1.85-16.59h-13.19v-8.08c0-4.27.11-8.51,6.08-8.51h6.05v-11.86c0-.18-5.2-.58-10.45-.58-10.98,0-17.85,6.88-17.85,19.5v9.54h-12.13v16.59h12.13v37.34h16.17Z"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

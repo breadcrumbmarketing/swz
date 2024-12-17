@@ -1,0 +1,10 @@
+
+
+Template for Wordpress
+
+Color and Typogragraphy is defined for entire websire in style.css
+
+Hero section is created in template under name template hero slider / this template is created for home page
+
+Back to up is in footer
+

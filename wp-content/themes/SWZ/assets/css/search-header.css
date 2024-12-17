@@ -1,0 +1,121 @@
+/* Dashboard Styles */
+.search-page-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    min-height: 100vh; /* Ensure minimum height */
+}
+
+.search-dashboard {
+    position: fixed;
+    left: 0;
+    top: calc(5vh + 71px + 15px + 15px);
+    width: 300px;
+    height: calc(100vh - 120px);
+    background: linear-gradient(to right, #000000, rgba(39, 39, 39, 0.97));
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 30px;
+    box-sizing: border-box;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.dashboard-section {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 20px;
+}
+
+.dashboard-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 10px;
+}
+
+.dashboard-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+}
+
+.search-term {
+    word-break: break-word;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.stat-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Main content area */
+.search-results-container {
+    margin-left: 300px;
+    width: calc(100vw - 300px);
+  
+    box-sizing: border-box;
+    padding-top: 4vh;
+    min-height: calc(100vh - 120px); /* Match dashboard height */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Status indicator */
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4CAF50;
+}
+
+.status-text {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* For no results state */
+.no-results .status-dot {
+    background: #f44336;
+}
+
+
+
+
