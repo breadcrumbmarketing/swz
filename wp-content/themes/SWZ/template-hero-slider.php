@@ -10,20 +10,20 @@ get_header(); ?>
     <div class="hero-slider">
     <div class="slide" data-slide="1">
     <div class="media-container">
-        <img class="media image" src="<?php echo get_theme_file_uri('/assets/images/DQEmprJ8TBqLjWRQ2qQnGw.webp'); ?>" alt="Slide 1 Image">
+        <img class="media image" src="<?php echo get_theme_file_uri('/assets/images/img01.jpg'); ?>" alt="Slide 1 Image">
     </div>
-</div>
+
     <div class="slide-content">
         <div class="content-wrapper">
-            <h1 class="slide-title">Der perfekte Platz für Ihr Sportauto</h1>
+            <h1 class="slide-title">Der perfekte Platz für Ihr <span style="color:red; font-size:6rem;">Sportauto</span></h1>
             <p class="slide-description">Sichern Sie sich einen exklusiven Stellplatz für Ihr Fahrzeug in unserer hochwertigen Sportwagen-Zentrum. Perfekt für Ihre Leidenschaft, perfekt für Ihr Auto.</p>
-            <button class="cta-button-hero">
+            <button class="cta-button-hero cta-button-black">
   <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
     ></path>
   </svg>
-  <span class="text">Jetzt Stellplatz sichern</span>
+  <span class="text" >Jetzt Stellplatz sichern</span>
   <span class="circle"></span>
   <svg viewBox="0 0 24 24" class="arr-1" xmlns="http://www.w3.org/2000/svg">
     <path
@@ -31,11 +31,12 @@ get_header(); ?>
     ></path>
   </svg>
 </button>
-            
+</div>   
           
         </div>
-    </div> 
+    
     <div class="search-filter">
+
     <div class="filter-container">
         <h3>Find Your Sport Car</h3>
         <form id="car-search-form">
@@ -44,10 +45,29 @@ get_header(); ?>
                 <option value="">Select Model</option>
                 <!-- Add options here based on your inventory -->
             </select>
-
-            <label for="price-range">Price Range:</label>
-            <input type="range" id="price-range" name="price-range" min="50000" max="300000" value="85000">
-            <span id="price-value">$85,000</span>
+            <label for="price-range" style="bottom:85px;">Price Range:</label>
+            
+            <div class="range-slider">
+        <!-- Lower/Min Range Input -->
+        <input type="range" 
+               id="price-min" 
+               name="price_min" 
+               min="<?php echo $min_price; ?>" 
+               max="<?php echo $max_price; ?>" 
+               value="<?php echo $min_price; ?>" 
+               step="100"
+               class="range-min">
+        <!-- Upper/Max Range Input -->
+        <input type="range" 
+               id="price-max" 
+               name="price_max" 
+               min="<?php echo $min_price; ?>" 
+               max="<?php echo $max_price; ?>" 
+               value="<?php echo $max_price; ?>" 
+               step="100"
+               class="range-max">
+    </div>
+          
 
             <label for="year">Year:</label>
             <select id="year" name="year">
@@ -64,7 +84,7 @@ get_header(); ?>
             </select>
 
 
-            
+            <a href="https://wordpress-1275929-5116835.cloudwaysapps.com/?page_id=183&preview=true">
             <button class="cta-button-hero" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
   <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
     <path
@@ -78,7 +98,7 @@ get_header(); ?>
       d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
     ></path>
   </svg>
-</button>
+</button></a>
 
 
         </form>
