@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: SWZ Contact Page
+ * Template Name: Home
  * @package WordPress
  * @subpackage SWZ
  * @since Breadcrumb
