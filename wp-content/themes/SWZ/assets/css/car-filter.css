@@ -28,7 +28,7 @@
     margin-bottom: -25px;
     margin-top: 30px;
     display: block;
-    color: #f7931e;
+    color: #DE4F3E;
 }
 
 /* ============================
@@ -322,7 +322,7 @@
 .compare-button {
     width: 100%;
     padding: 10px;
-    background-color: #f7931e;
+    background-color: #DE4F3E;
     color: #000;
     font-size: 14px;
     font-weight: bold;
@@ -340,7 +340,7 @@
 }
 
 .compare-button:hover:enabled {
-    background-color: #e6821e;
+    background-color: #DE4F3E;
     color: #fff;
 }
 
@@ -351,7 +351,7 @@
     margin-right: 5px;
     width: 16px;
     height: 16px;
-    accent-color: #f7931e; /* Orange checkbox */
+    accent-color: #DE4F3E; /* Orange checkbox */
     cursor: pointer;
 }
 
@@ -379,7 +379,7 @@
 
 .filter-car-types input[type="checkbox"]:checked + img {
     transform: scale(1.1);
-    border: 2px solid #f7931e;
+    border: 2px solid #DE4F3E;
 }
 
 /* ============================
@@ -402,7 +402,7 @@
 
 .color-option:hover,
 .color-option:focus {
-    border-color: #f7931e;
+    border-color: #DE4F3E;
 }
 
 /* ============================
