@@ -10,10 +10,9 @@ get_header(); ?>
     <div class="hero-slider">
     <div class="slide" data-slide="1">
     <div class="media-container">
-        <video class="media video" loop muted playsinline>
-        <img class="media image" src="<?php echo get_theme_file_uri('/https://wordpress-1275929-5116835.cloudwaysapps.com/wp-content/uploads/2024/12/DQEmprJ8TBqLjWRQ2qQnGw.webp'); ?>" alt="Slide 2">            
-        </video>
+        <img class="media image" src="<?php echo get_theme_file_uri('https://wordpress-1275929-5116835.cloudwaysapps.com/wp-content/uploads/2024/12/DQEmprJ8TBqLjWRQ2qQnGw.webp'); ?>" alt="Slide 1 Image">
     </div>
+</div>
     <div class="slide-content">
         <div class="content-wrapper">
             <h1 class="slide-title">Der perfekte Platz für Ihr Sportauto</h1>
@@ -92,12 +91,10 @@ get_header(); ?>
             </div>
         </div>
         <div class="slide" data-slide="3">
-            <div class="media-container">
-                <video class="media video" loop muted playsinline>
-                    <source src="<?php echo get_theme_file_uri('/assets/videos/video02.mp4'); ?>" type="video/mp4">
-                </video>
-            </div>
-        </div>
+    <div class="media-container">
+        <img class="media image" src="<?php echo get_theme_file_uri('/assets/images/replacement_img03.jpg'); ?>" alt="Slide 3 Image">
+    </div>
+</div>
         <div class="slide" data-slide="4">
             <div class="media-container">
                 <img class="media image" src="<?php echo get_theme_file_uri('/assets/images/img02.jpg'); ?>" alt="Slide 4">
