@@ -11,7 +11,7 @@ get_header(); ?>
     <div class="slide" data-slide="1">
     <div class="media-container">
         <video class="media video" loop muted playsinline>
-            <source src="<?php echo get_theme_file_uri('/assets/videos/video01.mp4'); ?>" type="video/mp4">
+        <img class="media image" src="<?php echo get_theme_file_uri('/https://wordpress-1275929-5116835.cloudwaysapps.com/wp-content/uploads/2024/12/DQEmprJ8TBqLjWRQ2qQnGw.webp'); ?>" alt="Slide 2">            
         </video>
     </div>
     <div class="slide-content">
