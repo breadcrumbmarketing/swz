@@ -103,7 +103,7 @@
 }
 
 .car-card-price {
-    color: #f7931e;
+    color: #DE4F3E;
     font-weight: bold;
     white-space: nowrap; /* Prevent price wrapping */
     overflow: hidden;
@@ -135,7 +135,7 @@
     font-size: 16px;
     margin-bottom: 10px;
     display: block;
-    color: #f7931e;
+    color: #DE4F3E;
 }
 
 /* Refresh Button */
@@ -199,7 +199,7 @@
     margin-right: 5px;
     width: 16px;
     height: 16px;
-    accent-color: #f7931e; /* Orange checkbox */
+    accent-color: #DE4F3E; /* Orange checkbox */
     cursor: pointer;
 }
 
@@ -252,7 +252,7 @@ Pop up for compersition
     top: 10px;
     right: 20px;
     font-size: 30px;
-    color: #f7931e;
+    color: #DE4F3E;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -281,7 +281,7 @@ Pop up for compersition
 }
 
 #comparison-table th {
-    background-color: #f7931e;
+    background-color: #DE4F3E;
     color: #fff;
     text-transform: uppercase;
     font-size: 14px;
@@ -344,7 +344,7 @@ Pop up for compersition
 /* Pop u compare text lable */
 /* Styling for Header Column */
 .comparison-attribute-header {
-    background-color: #f7931e;
+    background-color: #DE4F3E;
     color: #040404;
     font-size: 14px;
     font-weight: bold;
