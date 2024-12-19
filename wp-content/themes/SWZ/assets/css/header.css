@@ -838,3 +838,24 @@ main {
           .FSfullscreen-button:hover {
             animation: pulse 1.5s infinite;
           }
+
+
+          /* icon in hamburger 
+
+          /* General SVG styling for mobile contact icons */
+.swz-mobile-contact img {
+  width: 24px; /* Set the standard width */
+  height: auto; /* Maintain aspect ratio */
+  max-height: 24px; /* Ensure consistent height */
+  margin-right: 10px; /* Add spacing between icon and text */
+  display: inline-block; /* Ensure proper alignment with text */
+  vertical-align: middle; /* Align icon with text vertically */
+}
+
+/* Additional mobile responsiveness */
+@media (max-width: 768px) {
+  .swz-mobile-contact img {
+      width: 20px; /* Adjust size for smaller screens */
+      max-height: 20px;
+  }
+}
