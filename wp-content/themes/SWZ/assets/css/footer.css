@@ -492,77 +492,34 @@ main {
 
 /* back to top */ 
 
-/* Basic styling for Back to Top button */
-.back-to-top {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 50px; /* Initial width for a good touch target */
-    height: 50px; /* Height to keep it circular */
-    border-radius: 50%; /* Circular shape */
-    background-color: rgb(255, 16, 16);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    border: none;
-    overflow: hidden; /* Keeps child elements from spilling out */
-    transition: width 0.3s ease, border-radius 0.3s ease;
-}
-
-/* Adjust button size and border-radius on hover */
 .back-to-top:hover {
     width: 140px;
     border-radius: 50px;
+    transition-duration: 0.3s;
+    background-color: rgb(255, 16, 16);
+    align-items: center;
 }
 
-/* Styling for SVG icon */
-.back-to-top .svgIcon {
-    fill: white; /* Ensure the SVG icon is white */
-    transition: transform 0.3s ease;
-}
-
-/* Ensures the icon moves to make space for the text on hover */
 .back-to-top:hover .svgIcon {
+    transition-duration: 0.3s;
     transform: translateY(-200%);
 }
 
-/* Hidden text styling */
 .back-to-top::before {
     position: absolute;
     content: "Nach oben";
-    color: rgb(219, 22, 22);
-    font-size: 0;
+    color: white;
+    font-size: 0px;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     white-space: nowrap;
-    transition: font-size 0.3s ease, opacity 0.3s ease;
 }
 
-/* Show text on hover */
 .back-to-top:hover::before {
     font-size: 13px;
     opacity: 1;
-}
-
-/* Media Query for Touch Devices (no hover) - Ensures usability on touch devices */
-@media (hover: none), (pointer: coarse) {
-    .back-to-top {
-        width: 50px; /* Keep width consistent without hover */
-        justify-content: flex-start; /* Adjust content alignment */
-        padding-left: 20px; /* Provide space for text to appear */
-    }
-
-    .back-to-top::before {
-        font-size: 13px; /* Always show text on touch devices */
-        opacity: 1;
-    }
-
-    .back-to-top .svgIcon {
-        transform: translateX(20%); /* Adjust icon position for visibility */
-    }
+    transition-duration: 0.3s;
 }
 
 
