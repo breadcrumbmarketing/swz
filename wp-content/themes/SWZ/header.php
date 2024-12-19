@@ -204,11 +204,11 @@
 
         <!-- Mobile Contact Info -->
         <div class="swz-mobile-contact">
-            <p><img src="<?php echo get_template_directory_uri(); ?>/assets/images/email.svg" alt="Email"> info@swz.de</p>
-            <p><img src="<?php echo get_template_directory_uri(); ?>/assets/images/location.svg" alt="Location"> Würzburger Str. 155, 63739 Aschaffenburg</p>
+            <p><img src="<?php echo get_template_directory_uri(); ?>https://wordpress-1275929-5116835.cloudwaysapps.com/wp-content/uploads/2024/12/email-9-svgrepo-com.svg" alt="Email"> info@swz.de</p>
+            <p><img src="<?php echo get_template_directory_uri(); ?>https://wordpress-1275929-5116835.cloudwaysapps.com/wp-content/uploads/2024/12/location-svgrepo-com.svg" alt="Location"> Würzburger Str. 155, 63739 Aschaffenburg</p>
         </div>
 
-        <!-- Mobile Social Icons -->
+        <!-- Mobile Social Icons 
         <div class="swz-mobile-social">
             <a href="#" target="_blank" rel="noopener noreferrer">
                 <img src="<?php echo get_template_directory_uri(); ?>/assets/images/facebook.svg" alt="Facebook">
@@ -217,7 +217,7 @@
                 <img src="<?php echo get_template_directory_uri(); ?>/assets/images/twitter.svg" alt="Twitter">
             </a>
         </div>
-
+-->
 
 
 
