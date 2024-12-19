@@ -13,6 +13,21 @@ if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['su
     $wpdb->query("DELETE FROM $table_name WHERE id IN (" . implode(',', $ids) . ")");
 }
 
+// Handle CSV export
+if (isset($_POST['export_csv'])) {
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="newsletter_subscribers.csv"');
+    $output = fopen('php://output', 'w');
+    fputcsv($output, array('Email', 'IP Address', 'Location', 'Date Subscribed'));
+
+    $rows = $wpdb->get_results("SELECT email, ip_address, location, date_subscribed FROM $table_name", ARRAY_A);
+    foreach ($rows as $row) {
+        fputcsv($output, $row);
+    }
+    fclose($output);
+    exit;
+}
+
 // Get subscribers with pagination
 $page = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
 $items_per_page = 20;
@@ -28,12 +43,15 @@ $subscribers = $wpdb->get_results(
         $offset
     )
 );
+
+$week_count = $wpdb->get_var(
+    "SELECT COUNT(*) FROM $table_name WHERE date_subscribed >= DATE_SUB(CURRENT_DATE(), INTERVAL DAYOFWEEK(CURRENT_DATE())-1 DAY)"
+);
 ?>
 
 <div class="wrap">
     <h1>Newsletter Subscribers</h1>
     
-    <!-- Stats Cards -->
     <div class="newsletter-stats">
         <div class="stat-card">
             <h3>Total Subscribers</h3>
@@ -41,14 +59,20 @@ $subscribers = $wpdb->get_results(
         </div>
         <div class="stat-card">
             <h3>This Month</h3>
-            <p><?php 
-                echo $wpdb->get_var(
-                    "SELECT COUNT(*) FROM $table_name WHERE MONTH(date_subscribed) = MONTH(CURRENT_DATE())"
-                ); 
-            ?></p>
+            <p><?php echo $wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE MONTH(date_subscribed) = MONTH(CURRENT_DATE())"); ?></p>
+        </div>
+        <div class="stat-card">
+            <h3>This Week</h3>
+            <p><?php echo $week_count; ?></p>
         </div>
     </div>
 
+    <!-- Export CSV Button -->
+    <form method="post">
+        <input type="submit" name="export_csv" class="button button-primary" value="Export CSV">
+    </form>
+
+    <!-- Subscriber List Form -->
     <form method="post">
         <div class="tablenav top">
             <div class="alignleft actions bulkactions">
@@ -59,16 +83,14 @@ $subscribers = $wpdb->get_results(
                 <input type="submit" class="button action" value="Apply">
             </div>
             <div class="tablenav-pages">
-                <?php
-                echo paginate_links(array(
+                <?php echo paginate_links(array(
                     'base' => add_query_arg('paged', '%#%'),
                     'format' => '',
                     'prev_text' => __('&laquo;'),
                     'next_text' => __('&raquo;'),
                     'total' => $total_pages,
                     'current' => $page
-                ));
-                ?>
+                )); ?>
             </div>
         </div>
 
@@ -86,15 +108,15 @@ $subscribers = $wpdb->get_results(
             </thead>
             <tbody>
                 <?php foreach ($subscribers as $subscriber): ?>
-                    <tr>
-                        <th scope="row" class="check-column">
-                            <input type="checkbox" name="subscribers[]" value="<?php echo $subscriber->id; ?>" />
-                        </th>
-                        <td><?php echo esc_html($subscriber->email); ?></td>
-                        <td><?php echo esc_html($subscriber->ip_address); ?></td>
-                        <td><?php echo esc_html($subscriber->location); ?></td>
-                        <td><?php echo esc_html($subscriber->date_subscribed); ?></td>
-                    </tr>
+                <tr>
+                    <th scope="row" class="check-column">
+                        <input type="checkbox" name="subscribers[]" value="<?php echo $subscriber->id; ?>" />
+                    </th>
+                    <td><?php echo esc_html($subscriber->email); ?></td>
+                    <td><?php echo esc_html($subscriber->ip_address); ?></td>
+                    <td><?php echo esc_html($subscriber->location); ?></td>
+                    <td><?php echo esc_html($subscriber->date_subscribed); ?></td>
+                </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>

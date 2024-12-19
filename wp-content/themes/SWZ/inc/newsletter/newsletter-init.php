@@ -95,19 +95,12 @@ class SWZ_Newsletter_System {
         if ($result === false) {
             wp_send_json_error('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
         } else {
-            // Send welcome email using automation system
-            $automation = SWZ_Newsletter_Automation::get_instance();
-            $email_sent = $automation->send_welcome_email($email);
-            
-            $message = 'Vielen Dank für Ihre Anmeldung zum Newsletter!';
-            if ($email_sent) {
-                $message .= ' Eine Bestätigungs-E-Mail wurde an Sie gesendet.';
-            }
-            
-            wp_send_json_success($message);
-        }}
-
-
+            // Subscription successful, but no email sent
+            wp_send_json_success('Vielen Dank für Ihre Anmeldung zum Newsletter!');
+        }
+    }
+    
+    
 
 // Add this function to your newsletter-init.php for debugging    for test 
 public function verify_table() {
