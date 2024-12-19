@@ -263,7 +263,7 @@ main {
     background: white;
     position: absolute;
     transition: all 0.3s ease-in-out;
-    opacity: 0;
+    opacity: 1; /* Ensure the icon is visible */
     transform: translateY(20px);
     transition: all 0.4s ease-in-out;
     transition-delay: 0.2s;
@@ -838,3 +838,5 @@ main {
           .FSfullscreen-button:hover {
             animation: pulse 1.5s infinite;
           }
+
+
