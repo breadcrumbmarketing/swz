@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
    // phoneNumber?.addEventListener('click', openCard);
    // closeBtn?.addEventListener('click', closeCard);
    /// overlay?.addEventListener('click', closeCard);
-//});
+});
 
 // -------------------- //
 //     FULL SCREEN      //
@@ -190,21 +190,19 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const fullscreenBtn = document.getElementById('FSfullscreen-btn');
     
-    // Initialize fullscreen if it was active
+    // Initialize fullscreen if it was previously set
     if (localStorage.getItem('FSisFullscreen') === 'true') {
         enterFullscreen();
     }
 
-    fullscreenBtn.addEventListener('click', toggleFullScreen);
-
-    function toggleFullScreen(event) {
+    fullscreenBtn.addEventListener('click', function(event) {
         event.preventDefault();
         if (!document.fullscreenElement) {
             enterFullscreen();
         } else {
             exitFullscreen();
         }
-    }
+    });
 
     function enterFullscreen() {
         const docEl = document.documentElement;
@@ -235,24 +233,12 @@ document.addEventListener('DOMContentLoaded', function() {
         fullscreenBtn.classList.remove('FSis-fullscreen');
     }
 
-    // Handle fullscreen changes
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-
-    function handleFullscreenChange() {
-        if (document.fullscreenElement) {
-            fullscreenBtn.classList.add('FSis-fullscreen');
-        } else {
-            fullscreenBtn.classList.remove('FSis-fullscreen');
-        }
+    function updateButtonState() {
+        fullscreenBtn.classList.toggle('FSis-fullscreen', !!document.fullscreenElement);
     }
 
-    // Restore fullscreen when page loads
-    window.addEventListener('load', function() {
-        if (localStorage.getItem('FSisFullscreen') === 'true') {
-            enterFullscreen();
-        }
-    });
+    document.addEventListener('fullscreenchange', updateButtonState);
+    document.addEventListener('webkitfullscreenchange', updateButtonState);
+    document.addEventListener('mozfullscreenchange', updateButtonState);
+    document.addEventListener('MSFullscreenChange', updateButtonState);
 });
