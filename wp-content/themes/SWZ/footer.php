@@ -127,10 +127,10 @@
             <div class="footer-bottom">
                 <p>&copy; Alle Rechte vorbehalten. Erstellt von Breadcrumb</p>
                 <div class="footer-links">
-                    <a href="#">Nutzungsbedingungen</a>
-                    <a href="#">Datenschutzerklärung</a>
-                    <a href="#">Barrierefreiheit</a>
-                    <a href="#">Interessenbasierte Werbung</a>
+                    <a href="https://wordpress-1275929-5116835.cloudwaysapps.com/nutzungsbedingungen/">Nutzungsbedingungen</a>
+                    <a href="https://wordpress-1275929-5116835.cloudwaysapps.com/datenschutzerklarung/">Datenschutzerklärung</a>
+                    <a href="https://wordpress-1275929-5116835.cloudwaysapps.com/barrierefreiheit/">Barrierefreiheit</a>
+                    <a href="https://wordpress-1275929-5116835.cloudwaysapps.com/interessenbasierte-werbung/">Interessenbasierte Werbung</a>
                 </div>
             </div>
         </div>
