@@ -323,7 +323,6 @@ main {
         height: 35px;
         margin: 0 auto;
     }
-
 }
 
 @media (max-width: 480px) {
@@ -334,8 +333,10 @@ main {
     .footer-newsletter {
         grid-column: span 1;
     }
-  
-
+    /* back to top */
+.back-to-top {
+ transform: translateX(-20px);
+}
 }
 
 
@@ -487,10 +488,6 @@ main {
 .svgIcon path {
     fill: white;
 }
-
-
-
-/* back to top */ 
 
 .back-to-top:hover {
     width: 140px;
