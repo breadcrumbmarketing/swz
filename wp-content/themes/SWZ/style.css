@@ -96,6 +96,8 @@ html, body {
     margin: 0; /* Remove any default margins */
     padding: 0;
     box-sizing: border-box; /* Ensure box-sizing is consistent */
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 body {
