@@ -164,25 +164,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Phone QR code popup
-    const phoneNumber = document.querySelector('.phone-number');
-    const contactCard = document.querySelector('.contact-card');
-    const overlay = document.querySelector('.overlay');
-    const closeBtn = document.querySelector('.close-btn');
+   //const phoneNumber = document.querySelector('.phone-number');
+   // const contactCard = document.querySelector('.contact-card');
+    //const overlay = document.querySelector('.overlay');
+   // const closeBtn = document.querySelector('.close-btn');
 
-    function openCard() {
-        contactCard?.classList.add('active');
-        overlay?.classList.add('active');
-    }
+   //function openCard() {
+      ////  overlay?.classList.add('active');
+  //  }
 
-    function closeCard() {
-        contactCard?.classList.remove('active');
-        overlay?.classList.remove('active');
-    }
+   // function closeCard() {
+       // contactCard?.classList.remove('active');
+      //  overlay?.classList.remove('active');
+    //}
 
-    phoneNumber?.addEventListener('click', openCard);
-    closeBtn?.addEventListener('click', closeCard);
-    overlay?.addEventListener('click', closeCard);
-});
+   // phoneNumber?.addEventListener('click', openCard);
+   // closeBtn?.addEventListener('click', closeCard);
+   /// overlay?.addEventListener('click', closeCard);
+//});
 
 // -------------------- //
 //     FULL SCREEN      //

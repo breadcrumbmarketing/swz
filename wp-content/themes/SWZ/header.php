@@ -45,7 +45,7 @@
                 </span>
                 <span>
                     <img src="<?php echo get_template_directory_uri(); ?>/assets/icons/contact/location-svgrepo-com.svg" alt="Location">
-                    Corneliusstraße 8, 65450 Hanau
+                    Würzburger Str. 155, 63739 Aschaffenburg
                 </span>
             </div>
             <div class="swz-top-right">
@@ -205,7 +205,7 @@
         <!-- Mobile Contact Info -->
         <div class="swz-mobile-contact">
             <p><img src="<?php echo get_template_directory_uri(); ?>/assets/images/email.svg" alt="Email"> info@swz.de</p>
-            <p><img src="<?php echo get_template_directory_uri(); ?>/assets/images/location.svg" alt="Location"> Corneliusstraße 8, 65450 Hanau</p>
+            <p><img src="<?php echo get_template_directory_uri(); ?>/assets/images/location.svg" alt="Location"> Würzburger Str. 155, 63739 Aschaffenburg</p>
         </div>
 
         <!-- Mobile Social Icons -->
