@@ -242,3 +242,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('mozfullscreenchange', updateButtonState);
     document.addEventListener('MSFullscreenChange', updateButtonState);
 });
+
+
+console.log("Button visibility:", mobileMenuBtn.style.display, mobileMenuBtn.style.opacity);
