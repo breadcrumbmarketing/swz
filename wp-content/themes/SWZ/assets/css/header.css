@@ -243,12 +243,14 @@ main {
 
 /* Mobile Menu Button */
 .swz-mobile-menu-btn {
-  display: block; /* Ensure it's always visible at mobile sizes */
-  background: none;
-  border: none;
-  cursor: pointer;
-  position: relative; /* Make sure positioning doesn't change dynamically unless required */
-  z-index: 1001;
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    z-index: 1001;
 }
 
 /* Hamburger Icon */
@@ -258,29 +260,34 @@ main {
     display: block;
     width: 24px;
     height: 2px;
-    background-color: white; /* Ensure high contrast against possible backgrounds */
+    background: white;
     position: absolute;
     transition: all 0.3s ease-in-out;
-    opacity: 1; /* Ensure opacity is always 1 unless toggled */
+    opacity: 1;
+    transform: translateY(20px);
+    transition: all 0.4s ease-in-out;
+    transition-delay: 0.2s;
 }
 .swz-mobile-menu.active .swz-mobile-menu-content {
     opacity: 1;
     transform: translateY(0);
 }
 .hamburger-icon {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .hamburger-icon::before {
-  content: '';
-  top: -8px; /* Adjust distance as needed */
+    content: '';
+    top: -8px;
+    left: 0;
 }
 
 .hamburger-icon::after {
-  content: '';
-  bottom: -8px; /* Adjust distance as needed */
+    content: '';
+    bottom: -8px;
+    left: 0;
 }
 
 /* Close Button */
@@ -831,5 +838,3 @@ main {
           .FSfullscreen-button:hover {
             animation: pulse 1.5s infinite;
           }
-
-
