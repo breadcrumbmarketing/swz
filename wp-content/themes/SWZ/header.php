@@ -137,7 +137,7 @@
            <form role="search" method="get" class="swz-search-form" action="<?php echo home_url('/'); ?>">
     <input type="search" 
            class="swz-search-box" 
-           placeholder="Finde Deinen Auto" 
+           placeholder="Finde Dein Auto" 
            value="<?php echo get_search_query(); ?>" 
            name="s" 
            aria-label="Search">
@@ -185,7 +185,7 @@
         <!-- Mobile Search -->
         <form role="search" method="get" class="swz-mobile-search" action="<?php echo home_url('/'); ?>">
             <input type="search" 
-                   placeholder="Finde Deinen Auto" 
+                   placeholder="Finde Dein Auto" 
                    value="<?php echo get_search_query(); ?>" 
                    name="s" 
                    aria-label="Search">
