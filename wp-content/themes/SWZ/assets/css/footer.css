@@ -323,6 +323,9 @@ main {
         height: 35px;
         margin: 0 auto;
     }
+    .back-to-top {
+        transform: translateX(-20px);
+       }
 }
 
 @media (max-width: 480px) {
@@ -333,6 +336,10 @@ main {
     .footer-newsletter {
         grid-column: span 1;
     }
+    /* back to top */
+.back-to-top {
+ transform: translateX(-20px);
+}
 }
 
 
