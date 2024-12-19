@@ -54,7 +54,7 @@
                 <div class="footer-section">
                     <h4>Über uns</h4>
                     <ul>
-                        <li><a href="#">Über Sport Wagenzentrum</a></li>
+                        <li><a href="#"> Sport Wagenzentrum</a></li>
                         <li><a href="#">Kontakt</a></li>
                         <li><a href="#">FAQ & Support</a></li>
                         <li><a href="#">Mobile App</a></li>
@@ -79,7 +79,7 @@
                         <i class="fas fa-phone"></i> (176) 47-666-407
                     </a>
                     <a href="mailto:online@breadcrumb.de" class="contact-link">
-                        <i class="fas fa-envelope"></i> online@breadcrumb.de
+                        <i class="fas fa-envelope"></i> info@muster.de
                     </a>
                     <div class="social-links">
                     <a href="https://www.instagram.com/porsche_aschaffenburg/?hl=de" target="_blank" class="social-link1">
@@ -130,7 +130,7 @@
                     <a href="https://wordpress-1275929-5116835.cloudwaysapps.com/nutzungsbedingungen/">Nutzungsbedingungen</a>
                     <a href="https://wordpress-1275929-5116835.cloudwaysapps.com/datenschutzerklarung/">Datenschutzerklärung</a>
                     <a href="https://wordpress-1275929-5116835.cloudwaysapps.com/barrierefreiheit/">Barrierefreiheit</a>
-                    <a href="https://wordpress-1275929-5116835.cloudwaysapps.com/interessenbasierte-werbung/">Interessenbasierte Werbung</a>
+                    
                 </div>
             </div>
         </div>

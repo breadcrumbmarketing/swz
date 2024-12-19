@@ -24,7 +24,7 @@
 
   <div class="phone-container">
         <div class="phone-number">+1 (123) 456-7890</div>
-        <div class="toolkit">
+       <!--  <div class="toolkit">
             <div class="contact-info">
                 <p><strong>8 bis 18 Uhr</strong>Öffnungzeiten</p>
                 <p><strong>+409 456-7890</strong> Kunden Support</p>
@@ -33,7 +33,7 @@
             <div class="qr-code">
                 <img src="/wp-content/themes/SWZ/assets/images/QR-Code.webp" alt="Contact QR Code">
             </div>
-        </div>
+        </div>-->
     </div>
 
 
