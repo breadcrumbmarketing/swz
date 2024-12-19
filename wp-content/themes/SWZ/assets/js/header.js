@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let headerTopHidden = false;
     let headerMainHidden = false;
 
+    if (!mobileMenuBtn || !mobileMenu || !closeMenuBtn) {
+        console.error('Some navigation elements are missing.');
+        return; // Stop the function if essential elements are missing
+    }
+
     // Toggle Menu Function with smooth transitions
     function toggleMenu(show) {
         if (show) {
@@ -244,4 +249,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-console.log("Button visibility:", mobileMenuBtn.style.display, mobileMenuBtn.style.opacity);
