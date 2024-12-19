@@ -50,7 +50,7 @@
          alt="Favorisieren" title="Zu Favoriten hinzufügen">
 
     <!-- Compare Checkbox -->
-    <div class="compare-checkbox">
+    <div class=" car-card-actions compare-checkbox">
         <label>
             <input type="checkbox" class="compare-check" 
                 data-car-id="<?php echo $car->id; ?>"> 
