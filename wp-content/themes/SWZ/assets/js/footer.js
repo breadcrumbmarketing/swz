@@ -60,13 +60,12 @@ jQuery(document).ready(function($) {
 
 // back to top 
 
-// back to top
 document.addEventListener('DOMContentLoaded', function() {
     const backToTop = document.getElementById('backToTop');
 
     window.addEventListener('scroll', function() {
         if (window.scrollY > 300) {
-            backToTop.style.display = 'flex'; // Use flex to ensure the SVG icon is centered
+            backToTop.style.display = 'block';
         } else {
             backToTop.style.display = 'none';
         }
