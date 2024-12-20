@@ -13,23 +13,12 @@ Tags: flexible-header, custom-colors, custom-menu, custom-logo, editor-style, fe
 */
 
 
-html, body {
-    margin: 0; /* Remove any default margins */
-    padding: 0;
-    box-sizing: border-box; /* Ensure box-sizing is consistent */
-    max-width: 100vw;
-    overflow-x: hidden;
-}
+
 
 body {
-    padding: 0  0px; /* Add 10px padding on left and right */
-    padding-top: var(--total-header-height, calc(5vh + 71px));
+  
 
     background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%);
-    background-attachment: fixed;
-    font-family: 'Porsche Next', sans-serif;
-    font-size: 16px;
-    line-height: 1.6;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+
 }
 
