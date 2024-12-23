@@ -68,10 +68,10 @@ if ($html_page) {
     }
 
     // Display the content using the the_content function for Elementor compatibility
-    if (have_posts()) : 
-        while (have_posts()) : the_post(); 
-            the_content(); // This is required by Elementor
-        endwhile; 
+    if ( have_posts() ) :
+        while ( have_posts() ) : the_post();
+            the_content(); // This function outputs the content of the page, which is editable with Elementor.
+        endwhile;
     endif;
 
 } else {
