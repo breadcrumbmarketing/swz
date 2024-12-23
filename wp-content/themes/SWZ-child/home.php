@@ -9,9 +9,20 @@
 get_header(); // This includes your theme's header.
 ?>
 <style>
-    body {
-        overflow-x: hidden;
-    }
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 </style>
 <?php
 if ( have_posts() ) :
