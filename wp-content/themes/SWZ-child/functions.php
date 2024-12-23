@@ -132,7 +132,6 @@ function check_api_key_permission( $request ) {
 
 //  --------------------------------  Post created by Lexikon Datas  --------------------------------  //
 
-
 // Callback function to handle the insertion of data into the wp_html_pages table
 function handle_write_html_page( $data ) {
     global $wpdb;
@@ -170,7 +169,11 @@ function handle_write_html_page( $data ) {
 
             // Use WordPress function to upload the image as a featured image
             $upload_dir = wp_upload_dir();
-            $image_data = file_get_contents($image_url);  // Get image data
+            $image_data = @file_get_contents($image_url);  // Suppress errors temporarily
+
+            if ($image_data === false) {
+                return new WP_REST_Response('Failed to download image.', 400);  // Error handling
+            }
 
             $filename = basename($image_url);
             $file_path = $upload_dir['path'] . '/' . $filename;
@@ -178,9 +181,12 @@ function handle_write_html_page( $data ) {
             file_put_contents($file_path, $image_data);  // Save image to uploads directory
 
             // Check if the image was uploaded successfully
+            $file_type = wp_check_filetype($filename);
+            $mime_type = $file_type['type'];  // Dynamically get MIME type
+
             $attachment = array(
                 'guid' => $upload_dir['url'] . '/' . $filename,
-                'post_mime_type' => 'image/jpeg',
+                'post_mime_type' => $mime_type,
                 'post_title' => $filename,
                 'post_content' => '',
                 'post_status' => 'inherit'
@@ -199,3 +205,20 @@ function handle_write_html_page( $data ) {
         }
     }
 }
+
+// Define Rewrite Rule for Lexikon Slug
+function add_custom_rewrite_rule() {
+    add_rewrite_rule(
+        '^lexikon/([^/]+)/?$',
+        'index.php?lexikon_slug=$matches[1]',
+        'top'
+    );
+}
+add_action('init', 'add_custom_rewrite_rule');
+
+// Register custom query variable
+function add_custom_query_var($vars) {
+    $vars[] = 'lexikon_slug'; // Register the new query variable
+    return $vars;
+}
+add_filter('query_vars', 'add_custom_query_var');
