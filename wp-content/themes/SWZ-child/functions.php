@@ -37,19 +37,15 @@ add_action( 'wp_enqueue_scripts', 'hello_elementor_child_scripts_styles', 20 );
 
 
 /** SEO */
-
 function swz_add_seo_meta_tags() {
     ?>
-    <!-- Dynamic Title Tag (Only if your theme doesn't automatically handle it) -->
-    <title><?php wp_title('|', true, 'right'); bloginfo('name'); ?></title>
-
     <!-- SEO Meta Tags -->
     <meta name="description" content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sed urna in justo euismod condimentum.">
     <meta name="Breadcrumb" content="Sportwagen Zentrum">
 
     <!-- Open Graph / Facebook Meta Tags for rich previews in social sharing -->
     <meta property="og:title" content="<?php echo get_the_title(); ?> | Lorem Ipsum ">
-    <meta property="og:description" content="<?php echo get_the_excerpt(): 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sed urna in justo euismod condimentum.'; ?>">
+    <meta property="og:description" content="<?php echo get_the_excerpt() ? get_the_excerpt() : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sed urna in justo euismod condimentum.'; ?>">
     <meta property="og:type" content="website">
     <meta property="og:url" content="<?php echo get_permalink(); ?>">
     <meta property="og:image" content="<?php echo get_stylesheet_directory_uri(); ?>/path/to/your/default-og-image.jpg">
