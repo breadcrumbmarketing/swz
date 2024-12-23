@@ -30,19 +30,12 @@ get_footer(); // Load footer
 <style>
     /* Override body background to be transparent */
     body {
-        background-color: transparent !important;
+        background-color:rgb(238, 238, 238) !important;
     }
 
     /* Keep the HTML background gradient working */
     html {
-        background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%) !important;
-        height: 100%;
+        background-color:rgb(238, 238, 238) !important;
     }
 
-    /* Ensure content is on top and visible */
-    .html-content {
-        position: relative;
-        z-index: 10;
-        padding: 20px; /* Add some padding for better layout */
-    }
 </style>
