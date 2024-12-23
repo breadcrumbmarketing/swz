@@ -53,3 +53,9 @@ html, body {
     overflow-x: hidden;
 }
 
+.entry-title {
+    display: none;
+}
+.page-header{
+   display: none; 
+}
