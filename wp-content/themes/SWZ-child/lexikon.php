@@ -67,11 +67,11 @@ if ($html_page) {
         $page_id = $existing_page->ID;
     }
 
-    // Display the content using the the_content function for Elementor compatibility
-    if ( have_posts() ) :
+    // Ensure the content is displayed with `the_content()` for Elementor compatibility
+    if ( have_posts() ) : 
         while ( have_posts() ) : the_post();
             the_content(); // This function outputs the content of the page, which is editable with Elementor.
-        endwhile;
+        endwhile; 
     endif;
 
 } else {
