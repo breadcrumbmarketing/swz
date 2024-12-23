@@ -15,19 +15,19 @@ $html_page = $wpdb->get_row($wpdb->prepare(
 ));
 
 if ($html_page) {
-    // Create a WordPress post automatically (if not already created)
-    $existing_post = get_page_by_path($slug, OBJECT, 'post');
+    // Create a WordPress page automatically (if not already created)
+    $existing_page = get_page_by_path($slug, OBJECT, 'page');
     
-    if (!$existing_post) {
-        // Insert the post automatically if it doesn't exist
-        $post_id = wp_insert_post(array(
+    if (!$existing_page) {
+        // Insert the page automatically if it doesn't exist
+        $page_id = wp_insert_post(array(
             'post_title'   => $html_page->title,
             'post_content' => $html_page->content,
             'post_status'  => 'publish',  // Change to 'draft' if you want
-            'post_type'    => 'post',    // This will be a standard post
+            'post_type'    => 'page',    // This will be a page type, which Elementor can edit
         ));
         
-        // Set the first image from content as the post's featured image
+        // Set the first image from content as the page's featured image
         preg_match('/<img.*?src=["\'](.*?)["\'].*?>/', $html_page->content, $matches);  // Match the first image in content
         
         if (isset($matches[1])) {
@@ -59,28 +59,23 @@ if ($html_page) {
             $attachment_metadata = wp_generate_attachment_metadata($attachment_id, $file_path);
             wp_update_attachment_metadata($attachment_id, $attachment_metadata);
 
-            // Set the image as the post's featured image
-            set_post_thumbnail($post_id, $attachment_id);
+            // Set the image as the page's featured image
+            set_post_thumbnail($page_id, $attachment_id);
         }
     } else {
-        // If the post already exists, use the post ID
-        $post_id = $existing_post->ID;
+        // If the page already exists, use the page ID
+        $page_id = $existing_page->ID;
     }
 
-    // Display the content (without title)
+    // Now fetch and display the content
+    // We can output the content from the `wp_html_pages` table and let Elementor take over
+    $page_content = get_post_field('post_content', $page_id);
     echo '<div class="html-content">';
-    echo wp_kses_post($html_page->content);  // Display the content, allowing safe HTML
+    echo wp_kses_post($page_content);  // Display the content safely (using wp_kses_post to allow some HTML)
     echo '</div>';
 } else {
     echo '<p>HTML page not found.</p>';
 }
 
-<?php
-if ( have_posts() ) :
-    while ( have_posts() ) : the_post();
-        the_content(); // This function outputs the content of the page, which is editable with Elementor.
-    endwhile;
-endif;
-
-get_footer(); // This includes your theme's footer.
+get_footer();  // Load footer
 ?>
