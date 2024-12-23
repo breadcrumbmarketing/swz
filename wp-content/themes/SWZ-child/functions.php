@@ -70,3 +70,61 @@ function swz_add_seo_meta_tags() {
     <?php
 }
 add_action('wp_head', 'swz_add_seo_meta_tags');
+
+
+//  --------------------------------  Remote Api --------------------------------  //
+// Register the custom REST API endpoint
+function register_html_pages_endpoint() {
+    register_rest_route( 'myapi/v1', '/write_html_page/', array(
+        'methods' => 'POST',
+        'callback' => 'handle_write_html_page',
+        'permission_callback' => 'check_api_key_permission', // Permission check function
+    ));
+}
+add_action( 'rest_api_init', 'register_html_pages_endpoint' );
+
+// Callback function to handle the insertion of data into the wp_html_pages table
+function handle_write_html_page( $data ) {
+    global $wpdb;
+
+    // Sanitize input data
+    $title = sanitize_text_field( $data['title'] );
+    $slug = sanitize_title( $data['slug'] ); // Slug is usually sanitized and converted to lowercase
+    $content = sanitize_textarea_field( $data['content'] );
+
+    // Check if the slug already exists in the table
+    $existing_page = $wpdb->get_var( $wpdb->prepare(
+        "SELECT id FROM {$wpdb->prefix}html_pages WHERE slug = %s", 
+        $slug
+    ));
+
+    if ( $existing_page ) {
+        return new WP_REST_Response( 'Page with this slug already exists.', 400 );
+    }
+
+    // Insert new page into the wp_html_pages table
+    $insert = $wpdb->insert(
+        "{$wpdb->prefix}html_pages", 
+        array(
+            'title'     => $title,
+            'slug'      => $slug,
+            'content'   => $content,
+            'status'    => 'draft', // Default status can be 'draft' or 'published'
+        )
+    );
+
+    if ( $insert ) {
+        return new WP_REST_Response( 'HTML page inserted successfully.', 200 );
+    } else {
+        return new WP_REST_Response( 'Failed to insert HTML page.', 400 );
+    }
+}
+
+// API key check function for authentication
+function check_api_key_permission( $request ) {
+    $api_key = $request->get_header( 'API-Key' ); // Get the API key from the header
+    if ( $api_key === 'your_secure_api_key' ) { // Replace with your secure key
+        return true;
+    }
+    return new WP_REST_Response( 'Unauthorized', 401 );
+}
