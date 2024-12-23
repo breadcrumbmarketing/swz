@@ -7,7 +7,13 @@
  */
 
 get_header(); // This includes your theme's header.
-
+?>
+<style>
+    body {
+        overflow-x: hidden;
+    }
+</style>
+<?php
 if ( have_posts() ) :
     while ( have_posts() ) : the_post();
         the_content(); // This function outputs the content of the page, which is editable with Elementor.
