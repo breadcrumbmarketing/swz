@@ -113,69 +113,33 @@ function handle_write_html_page( $data ) {
     );
 
     if ( $insert ) {
-        // Now automatically create a WordPress page (not post) from the HTML content
-        $existing_page = get_page_by_path($slug, OBJECT, 'page');
+        // Automatically create a WordPress page (not post) from the HTML content
+        $existing_post = get_page_by_path($slug, OBJECT, 'post'); // Check if post already exists
         
-        if (!$existing_page) {
-            $page_id = wp_insert_post(array(
+        if (!$existing_post) {
+            // Insert the post if it doesn't exist
+            $post_id = wp_insert_post(array(
                 'post_title'   => $title,
                 'post_content' => $content,
-                'post_status'  => 'publish',  // Change to 'draft' if you want
-                'post_type'    => 'page',    // This will be a page type, which Elementor can edit
+                'post_status'  => 'publish', // You can set to 'draft' if needed
+                'post_type'    => 'post',    // Post type
             ));
 
-            // Set the first image from content as the page's featured image
-            preg_match('/<img.*?src=["\'](.*?)["\'].*?>/', $content, $matches);  // Match the first image in content
-            
-            if (isset($matches[1])) {
-                $image_url = $matches[1];
-
-                // Use WordPress function to upload the image as a featured image
-                $upload_dir = wp_upload_dir();
-                $image_data = @file_get_contents($image_url);  // Suppress errors temporarily
-
-                if ($image_data === false) {
-                    return new WP_REST_Response('Failed to download image.', 400);  // Error handling
-                }
-
-                $filename = basename($image_url);
-                $file_path = $upload_dir['path'] . '/' . $filename;
-                
-                file_put_contents($file_path, $image_data);  // Save image to uploads directory
-
-                // Check if the image was uploaded successfully
-                $file_type = wp_check_filetype($filename);
-                $mime_type = $file_type['type'];  // Dynamically get MIME type
-
-                $attachment = array(
-                    'guid' => $upload_dir['url'] . '/' . $filename,
-                    'post_mime_type' => $mime_type,
-                    'post_title' => $filename,
-                    'post_content' => '',
-                    'post_status' => 'inherit'
-                );
-
-                // Insert the image into the media library
-                $attachment_id = wp_insert_attachment($attachment, $file_path);
-
-                // Generate metadata for the image
-                require_once(ABSPATH . 'wp-admin/includes/image.php');
-                $attachment_metadata = wp_generate_attachment_metadata($attachment_id, $file_path);
-                wp_update_attachment_metadata($attachment_id, $attachment_metadata);
-
-                // Set the image as the page's featured image
-                set_post_thumbnail($page_id, $attachment_id);
+            // Check if the post was created successfully
+            if (is_wp_error($post_id)) {
+                return new WP_REST_Response('Failed to create post', 400);
             }
-        } else {
-            // If the page already exists, use the page ID
-            $page_id = $existing_page->ID;
-        }
 
-        return new WP_REST_Response( 'HTML page inserted and WordPress page created successfully.', 200 );
+            return new WP_REST_Response( 'Post created successfully.', 200 );
+        } else {
+            // Post already exists
+            return new WP_REST_Response('Post already exists.', 400);
+        }
     } else {
         return new WP_REST_Response( 'Failed to insert HTML page.', 400 );
     }
 }
+
 
 // API key check function for authentication
 function check_api_key_permission( $request ) {
