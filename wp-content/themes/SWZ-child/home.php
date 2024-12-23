@@ -22,7 +22,12 @@ get_header(); // This includes your theme's header.
     max-width: 100%;
     overflow-x: hidden;
 }
-
+.entry-title {
+    display: none !important;
+}
+.page-header{
+   display: none !important; 
+}
 </style>
 <?php
 if ( have_posts() ) :
