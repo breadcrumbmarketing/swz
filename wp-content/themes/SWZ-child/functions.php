@@ -71,6 +71,7 @@ function swz_add_seo_meta_tags() {
 }
 add_action('wp_head', 'swz_add_seo_meta_tags');
 
+
 //  --------------------------------  Remote Api --------------------------------  //
 // Register the custom REST API endpoint
 function register_html_pages_endpoint() {
@@ -113,17 +114,56 @@ function handle_write_html_page( $data ) {
     );
 
     if ( $insert ) {
-        // Now automatically create a WordPress post from the HTML content
-        $post_id = wp_insert_post(array(
+        return new WP_REST_Response( 'HTML page inserted successfully.', 200 );
+    } else {
+        return new WP_REST_Response( 'Failed to insert HTML page.', 400 );
+    }
+}
+
+// API key check function for authentication
+function check_api_key_permission( $request ) {
+    $api_key = $request->get_header( 'API-Key' ); // Get the API key from the header
+    if ( $api_key === 'swz_aschaffenburg_breadcrumb_hamy' ) { // Replace with your secure key
+        return true;
+    }
+    return new WP_REST_Response( 'Unauthorized', 401 );
+}
+
+
+//  --------------------------------  Post created by Lexikon Datas  --------------------------------  //
+
+// Callback function to handle the insertion of data into the wp_html_pages table
+function handle_write_html_page( $data ) {
+    global $wpdb;
+
+    // Sanitize input data
+    $title = sanitize_text_field( $data['title'] );
+    $slug = sanitize_title( $data['slug'] ); // Slug is usually sanitized and converted to lowercase
+    $content = sanitize_textarea_field( $data['content'] );
+
+    // Insert new page into the wp_html_pages table
+    $insert = $wpdb->insert(
+        "{$wpdb->prefix}html_pages", 
+        array(
+            'title'     => $title,
+            'slug'      => $slug,
+            'content'   => $content,
+            'status'    => 'draft', // Default status can be 'draft' or 'published'
+        )
+    );
+
+    if ( $insert ) {
+        // Now automatically create a WordPress page (not post) from the HTML content
+        $page_id = wp_insert_post(array(
             'post_title'   => $title,
             'post_content' => $content,
             'post_status'  => 'publish', // You can set to 'draft' if needed
-            'post_type'    => 'post', // Make this a post type
+            'post_type'    => 'page',    // This will be a page type, which Elementor can edit
         ));
 
-        // After inserting the post, we can also set the first image from the content as the featured image
-        preg_match('/<img.*?src=["\'](.*?)["\'].*?>/', $content, $matches);  // Match the first image in the content
-
+        // After inserting the page, we can also set the first image from the content as the featured image
+        preg_match('/<img.*?src=["\'](.*?)["\'].*?>/', $content, $matches);  // Match the first image in content
+        
         if (isset($matches[1])) {
             $image_url = $matches[1];
 
@@ -160,13 +200,13 @@ function handle_write_html_page( $data ) {
             $attachment_metadata = wp_generate_attachment_metadata($attachment_id, $file_path);
             wp_update_attachment_metadata($attachment_id, $attachment_metadata);
 
-            // Set the image as the post's thumbnail (featured image)
-            set_post_thumbnail($post_id, $attachment_id);
+            // Set the image as the page's thumbnail (featured image)
+            set_post_thumbnail($page_id, $attachment_id);
         }
     }
 }
 
-//  --------------------------------  Define Slug for Lexikon  --------------------------------  //
+// Define Rewrite Rule for Lexikon Slug
 function add_custom_rewrite_rule() {
     add_rewrite_rule(
         '^lexikon/([^/]+)/?$',

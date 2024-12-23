@@ -40,7 +40,7 @@ if ($html_page) {
             $filename = basename($image_url);
             $file_path = $upload_dir['path'] . '/' . $filename;
             
-            file_put_contents($file_path, $image_data);  // Save image to the uploads directory
+            file_put_contents($file_path, $image_data);  // Save image to uploads directory
             
             // Insert the image into the media library
             $attachment = array(
@@ -67,12 +67,13 @@ if ($html_page) {
         $page_id = $existing_page->ID;
     }
 
-    // Now fetch and display the content
-    // We can output the content from the `wp_html_pages` table and let Elementor take over
-    $page_content = get_post_field('post_content', $page_id);
-    echo '<div class="html-content">';
-    echo wp_kses_post($page_content);  // Display the content safely (using wp_kses_post to allow some HTML)
-    echo '</div>';
+    // Display the content using the the_content function for Elementor compatibility
+    if (have_posts()) : 
+        while (have_posts()) : the_post(); 
+            the_content(); // This is required by Elementor
+        endwhile; 
+    endif;
+
 } else {
     echo '<p>HTML page not found.</p>';
 }
