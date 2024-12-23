@@ -71,7 +71,6 @@ function swz_add_seo_meta_tags() {
 }
 add_action('wp_head', 'swz_add_seo_meta_tags');
 
-
 //  --------------------------------  Remote Api --------------------------------  //
 // Register the custom REST API endpoint
 function register_html_pages_endpoint() {
@@ -114,7 +113,65 @@ function handle_write_html_page( $data ) {
     );
 
     if ( $insert ) {
-        return new WP_REST_Response( 'HTML page inserted successfully.', 200 );
+        // Now automatically create a WordPress page (not post) from the HTML content
+        $existing_page = get_page_by_path($slug, OBJECT, 'page');
+        
+        if (!$existing_page) {
+            $page_id = wp_insert_post(array(
+                'post_title'   => $title,
+                'post_content' => $content,
+                'post_status'  => 'publish',  // Change to 'draft' if you want
+                'post_type'    => 'page',    // This will be a page type, which Elementor can edit
+            ));
+
+            // Set the first image from content as the page's featured image
+            preg_match('/<img.*?src=["\'](.*?)["\'].*?>/', $content, $matches);  // Match the first image in content
+            
+            if (isset($matches[1])) {
+                $image_url = $matches[1];
+
+                // Use WordPress function to upload the image as a featured image
+                $upload_dir = wp_upload_dir();
+                $image_data = @file_get_contents($image_url);  // Suppress errors temporarily
+
+                if ($image_data === false) {
+                    return new WP_REST_Response('Failed to download image.', 400);  // Error handling
+                }
+
+                $filename = basename($image_url);
+                $file_path = $upload_dir['path'] . '/' . $filename;
+                
+                file_put_contents($file_path, $image_data);  // Save image to uploads directory
+
+                // Check if the image was uploaded successfully
+                $file_type = wp_check_filetype($filename);
+                $mime_type = $file_type['type'];  // Dynamically get MIME type
+
+                $attachment = array(
+                    'guid' => $upload_dir['url'] . '/' . $filename,
+                    'post_mime_type' => $mime_type,
+                    'post_title' => $filename,
+                    'post_content' => '',
+                    'post_status' => 'inherit'
+                );
+
+                // Insert the image into the media library
+                $attachment_id = wp_insert_attachment($attachment, $file_path);
+
+                // Generate metadata for the image
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                $attachment_metadata = wp_generate_attachment_metadata($attachment_id, $file_path);
+                wp_update_attachment_metadata($attachment_id, $attachment_metadata);
+
+                // Set the image as the page's featured image
+                set_post_thumbnail($page_id, $attachment_id);
+            }
+        } else {
+            // If the page already exists, use the page ID
+            $page_id = $existing_page->ID;
+        }
+
+        return new WP_REST_Response( 'HTML page inserted and WordPress page created successfully.', 200 );
     } else {
         return new WP_REST_Response( 'Failed to insert HTML page.', 400 );
     }
@@ -127,83 +184,6 @@ function check_api_key_permission( $request ) {
         return true;
     }
     return new WP_REST_Response( 'Unauthorized', 401 );
-}
-
-
-//  --------------------------------  Post created by Lexikon Datas  --------------------------------  //
-
-// Callback function to handle the insertion of data into the wp_html_pages table
-function handle_write_html_page( $data ) {
-    global $wpdb;
-
-    // Sanitize input data
-    $title = sanitize_text_field( $data['title'] );
-    $slug = sanitize_title( $data['slug'] ); // Slug is usually sanitized and converted to lowercase
-    $content = sanitize_textarea_field( $data['content'] );
-
-    // Insert new page into the wp_html_pages table
-    $insert = $wpdb->insert(
-        "{$wpdb->prefix}html_pages", 
-        array(
-            'title'     => $title,
-            'slug'      => $slug,
-            'content'   => $content,
-            'status'    => 'draft', // Default status can be 'draft' or 'published'
-        )
-    );
-
-    if ( $insert ) {
-        // Now automatically create a WordPress page (not post) from the HTML content
-        $page_id = wp_insert_post(array(
-            'post_title'   => $title,
-            'post_content' => $content,
-            'post_status'  => 'publish', // You can set to 'draft' if needed
-            'post_type'    => 'page',    // This will be a page type, which Elementor can edit
-        ));
-
-        // After inserting the page, we can also set the first image from the content as the featured image
-        preg_match('/<img.*?src=["\'](.*?)["\'].*?>/', $content, $matches);  // Match the first image in content
-        
-        if (isset($matches[1])) {
-            $image_url = $matches[1];
-
-            // Use WordPress function to upload the image as a featured image
-            $upload_dir = wp_upload_dir();
-            $image_data = @file_get_contents($image_url);  // Suppress errors temporarily
-
-            if ($image_data === false) {
-                return new WP_REST_Response('Failed to download image.', 400);  // Error handling
-            }
-
-            $filename = basename($image_url);
-            $file_path = $upload_dir['path'] . '/' . $filename;
-            
-            file_put_contents($file_path, $image_data);  // Save image to uploads directory
-
-            // Check if the image was uploaded successfully
-            $file_type = wp_check_filetype($filename);
-            $mime_type = $file_type['type'];  // Dynamically get MIME type
-
-            $attachment = array(
-                'guid' => $upload_dir['url'] . '/' . $filename,
-                'post_mime_type' => $mime_type,
-                'post_title' => $filename,
-                'post_content' => '',
-                'post_status' => 'inherit'
-            );
-
-            // Insert the image into the media library
-            $attachment_id = wp_insert_attachment($attachment, $file_path);
-
-            // Generate the metadata for the image
-            require_once(ABSPATH . 'wp-admin/includes/image.php');
-            $attachment_metadata = wp_generate_attachment_metadata($attachment_id, $file_path);
-            wp_update_attachment_metadata($attachment_id, $attachment_metadata);
-
-            // Set the image as the page's thumbnail (featured image)
-            set_post_thumbnail($page_id, $attachment_id);
-        }
-    }
 }
 
 // Define Rewrite Rule for Lexikon Slug
