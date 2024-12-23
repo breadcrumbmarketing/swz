@@ -128,3 +128,74 @@ function check_api_key_permission( $request ) {
     }
     return new WP_REST_Response( 'Unauthorized', 401 );
 }
+
+
+//  --------------------------------  Post created by Lexikon Datas  --------------------------------  //
+
+
+// Callback function to handle the insertion of data into the wp_html_pages table
+function handle_write_html_page( $data ) {
+    global $wpdb;
+
+    // Sanitize input data
+    $title = sanitize_text_field( $data['title'] );
+    $slug = sanitize_title( $data['slug'] ); // Slug is usually sanitized and converted to lowercase
+    $content = sanitize_textarea_field( $data['content'] );
+
+    // Insert new page into the wp_html_pages table
+    $insert = $wpdb->insert(
+        "{$wpdb->prefix}html_pages", 
+        array(
+            'title'     => $title,
+            'slug'      => $slug,
+            'content'   => $content,
+            'status'    => 'draft', // Default status can be 'draft' or 'published'
+        )
+    );
+
+    if ( $insert ) {
+        // Now automatically create a WordPress post from the HTML content
+        $post_id = wp_insert_post(array(
+            'post_title'   => $title,
+            'post_content' => $content,
+            'post_status'  => 'publish', // You can set to 'draft' if needed
+            'post_type'    => 'post', // Make this a post type
+        ));
+
+        // After inserting the post, we can also set the first image from the content as the featured image
+        preg_match('/<img.*?src=["\'](.*?)["\'].*?>/', $content, $matches);  // Match the first image in the content
+
+        if (isset($matches[1])) {
+            $image_url = $matches[1];
+
+            // Use WordPress function to upload the image as a featured image
+            $upload_dir = wp_upload_dir();
+            $image_data = file_get_contents($image_url);  // Get image data
+
+            $filename = basename($image_url);
+            $file_path = $upload_dir['path'] . '/' . $filename;
+            
+            file_put_contents($file_path, $image_data);  // Save image to uploads directory
+
+            // Check if the image was uploaded successfully
+            $attachment = array(
+                'guid' => $upload_dir['url'] . '/' . $filename,
+                'post_mime_type' => 'image/jpeg',
+                'post_title' => $filename,
+                'post_content' => '',
+                'post_status' => 'inherit'
+            );
+
+            // Insert the image into the media library
+            $attachment_id = wp_insert_attachment($attachment, $file_path);
+
+            // Generate the metadata for the image
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+            $attachment_metadata = wp_generate_attachment_metadata($attachment_id, $file_path);
+            wp_update_attachment_metadata($attachment_id, $attachment_metadata);
+
+            // Set the image as the post's thumbnail (featured image)
+            set_post_thumbnail($post_id, $attachment_id);
+        }
+    }
+}
