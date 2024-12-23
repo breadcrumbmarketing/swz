@@ -75,4 +75,12 @@ if ($html_page) {
     echo '<p>HTML page not found.</p>';
 }
 
-get_footer();  // Load footer
+<?php
+if ( have_posts() ) :
+    while ( have_posts() ) : the_post();
+        the_content(); // This function outputs the content of the page, which is editable with Elementor.
+    endwhile;
+endif;
+
+get_footer(); // This includes your theme's footer.
+?>
