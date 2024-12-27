@@ -45,6 +45,13 @@ if (!$html_content) {
         .edit-bgcolor {
             color: white !important;
         }
+        .heading-content-wrapper p {
+    color: #d3d3d4 !important;
+}
+.accordion-tab-title-wrapper {
+    background-color: orange !important;
+}
+
     </style>
 </head>
 <body>
