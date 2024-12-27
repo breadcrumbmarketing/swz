@@ -166,3 +166,26 @@ function add_custom_query_var($vars) {
     return $vars;
 }
 add_filter('query_vars', 'add_custom_query_var');
+
+
+// Add template for all posts based on the `wp_html_pages` table
+function register_post_template($template) {
+    if (is_single() && get_post_type() === 'post') {
+        global $wpdb;
+        
+        // Get the slug of the current post
+        $post_slug = get_post_field('post_name', get_the_ID());
+        
+        // Check if the post slug exists in the `wp_html_pages` table
+        $html_page = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}html_pages WHERE slug = %s", $post_slug));
+        
+        if ($html_page) {
+            // Apply the custom template if the HTML page exists in the database
+            return get_template_directory() . '/posthtml.php'; // Path to your custom template
+        }
+    }
+
+    // Return the default template if the condition isn't met
+    return $template;
+}
+add_filter('template_include', 'register_post_template');

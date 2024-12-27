@@ -1,13 +1,14 @@
 <?php
 /**
- * Template Name: Display HTML Content
+ * Template Name: Post HTML Content
  */
 
 get_header(); // Load header
 
-// Fetch the HTML page content with id = 6 from the database
+// Fetch the HTML page content based on the post's slug
 global $wpdb;
-$html_page = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}html_pages WHERE id = 6");
+$post_slug = get_post_field('post_name', get_the_ID()); // Get the slug of the current post
+$html_page = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}html_pages WHERE slug = %s", $post_slug));
 
 if ($html_page) {
     // Output the title and content of the page
@@ -20,22 +21,21 @@ if ($html_page) {
     wp_enqueue_style('custom-carousel-style', 'path/to/your/carousel.css');
     wp_enqueue_script('custom-carousel-script', 'path/to/your/carousel.js', array('jquery'), null, true);
 } else {
-    echo '<p>HTML page with ID 6 not found.</p>';
+    echo '<p>HTML page not found for this post.</p>';
 }
 
 get_footer(); // Load footer
 
-// Add custom inline styles to make the background transparent for this template
+// Custom inline styles to make the background transparent
 ?>
 <style>
     /* Override body background to be transparent */
     body {
-        background-color:rgb(238, 238, 238) !important;
+        background-color: rgb(238, 238, 238) !important;
     }
 
-    /* Keep the HTML background gradient working */
+    /* Ensure the HTML background remains */
     html {
-        background-color:rgb(238, 238, 238) !important;
+        background-color: rgb(238, 238, 238) !important;
     }
-
 </style>
