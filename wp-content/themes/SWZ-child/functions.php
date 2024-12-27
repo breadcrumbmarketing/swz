@@ -72,76 +72,85 @@ function swz_add_seo_meta_tags() {
 add_action('wp_head', 'swz_add_seo_meta_tags');
 
 //  --------------------------------  Remote Api --------------------------------  //
-// Register the custom REST API endpoint
+// --------------------------------- Register the custom REST API endpoint --------------------------------- //
 function register_html_pages_endpoint() {
-    register_rest_route( 'myapi/v1', '/write_html_page/', array(
+    register_rest_route('myapi/v1', '/write_html_page/', array(
         'methods' => 'POST',
         'callback' => 'handle_write_html_page',
         'permission_callback' => 'check_api_key_permission', // Permission check function
     ));
 }
-add_action( 'rest_api_init', 'register_html_pages_endpoint' );
+add_action('rest_api_init', 'register_html_pages_endpoint');
 
-// Callback function to handle the insertion of data into the wp_html_pages table
-function handle_write_html_page( $data ) {
+// --------------------------------- Callback function to handle the insertion of data into the wp_html_pages table --------------------------------- //
+function handle_write_html_page($data) {
     global $wpdb;
 
-      // Log the received content
-      error_log('Received Content: ' . print_r($data['content'], true));
+    // Log the received content for debugging
+    error_log('Received Content: ' . print_r($data['content'], true));
 
-    // Sanitize input data
-    $title = sanitize_text_field( $data['title'] );
-    $slug = sanitize_title( $data['slug'] );
-    $content = wp_kses_post( $data['content'] ); // Allow safe HTML tags in the content
-    
-    // Check if the slug already exists in the table
+    // Sanitize input data for title and slug
+    $title = sanitize_text_field($data['title']);
+    $slug = sanitize_title($data['slug']);
+    $content = $data['content']; // Directly use the raw HTML content to preserve all tags
+
+    // Check if the slug already exists in the wp_html_pages table
     $existing_page = $wpdb->get_var($wpdb->prepare(
-        "SELECT id FROM {$wpdb->prefix}html_pages WHERE slug = %s", 
+        "SELECT id FROM {$wpdb->prefix}html_pages WHERE slug = %s",
         $slug
     ));
 
-    if ( $existing_page ) {
+    if ($existing_page) {
         return new WP_REST_Response('Page with this slug already exists.', 400);
     }
 
     // Insert new page into the wp_html_pages table
     $insert = $wpdb->insert(
-        "{$wpdb->prefix}html_pages", 
+        "{$wpdb->prefix}html_pages",
         array(
-            'title'     => $title,
-            'slug'      => $slug,
-            'content'   => $content,
-            'status'    => 'draft', // Default status can be 'draft' or 'published'
+            'title'   => $title,
+            'slug'    => $slug,
+            'content' => $content,
+            'status'  => 'draft', // Default status can be 'draft' or 'published'
         )
     );
 
-    if ( $insert ) {
+    if ($insert) {
         // Check if a WordPress page already exists with this slug
         $existing_page = get_page_by_path($slug, OBJECT, 'page');
         if (!$existing_page) {
-            // Insert the page if it doesn't exist
+            // Insert the WordPress page if it doesn't exist
             $page_id = wp_insert_post(array(
                 'post_title'   => $title,
                 'post_content' => $content,
-                'post_status'  => 'publish', // You can set to 'draft' if needed
+                'post_status'  => 'publish', // Set to 'publish' or 'draft' based on your needs
                 'post_type'    => 'page',    // Specify it's a page
             ));
 
             if (!is_wp_error($page_id)) {
-                // Set the custom template for the new page
-                update_post_meta($page_id, '_wp_page_template', 'your_template.php'); // Specify your custom page template filename
+                // Assign the custom template to the new page
+                update_post_meta($page_id, '_wp_page_template', 'your_template.php'); // Adjust the template filename
+
                 return new WP_REST_Response('Page created successfully.', 200);
             } else {
-                return new WP_REST_Response('Failed to create page.', 400);
+                return new WP_REST_Response('Failed to create WordPress page.', 400);
             }
         } else {
-            return new WP_REST_Response('Page already exists.', 400);
+            return new WP_REST_Response('WordPress page with this slug already exists.', 400);
         }
     } else {
-        return new WP_REST_Response('Failed to insert HTML page.', 400);
+        return new WP_REST_Response('Failed to insert HTML page into the database.', 400);
     }
 }
 
+// --------------------------------- API key check function for authentication --------------------------------- //
+function check_api_key_permission($request) {
+    $api_key = $request->get_header('API-Key'); // Get the API key from the header
+    if ($api_key === 'swz_aschaffenburg_breadcrumb_hamy') { // Replace with your secure API key
+        return true;
+    }
+    return new WP_REST_Response('Unauthorized', 401);
+}
 
 // API key check function for authentication
 function check_api_key_permission( $request ) {
