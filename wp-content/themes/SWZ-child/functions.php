@@ -73,13 +73,23 @@ add_action('wp_head', 'swz_add_seo_meta_tags');
 
 //  --------------------------------  Remote Api --------------------------------  //
 // Register the custom REST API endpoint
+function register_html_pages_endpoint() {
+    register_rest_route( 'myapi/v1', '/write_html_page/', array(
+        'methods' => 'POST',
+        'callback' => 'handle_write_html_page',
+        'permission_callback' => 'check_api_key_permission', // Permission check function
+    ));
+}
+add_action( 'rest_api_init', 'register_html_pages_endpoint' );
+
+// Callback function to handle the insertion of data into the wp_html_pages table
 function handle_write_html_page( $data ) {
     global $wpdb;
 
     // Sanitize input data
     $title = sanitize_text_field( $data['title'] );
     $slug = sanitize_title( $data['slug'] );
-    $content = wp_kses_post( $data['content'] ); // Allow safe HTML tags in the content
+    $content = sanitize_textarea_field( $data['content'] );
 
     // Check if the slug already exists in the table
     $existing_page = $wpdb->get_var($wpdb->prepare(
@@ -97,7 +107,7 @@ function handle_write_html_page( $data ) {
         array(
             'title'     => $title,
             'slug'      => $slug,
-            'content'   => $content, // Insert raw HTML content
+            'content'   => $content,
             'status'    => 'draft', // Default status can be 'draft' or 'published'
         )
     );
