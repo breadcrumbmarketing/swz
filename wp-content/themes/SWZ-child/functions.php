@@ -138,6 +138,40 @@ function check_api_key_permission( $request ) {
 }
 
 // -------------------------------- Dynamic Page Creation -------------------------------- //
+function upload_image_to_media_library($image_url) {
+    // Include WordPress file handling functions
+    require_once(ABSPATH . 'wp-admin/includes/file.php');
+    require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+    // Download the image from the URL
+    $temp_file = download_url($image_url);
+
+    if (is_wp_error($temp_file)) {
+        return false; // Return false if the download failed
+    }
+
+    // Prepare file information
+    $file = array(
+        'name'     => basename($image_url),
+        'type'     => mime_content_type($temp_file),
+        'tmp_name' => $temp_file,
+        'error'    => 0,
+        'size'     => filesize($temp_file),
+    );
+
+    // Upload the file to the WordPress media library
+    $attachment_id = media_handle_sideload($file, 0);
+
+    // Clean up temporary file
+    @unlink($temp_file);
+
+    // Check for upload errors
+    if (is_wp_error($attachment_id)) {
+        return false;
+    }
+
+    return $attachment_id;
+}
 
 // Create dynamic WordPress pages for unpublished rows in the wp_html_pages table
 function create_html_pages_from_database() {
@@ -182,7 +216,7 @@ function create_html_pages_from_database() {
                 );
 
                 // Assign a custom page template (optional)
-                update_post_meta($page_id, '_wp_page_template', 'your_template.php'); // Replace with your template filename
+                update_post_meta($page_id, '_wp_page_template', 'carpage.php'); // Replace with your template filename
             }
         }
     }
