@@ -29,23 +29,33 @@ if (!$html_content) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Full Width HTML Page</title>
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white !important; 
-        }
-        .full-width-content {
-    width: 100%;
-    height: 100%;
+/* Ensure no gap between HTML, header, and footer */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: white !important;
+}
+
+/* Ensure the full-width-content fills the entire viewport */
+.full-width-content {
+    width: 100% !important;
+    height: 100% !important;
     overflow-x: hidden !important; /* Hide horizontal scrolling */
     overflow-y: auto !important; /* Allow vertical scrolling */
-    background: linear-gradient(180deg, #ffffff,rgb(188, 226, 245)) !important; /* Minimal white gradient */
-    margin: 0 !important; /* Ensure no margins that cause overflow */
-    padding: 0 !important; /* Ensure no padding that causes overflow */
-    box-sizing: border-box !important; /* Include padding and borders in the width */
+    background: linear-gradient(180deg, #ffffff, rgb(217, 239, 250)) !important; /* Minimal white gradient */
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
 }
+
+/* Ensure header and footer have no margin or padding */
+header, footer {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 /* General styles for the accordion */
 .accordion {
     margin: 0 auto !important;
