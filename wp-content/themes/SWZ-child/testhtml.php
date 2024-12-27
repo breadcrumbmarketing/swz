@@ -8,9 +8,16 @@ get_header();
 // Establish a database connection
 global $wpdb;
 
-// Fetch the HTML content from the database
-$html_content = $wpdb->get_var("SELECT content FROM wp_html_pages WHERE id = 50");
+// Get the slug from the current URL
+$current_slug = get_query_var('pagename');
 
+// Fetch the HTML content from the database using the slug
+$html_content = $wpdb->get_var($wpdb->prepare(
+    "SELECT content FROM wp_html_pages WHERE slug = %s AND status = 'published'",
+    $current_slug
+));
+
+// Check if content exists for the given slug
 if (!$html_content) {
     $html_content = "<h1>Content not found</h1>";
 }
