@@ -46,43 +46,122 @@ if (!$html_content) {
     padding: 0 !important; /* Ensure no padding that causes overflow */
     box-sizing: border-box !important; /* Include padding and borders in the width */
 }
-
-        .aa-col-12, .aa-m-col-12 {
-    width: 100% !important; /* Ensure full width */
-    padding: 10px !important; /* Add spacing */
-    box-sizing: border-box !important; /* Include padding and borders in width */
+/* General styles for the accordion */
+.accordion {
+    margin: 0 auto !important;
+    padding: 10px !important;
+    width: 100% !important;
+    max-width: 1200px !important; /* Limit the max width on large screens */
+    box-sizing: border-box !important;
 }
 
-/* Media query for smaller screens (e.g., mobile) */
-@media (max-width: 768px) {
-    .aa-col-12, .aa-m-col-12 {
-        width: 100% !important; /* Maintain full width on mobile */
-        padding: 8px !important; /* Reduce padding */
-        margin-bottom: 15px !important; /* Add spacing between sections */
-    }
-
-    /* Adjust accordion sections for smaller screens */
-    .accordion-section {
-        margin: 0 auto !important; /* Center content on mobile */
-        padding: 10px !important; /* Add some spacing */
-    }
+.accordion-header {
+    font-size: 1rem !important;
+    padding: 10px !important;
 }
 
+.accordion-button {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    font-size: 1rem !important;
+    padding: 12px !important;
+    background-color: #f8f9fa !important;
+    border: none !important;
+    box-shadow: none !important;
+    transition: background-color 0.2s !important;
+}
 
+.accordion-button:hover {
+    background-color: #eaeaea !important;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+}
+
+.accordion-button.collapsed {
+    background-color: #ffffff !important;
+    color: #333 !important;
+}
+
+.accordion-body {
+    padding: 15px !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+    background-color: #f9f9f9 !important;
+}
+
+/* Table responsiveness inside accordion */
+.table-section {
+    overflow-x: auto !important;
+    margin: 0 !important;
+}
+
+.table-section table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 0.85rem !important;
+}
+
+.table-section th,
+.table-section td {
+    text-align: left !important;
+    padding: 8px !important;
+    border: 1px solid #ddd !important;
+}
+
+.table-section th {
+    background-color: #f1f1f1 !important;
+    font-weight: bold !important;
+}
+
+/* Mobile responsiveness */
 @media (max-width: 768px) {
-    .accordion-tab-title-wrapper{
-        width: 100% !important; /* Maintain full width on mobile */
-        padding: 8px !important; /* Reduce padding */
-        margin-bottom: 15px !important; /* Add spacing between sections */
+    .accordion-header {
+        font-size: 0.9rem !important;
     }
 
-    /* Adjust accordion sections for smaller screens */
+    .accordion-button {
+        font-size: 0.85rem !important;
+        padding: 10px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
     .accordion-tab-title-wrapper {
-        margin: 0 auto !important; /* Center content on mobile */
-        padding: 10px !important; /* Add some spacing */
+        font-size: 0.85rem !important;
+        text-align: left !important;
+    }
+
+    .table-section table {
+        font-size: 0.75rem !important;
+    }
+
+    .table-section th,
+    .table-section td {
+        padding: 6px !important;
     }
 }
 
+/* Very small screens (e.g., phones) */
+@media (max-width: 480px) {
+    .accordion-button {
+        font-size: 0.8rem !important;
+        padding: 8px !important;
+    }
+
+    .accordion-body {
+        font-size: 0.8rem !important;
+    }
+
+    .table-section th,
+    .table-section td {
+        font-size: 0.7rem !important;
+        padding: 5px !important;
+    }
+}
 
     </style>
 </head>

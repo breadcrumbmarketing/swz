@@ -14,3 +14,4 @@ style for black background pahe lexikon
     background-color: #DE4F3E !important; /* Change to the desired hover color */
     color: #fff; /* Optional: Change text color on hover */
 }
+
