@@ -29,6 +29,9 @@ if ($html_pages) {
             $post_id = wp_insert_post($post_data);
             
             if ($post_id) {
+                // Set the custom template for the new post
+                update_post_meta($post_id, '_wp_page_template', 'posthtml.php');  // Adjust 'posthtml.php' to your template filename
+
                 // Optional: Set featured image if needed
                 preg_match('/<img.*?src=["\'](.*?)["\'].*?>/', $html_page->content, $matches);  // Match the first image URL in content
                 if (isset($matches[1])) {
@@ -62,7 +65,7 @@ if ($html_pages) {
                 }
 
                 // Optional: Log success
-                echo 'Post created successfully for: ' . esc_html($html_page->title) . '<br>';
+                echo 'Post created successfully with custom template for: ' . esc_html($html_page->title) . '<br>';
             } else {
                 echo 'Failed to create post for: ' . esc_html($html_page->title) . '<br>';
             }
