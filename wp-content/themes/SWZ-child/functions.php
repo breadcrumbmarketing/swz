@@ -169,23 +169,29 @@ add_filter('query_vars', 'add_custom_query_var');
 
 
 // Add template for all posts based on the `wp_html_pages` table
-function register_post_template($template) {
-    if (is_single() && get_post_type() === 'post') {
-        global $wpdb;
-        
-        // Get the slug of the current post
-        $post_slug = get_post_field('post_name', get_the_ID());
-        
-        // Check if the post slug exists in the `wp_html_pages` table
-        $html_page = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}html_pages WHERE slug = %s", $post_slug));
-        
-        if ($html_page) {
-            // Apply the custom template if the HTML page exists in the database
-            return get_template_directory() . '/posthtml.php'; // Path to your custom template
+function add_custom_post_templates($templates) {
+    $templates['posthtml.php'] = 'Display HTML Content';
+    return $templates;
+}
+add_filter('theme_post_templates', 'add_custom_post_templates');
+
+// Load the custom post template based on post meta
+function load_custom_post_template($template) {
+    $post = get_queried_object();
+    if ($post && $post->post_type == 'post') {
+        $assigned_template = get_post_meta($post->ID, '_wp_post_template', true);
+        if ($assigned_template && 'posthtml.php' == $assigned_template) {
+            if (file_exists(get_template_directory() . '/' . $assigned_template)) {
+                return get_template_directory() . '/' . $assigned_template;
+            }
         }
     }
-
-    // Return the default template if the condition isn't met
     return $template;
 }
-add_filter('template_include', 'register_post_template');
+add_filter('single_template', 'load_custom_post_template');
+
+// Ensure the template is correctly identified and loaded for posts
+function yourtheme_setup_post_templates() {
+    add_theme_support('post-templates');
+}
+add_action('after_setup_theme', 'yourtheme_setup_post_templates');

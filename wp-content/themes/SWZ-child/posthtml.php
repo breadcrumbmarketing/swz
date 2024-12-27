@@ -1,7 +1,8 @@
 <?php
-/**
- * Template Name: Post HTML Content
- */
+/*
+* Template Name: Display HTML Content
+* Template Post Type: post
+*/
 
 get_header(); // Load header
 
