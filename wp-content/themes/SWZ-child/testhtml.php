@@ -47,9 +47,11 @@ if (!$html_content) {
         .heading-content-wrapper p {
     color: #d3d3d4 !important;
 }
-.accordion-tab-title-wrapper {
-    background-color: orange !important;
+.accordion-button.collapsed:hover {
+    background-color: #DE4F3E !important; /* Change to the desired hover color */
+    color: #fff; /* Optional: Change text color on hover */
 }
+
 
     </style>
 </head>
