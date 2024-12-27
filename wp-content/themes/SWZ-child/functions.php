@@ -87,6 +87,7 @@ function register_html_pages_endpoint() {
 }
 add_action( 'rest_api_init', 'register_html_pages_endpoint' );
 
+
 // Callback function to handle the insertion of data into the wp_html_pages table
 function handle_write_html_page($data) {
     global $wpdb;
@@ -118,19 +119,13 @@ function handle_write_html_page($data) {
     );
 
     if ($insert) {
-        return new WP_REST_Response('HTML page added to database successfully.', 200);
+        // Trigger dynamic page creation immediately
+        create_html_pages_from_database(); // Call the function to create the page
+
+        return new WP_REST_Response('HTML page added to database and WordPress page created successfully.', 200);
     } else {
         return new WP_REST_Response('Failed to insert HTML page into database.', 400);
     }
-}
-
-// API key check function for authentication
-function check_api_key_permission( $request ) {
-    $api_key = $request->get_header('API-Key'); // Get the API key from the header
-    if ($api_key === 'swz_aschaffenburg_breadcrumb_hamy') { // Replace with your secure key
-        return true;
-    }
-    return new WP_REST_Response('Unauthorized', 401);
 }
 
 // -------------------------------- Dynamic Page Creation -------------------------------- //
