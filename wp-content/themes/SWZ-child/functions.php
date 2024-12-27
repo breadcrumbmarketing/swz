@@ -140,8 +140,11 @@ function check_api_key_permission( $request ) {
 // -------------------------------- Dynamic Page Creation -------------------------------- //
 function upload_image_to_media_library($image_url) {
     // Include WordPress file handling functions
-    require_once(ABSPATH . 'wp-admin/includes/file.php');
-    require_once(ABSPATH . 'wp-admin/includes/image.php');
+    if (!function_exists('media_handle_sideload')) {
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+    }
 
     // Download the image from the URL
     $temp_file = download_url($image_url);
