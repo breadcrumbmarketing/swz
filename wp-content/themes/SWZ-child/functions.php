@@ -88,17 +88,17 @@ function handle_write_html_page( $data ) {
 
     // Sanitize input data
     $title = sanitize_text_field( $data['title'] );
-    $slug = sanitize_title( $data['slug'] ); // Slug is usually sanitized and converted to lowercase
+    $slug = sanitize_title( $data['slug'] );
     $content = sanitize_textarea_field( $data['content'] );
 
     // Check if the slug already exists in the table
-    $existing_page = $wpdb->get_var( $wpdb->prepare(
+    $existing_page = $wpdb->get_var($wpdb->prepare(
         "SELECT id FROM {$wpdb->prefix}html_pages WHERE slug = %s", 
         $slug
     ));
 
     if ( $existing_page ) {
-        return new WP_REST_Response( 'Page with this slug already exists.', 400 );
+        return new WP_REST_Response('Page with this slug already exists.', 400);
     }
 
     // Insert new page into the wp_html_pages table
@@ -113,34 +113,30 @@ function handle_write_html_page( $data ) {
     );
 
     if ( $insert ) {
-        // Automatically create a WordPress page (not post) from the HTML content
-$existing_page = get_page_by_path($slug, OBJECT, 'page'); // Check if page already exists
+        // Check if a WordPress page already exists with this slug
+        $existing_page = get_page_by_path($slug, OBJECT, 'page');
+        if (!$existing_page) {
+            // Insert the page if it doesn't exist
+            $page_id = wp_insert_post(array(
+                'post_title'   => $title,
+                'post_content' => $content,
+                'post_status'  => 'publish', // You can set to 'draft' if needed
+                'post_type'    => 'page',    // Specify it's a page
+            ));
 
-if (!$existing_page) {
-    // Insert the page if it doesn't exist
-    $page_id = wp_insert_post(array(
-        'post_title'   => $title,
-        'post_content' => $content,
-        'post_status'  => 'publish', // You can set to 'draft' if needed
-        'post_type'    => 'page',    // Change to 'page'
-    ));
-
-    // Insert the new page into the WordPress database
-    $page_id = wp_insert_post($page_data);
-
-    // Check if the page was created successfully
-     if (!is_wp_error($page_id)) {
-            // Set the custom template for the new page
-            update_post_meta($page_id, '_wp_page_template', 'your_template.php');  // Specify your custom page template filename
-
-            return new WP_REST_Response('Page created successfully.', 200);
+            if (!is_wp_error($page_id)) {
+                // Set the custom template for the new page
+                update_post_meta($page_id, '_wp_page_template', 'your_template.php'); // Specify your custom page template filename
+                return new WP_REST_Response('Page created successfully.', 200);
+            } else {
+                return new WP_REST_Response('Failed to create page.', 400);
+            }
         } else {
-            return new WP_REST_Response('Failed to create page.', 400);
+            return new WP_REST_Response('Page already exists.', 400);
         }
     } else {
-        return new WP_REST_Response('Page already exists.', 400);
+        return new WP_REST_Response('Failed to insert HTML page.', 400);
     }
-
 }
 
 
