@@ -71,7 +71,10 @@ function swz_add_seo_meta_tags() {
 }
 add_action('wp_head', 'swz_add_seo_meta_tags');
 
-<?php
+
+
+
+
 // -------------------------------- Remote API -------------------------------- //
 
 // Register the custom REST API endpoint
