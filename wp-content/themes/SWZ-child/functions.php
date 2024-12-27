@@ -114,30 +114,33 @@ function handle_write_html_page( $data ) {
 
     if ( $insert ) {
         // Automatically create a WordPress page (not post) from the HTML content
-        $existing_post = get_page_by_path($slug, OBJECT, 'post'); // Check if post already exists
-        
-        if (!$existing_post) {
-            // Insert the post if it doesn't exist
-            $post_id = wp_insert_post(array(
-                'post_title'   => $title,
-                'post_content' => $content,
-                'post_status'  => 'publish', // You can set to 'draft' if needed
-                'post_type'    => 'post',    // Post type
-            ));
+$existing_page = get_page_by_path($slug, OBJECT, 'page'); // Check if page already exists
 
-            // Check if the post was created successfully
-            if (is_wp_error($post_id)) {
-                return new WP_REST_Response('Failed to create post', 400);
-            }
+if (!$existing_page) {
+    // Insert the page if it doesn't exist
+    $page_id = wp_insert_post(array(
+        'post_title'   => $title,
+        'post_content' => $content,
+        'post_status'  => 'publish', // You can set to 'draft' if needed
+        'post_type'    => 'page',    // Change to 'page'
+    ));
 
-            return new WP_REST_Response( 'Post created successfully.', 200 );
+    // Insert the new page into the WordPress database
+    $page_id = wp_insert_post($page_data);
+
+    // Check if the page was created successfully
+     if (!is_wp_error($page_id)) {
+            // Set the custom template for the new page
+            update_post_meta($page_id, '_wp_page_template', 'your_template.php');  // Specify your custom page template filename
+
+            return new WP_REST_Response('Page created successfully.', 200);
         } else {
-            // Post already exists
-            return new WP_REST_Response('Post already exists.', 400);
+            return new WP_REST_Response('Failed to create page.', 400);
         }
     } else {
-        return new WP_REST_Response( 'Failed to insert HTML page.', 400 );
+        return new WP_REST_Response('Page already exists.', 400);
     }
+
 }
 
 
@@ -168,30 +171,6 @@ function add_custom_query_var($vars) {
 add_filter('query_vars', 'add_custom_query_var');
 
 
-// Add template for all posts based on the `wp_html_pages` table
-function add_custom_post_templates($templates) {
-    $templates['posthtml.php'] = 'Display HTML Content';
-    return $templates;
-}
-add_filter('theme_post_templates', 'add_custom_post_templates');
 
-// Load the custom post template based on post meta
-function load_custom_post_template($template) {
-    $post = get_queried_object();
-    if ($post && $post->post_type == 'post') {
-        $assigned_template = get_post_meta($post->ID, '_wp_post_template', true);
-        if ($assigned_template && 'posthtml.php' == $assigned_template) {
-            if (file_exists(get_template_directory() . '/' . $assigned_template)) {
-                return get_template_directory() . '/' . $assigned_template;
-            }
-        }
-    }
-    return $template;
-}
-add_filter('single_template', 'load_custom_post_template');
 
-// Ensure the template is correctly identified and loaded for posts
-function yourtheme_setup_post_templates() {
-    add_theme_support('post-templates');
-}
-add_action('after_setup_theme', 'yourtheme_setup_post_templates');
+
