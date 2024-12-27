@@ -161,6 +161,19 @@ function create_html_pages_from_database() {
             ));
 
             if (!is_wp_error($page_id)) {
+                // Extract the first image from the HTML content
+                if (preg_match('/<img[^>]+src="([^">]+)"/i', $row->content, $matches)) {
+                    $image_url = $matches[1]; // Get the image URL
+
+                    // Upload the image to the WordPress Media Library
+                    $attachment_id = upload_image_to_media_library($image_url);
+
+                    if ($attachment_id) {
+                        // Set the uploaded image as the featured image for the page
+                        set_post_thumbnail($page_id, $attachment_id);
+                    }
+                }
+
                 // Mark the row as 'published' in the database
                 $wpdb->update(
                     "{$wpdb->prefix}html_pages",
@@ -169,11 +182,12 @@ function create_html_pages_from_database() {
                 );
 
                 // Assign a custom page template (optional)
-                update_post_meta($page_id, '_wp_page_template', 'carpage.php'); // Replace with your template filename
+                update_post_meta($page_id, '_wp_page_template', 'your_template.php'); // Replace with your template filename
             }
         }
     }
 }
+
 add_action('wp_hourly_check_html_pages', 'create_html_pages_from_database');
 
 // Schedule the dynamic page creation check if not already scheduled
