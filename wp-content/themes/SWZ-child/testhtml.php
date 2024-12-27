@@ -41,6 +41,8 @@ if (!$html_content) {
             width: 100%;
             height: 100%;
             overflow: auto;
+            background-color: white !important; 
+
         }
      
 
