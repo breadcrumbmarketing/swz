@@ -86,11 +86,14 @@ add_action( 'rest_api_init', 'register_html_pages_endpoint' );
 function handle_write_html_page( $data ) {
     global $wpdb;
 
+      // Log the received content
+      error_log('Received Content: ' . print_r($data['content'], true));
+
     // Sanitize input data
     $title = sanitize_text_field( $data['title'] );
     $slug = sanitize_title( $data['slug'] );
-    $content = sanitize_textarea_field( $data['content'] );
-
+    $content = wp_kses_post( $data['content'] ); // Allow safe HTML tags in the content
+    
     // Check if the slug already exists in the table
     $existing_page = $wpdb->get_var($wpdb->prepare(
         "SELECT id FROM {$wpdb->prefix}html_pages WHERE slug = %s", 
