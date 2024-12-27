@@ -169,7 +169,7 @@ function create_html_pages_from_database() {
                 );
 
                 // Assign a custom page template (optional)
-                update_post_meta($page_id, '_wp_page_template', 'your_template.php'); // Replace with your template filename
+                update_post_meta($page_id, '_wp_page_template', 'carpage.php'); // Replace with your template filename
             }
         }
     }

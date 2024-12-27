@@ -44,7 +44,7 @@ html, body {
     height: 100% !important;
     overflow-x: hidden !important; /* Hide horizontal scrolling */
     overflow-y: auto !important; /* Allow vertical scrolling */
-    background: linear-gradient(180deg, #ffffff, rgb(217, 239, 250)) !important; /* Minimal white gradient */
+    background: linear-gradient(180deg, #ffffff, rgb(238, 247, 252)) !important; /* Minimal white gradient */
     margin: 0 !important;
     padding: 0 !important;
     box-sizing: border-box !important;
