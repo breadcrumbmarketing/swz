@@ -41,7 +41,7 @@ if (!$html_content) {
     height: 100%;
     overflow-x: hidden !important; /* Hide horizontal scrolling */
     overflow-y: auto !important; /* Allow vertical scrolling */
-    background: linear-gradient(180deg, #ffffff, #f9f9f9) !important; /* Minimal white gradient */
+    background: linear-gradient(180deg, #ffffff,rgb(188, 226, 245)) !important; /* Minimal white gradient */
     margin: 0 !important; /* Ensure no margins that cause overflow */
     padding: 0 !important; /* Ensure no padding that causes overflow */
     box-sizing: border-box !important; /* Include padding and borders in the width */
@@ -63,6 +63,21 @@ if (!$html_content) {
 
     /* Adjust accordion sections for smaller screens */
     .accordion-section {
+        margin: 0 auto !important; /* Center content on mobile */
+        padding: 10px !important; /* Add some spacing */
+    }
+}
+
+
+@media (max-width: 768px) {
+    .accordion-tab-title-wrapper{
+        width: 100% !important; /* Maintain full width on mobile */
+        padding: 8px !important; /* Reduce padding */
+        margin-bottom: 15px !important; /* Add spacing between sections */
+    }
+
+    /* Adjust accordion sections for smaller screens */
+    .accordion-tab-title-wrapper {
         margin: 0 auto !important; /* Center content on mobile */
         padding: 10px !important; /* Add some spacing */
     }
