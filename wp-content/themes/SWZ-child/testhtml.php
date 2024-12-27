@@ -131,9 +131,14 @@ if (!$html_content) {
     }
 
     .accordion-tab-title-wrapper {
-        font-size: 0.85rem !important;
-        text-align: left !important;
-    }
+    word-wrap: break-word !important; /* Allow long words to break and wrap */
+    word-break: break-word !important; /* Ensure breaking behavior */
+    white-space: normal !important; /* Allow wrapping of text to the next line */
+    display: block !important; /* Ensure it behaves like a block element */
+    overflow-wrap: break-word !important; /* Prevent overflow on small screens */
+    width: 100% !important; /* Ensure the content fits within its container */
+    text-align: left !important; /* Align text to the left */
+}
 
     .table-section table {
         font-size: 0.75rem !important;
@@ -146,7 +151,7 @@ if (!$html_content) {
 }
 
 /* Very small screens (e.g., phones) */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
     .accordion-button {
         font-size: 0.8rem !important;
         padding: 8px !important;
@@ -160,6 +165,9 @@ if (!$html_content) {
     .table-section td {
         font-size: 0.7rem !important;
         padding: 5px !important;
+    }
+    .accordion-tab-title-wrapper {
+        font-size: 0.85rem !important; /* Adjust font size for mobile */
     }
 }
 
