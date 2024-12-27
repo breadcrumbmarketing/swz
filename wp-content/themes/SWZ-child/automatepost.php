@@ -19,10 +19,10 @@ if ($html_pages) {
             // Create a new page automatically if it doesn't exist
             $page_data = array(
                 'post_title'   => $html_page->title,
-                'post_content' => '', // Leave post_content empty to avoid WordPress sanitization
-                'post_status'  => 'publish',  // Set to 'publish' or 'draft' based on your needs
+                'post_content' => '', // Leave post_content empty to avoid sanitization
+                'post_status'  => 'publish',  // Set to 'draft' if you want to keep it unpublished
                 'post_type'    => 'page',     // Set to 'page' to create pages
-                'post_name'    => $html_page->slug,  // Set the page slug
+                'post_name'    => $html_page->slug,  // This sets the page slug
             );
 
             // Insert the page into WordPress
@@ -33,7 +33,7 @@ if ($html_pages) {
                 update_post_meta($page_id, '_raw_html_content', $html_page->content);
 
                 // Set a custom template for the page
-                update_post_meta($page_id, '_wp_page_template', 'posthtml.php'); // Specify the template file name
+                update_post_meta($page_id, '_wp_page_template', 'display-html-content.php'); // Specify your template file
 
                 // Log success
                 echo 'Page created successfully with raw HTML content for: ' . esc_html($html_page->title) . '<br>';
