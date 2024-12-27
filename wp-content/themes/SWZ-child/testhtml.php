@@ -37,14 +37,37 @@ if (!$html_content) {
             background-color: white !important; 
         }
         .full-width-content {
-            
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: white !important; 
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden !important; /* Hide horizontal scrolling */
+    overflow-y: auto !important; /* Allow vertical scrolling */
+    background: linear-gradient(180deg, #ffffff, #f9f9f9) !important; /* Minimal white gradient */
+    margin: 0 !important; /* Ensure no margins that cause overflow */
+    padding: 0 !important; /* Ensure no padding that causes overflow */
+    box-sizing: border-box !important; /* Include padding and borders in the width */
+}
 
-        }
-     
+        .aa-col-12, .aa-m-col-12 {
+    width: 100% !important; /* Ensure full width */
+    padding: 10px !important; /* Add spacing */
+    box-sizing: border-box !important; /* Include padding and borders in width */
+}
+
+/* Media query for smaller screens (e.g., mobile) */
+@media (max-width: 768px) {
+    .aa-col-12, .aa-m-col-12 {
+        width: 100% !important; /* Maintain full width on mobile */
+        padding: 8px !important; /* Reduce padding */
+        margin-bottom: 15px !important; /* Add spacing between sections */
+    }
+
+    /* Adjust accordion sections for smaller screens */
+    .accordion-section {
+        margin: 0 auto !important; /* Center content on mobile */
+        padding: 10px !important; /* Add some spacing */
+    }
+}
+
 
     </style>
 </head>
