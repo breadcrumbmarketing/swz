@@ -71,7 +71,9 @@ function swz_add_seo_meta_tags() {
 }
 add_action('wp_head', 'swz_add_seo_meta_tags');
 
-//  --------------------------------  Remote Api --------------------------------  //
+<?php
+// -------------------------------- Remote API -------------------------------- //
+
 // Register the custom REST API endpoint
 function register_html_pages_endpoint() {
     register_rest_route( 'myapi/v1', '/write_html_page/', array(
@@ -86,13 +88,10 @@ add_action( 'rest_api_init', 'register_html_pages_endpoint' );
 function handle_write_html_page($data) {
     global $wpdb;
 
-    // Log the received content for debugging
-    error_log('Received Content: ' . print_r($data['content'], true));
-
-    // Sanitize input data for title and slug
-    $title = sanitize_text_field($data['title']); // Sanitize the title to remove unwanted characters
-    $slug = sanitize_title($data['slug']); // Convert the slug into a URL-friendly format
-    $content = $data['content']; // Directly use the raw HTML content without any sanitization
+    // Sanitize input data
+    $title = sanitize_text_field($data['title']); // Sanitize the title
+    $slug = sanitize_title($data['slug']);       // Convert the slug into a URL-friendly format
+    $content = $data['content'];                // Use raw HTML content without sanitization
 
     // Check if the slug already exists in the table
     $existing_page = $wpdb->get_var($wpdb->prepare(
@@ -110,49 +109,74 @@ function handle_write_html_page($data) {
         array(
             'title'   => $title,
             'slug'    => $slug,
-            'content' => $content, // Store the raw HTML content
-            'status'  => 'draft', // Default status can be 'draft' or 'published'
+            'content' => $content,
+            'status'  => 'draft', // Set initial status to draft
         )
     );
 
     if ($insert) {
-        // Check if a WordPress page already exists with this slug
-        $existing_page = get_page_by_path($slug, OBJECT, 'page');
-        if (!$existing_page) {
-            // Insert the page if it doesn't exist
-            $page_id = wp_insert_post(array(
-                'post_title'   => $title,
-                'post_content' => $content,
-                'post_status'  => 'publish', // Set to 'publish' or 'draft' based on your needs
-                'post_type'    => 'page',    // Specify it's a page
-            ));
-
-            if (!is_wp_error($page_id)) {
-                // Set the custom template for the new page
-                update_post_meta($page_id, '_wp_page_template', 'your_template.php'); // Specify your custom page template filename
-                return new WP_REST_Response('Page created successfully.', 200);
-            } else {
-                return new WP_REST_Response('Failed to create page.', 400);
-            }
-        } else {
-            return new WP_REST_Response('Page already exists.', 400);
-        }
+        return new WP_REST_Response('HTML page added to database successfully.', 200);
     } else {
-        return new WP_REST_Response('Failed to insert HTML page.', 400);
+        return new WP_REST_Response('Failed to insert HTML page into database.', 400);
     }
 }
-
 
 // API key check function for authentication
 function check_api_key_permission( $request ) {
-    $api_key = $request->get_header( 'API-Key' ); // Get the API key from the header
-    if ( $api_key === 'swz_aschaffenburg_breadcrumb_hamy' ) { // Replace with your secure key
+    $api_key = $request->get_header('API-Key'); // Get the API key from the header
+    if ($api_key === 'swz_aschaffenburg_breadcrumb_hamy') { // Replace with your secure key
         return true;
     }
-    return new WP_REST_Response( 'Unauthorized', 401 );
+    return new WP_REST_Response('Unauthorized', 401);
 }
 
-// Define Rewrite Rule for Lexikon Slug
+// -------------------------------- Dynamic Page Creation -------------------------------- //
+
+// Create dynamic WordPress pages for unpublished rows in the wp_html_pages table
+function create_html_pages_from_database() {
+    global $wpdb;
+
+    // Fetch rows from the wp_html_pages table with status 'draft'
+    $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages WHERE status = 'draft'");
+
+    foreach ($rows as $row) {
+        // Check if a WordPress page already exists with the slug
+        $existing_page = get_page_by_path($row->slug, OBJECT, 'page');
+
+        if (!$existing_page) {
+            // Insert a new WordPress page
+            $page_id = wp_insert_post(array(
+                'post_title'   => $row->title,
+                'post_name'    => $row->slug,
+                'post_content' => $row->content,
+                'post_status'  => 'publish', // Publish the page
+                'post_type'    => 'page',    // Create as a WordPress page
+            ));
+
+            if (!is_wp_error($page_id)) {
+                // Mark the row as 'published' in the database
+                $wpdb->update(
+                    "{$wpdb->prefix}html_pages",
+                    array('status' => 'published'),
+                    array('id' => $row->id)
+                );
+
+                // Assign a custom page template (optional)
+                update_post_meta($page_id, '_wp_page_template', 'your_template.php'); // Replace with your template filename
+            }
+        }
+    }
+}
+add_action('wp_hourly_check_html_pages', 'create_html_pages_from_database');
+
+// Schedule the dynamic page creation check if not already scheduled
+if (!wp_next_scheduled('wp_hourly_check_html_pages')) {
+    wp_schedule_event(time(), 'hourly', 'wp_hourly_check_html_pages');
+}
+
+// -------------------------------- Rewrite Rules -------------------------------- //
+
+// Define rewrite rule for custom lexikon slugs
 function add_custom_rewrite_rule() {
     add_rewrite_rule(
         '^lexikon/([^/]+)/?$',
@@ -162,14 +186,9 @@ function add_custom_rewrite_rule() {
 }
 add_action('init', 'add_custom_rewrite_rule');
 
-// Register custom query variable
+// Register custom query variable for lexikon slug
 function add_custom_query_var($vars) {
     $vars[] = 'lexikon_slug'; // Register the new query variable
     return $vars;
 }
 add_filter('query_vars', 'add_custom_query_var');
-
-
-
-
-
