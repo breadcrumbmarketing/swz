@@ -46,12 +46,13 @@ $query = new WP_Query($args);
 body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p {
     font-family: 'Poppins', sans-serif;
 }
-
+/* General Styling for Gallery */
 .gallery-container {
     padding: 20px;
-    max-width: 1200px; /* Limit the width of the gallery */
-    margin: 0 auto; /* Center the gallery on the page */
+    max-width: 1200px;
+    margin: 0 auto;
     text-align: center;
+    background-color: #f5f5f5; /* Light background for the gallery */
 }
 
 .filter-bar {
@@ -64,35 +65,31 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     gap: 10px;
 }
 
-.filter-bar select {
-    padding: 8px;
-    font-size: 16px;
-    width: 200px;
-}
-
+.filter-bar select,
 .filter-bar button {
-    padding: 8px 16px;
+    padding: 10px;
     font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
 }
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Cards adapt to screen size */
-    gap: 15px; /* Consistent gap between cards */
-    justify-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px; /* Minimal gap between cards */
 }
+
+/* Individual Card Styling */
 .gallery-card {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    background-color: #fff; /* White background */
     border: 1px solid #ddd;
     border-radius: 10px;
     overflow: hidden;
-    text-decoration: none;
-    color: #000;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    height: 400px; /* Fixed card height */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 350px; /* Fixed height for consistency */
 }
 
 .gallery-card:hover {
@@ -100,41 +97,42 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Top container for the image */
+/* Top Section for Image */
 .gallery-card .image-container {
-    height: 50%; /* Takes 50% of the card height */
-    background-size: cover;
+    flex: 2; /* 2/3 of the card height */
+    background-size: contain;
     background-position: center;
-    background-color: #f5f5f5; /* Default background color */
+    background-color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
+    border-bottom: 1px solid #ddd;
 }
 
-/* Placeholder for missing images */
+/* Fallback for no images */
 .gallery-card .image-container img {
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain; /* Ensures the image fits within the container */
+    object-fit: contain;
 }
 
-/* Bottom container for the text */
+/* Bottom Section for Text */
 .gallery-card .text-container {
-    height: 50%; /* Takes 50% of the card height */
-    background-color: #fff; /* White background for text */
+    flex: 1; /* 1/3 of the card height */
+    background-color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centers the text vertically */
-    align-items: center; /* Centers the text horizontally */
+    justify-content: center;
+    align-items: center;
     padding: 10px;
     text-align: center;
 }
 
 .gallery-card .text-container h3 {
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 600;
     margin: 0;
-    line-height: 1.4;
+    color: #000;
 }
 
 .gallery-card .text-container p {
@@ -143,10 +141,10 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     color: #555;
 }
 
-/* Responsive behavior */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
     .gallery-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjusts for smaller screens */
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Smaller cards for mobile */
     }
 }
 
@@ -182,38 +180,40 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     </div>
 
     <div class="gallery-grid">
-        <?php if ($query->have_posts()) : ?>
-            <?php while ($query->have_posts()) : $query->the_post(); ?>
-                <?php
-                // Get the featured image as background
-                $featured_image = get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300';
+    <?php if ($query->have_posts()) : ?>
+        <?php while ($query->have_posts()) : $query->the_post(); ?>
+            <?php
+            // Get the featured image or a placeholder
+            $featured_image = get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300';
 
-                // Count occurrences of brand and model in the page content
-                $post_content = strtolower(strip_tags(get_the_content()));
-                $brand_count = $selected_brand ? substr_count($post_content, strtolower($selected_brand)) : 0;
-                $model_count = $selected_model ? substr_count($post_content, strtolower($selected_model)) : 0;
+            // Count occurrences of brand and model in the page content
+            $post_content = strtolower(strip_tags(get_the_content()));
+            $brand_count = $selected_brand ? substr_count($post_content, strtolower($selected_brand)) : 0;
+            $model_count = $selected_model ? substr_count($post_content, strtolower($selected_model)) : 0;
 
-                // Only display the card if the brand or model occurs more than 10 times
-                if (
-                    (!$selected_brand || $brand_count > 10) &&
-                    (!$selected_model || $model_count > 10)
-                ) :
-                ?>
-                    <a href="<?php the_permalink(); ?>" class="gallery-card">
-                        <img src="<?php echo esc_url($featured_image); ?>" alt="<?php the_title(); ?>">
-                        <div class="caption">
-                            <h3><?php the_title(); ?></h3>
-                            <?php if ($selected_brand || $selected_model) : ?>
-                                <p><?php echo esc_html($selected_brand . ' ' . $selected_model); ?></p>
-                            <?php endif; ?>
-                        </div>
-                    </a>
-                <?php endif; ?>
-            <?php endwhile; ?>
-        <?php else : ?>
-            <p><?php esc_html_e('Keine Autos gefunden. Versuchen Sie, den Filter anzupassen.', 'text-domain'); ?></p>
-        <?php endif; ?>
-    </div>
+            // Only display the card if the brand or model occurs more than 10 times
+            if (
+                (!$selected_brand || $brand_count > 10) &&
+                (!$selected_model || $model_count > 10)
+            ) :
+            ?>
+                <a href="<?php the_permalink(); ?>" class="gallery-card">
+                    <!-- Top Section: Image -->
+                    <div class="image-container" style="background-image: url('<?php echo esc_url($featured_image); ?>');">
+                    </div>
+                    <!-- Bottom Section: Text -->
+                    <div class="text-container">
+                        <h3><?php the_title(); ?></h3>
+                        <p><?php esc_html_e('Additional text here', 'text-domain'); ?></p>
+                    </div>
+                </a>
+            <?php endif; ?>
+        <?php endwhile; ?>
+    <?php else : ?>
+        <p><?php esc_html_e('Keine Autos gefunden. Versuchen Sie, den Filter anzupassen.', 'text-domain'); ?></p>
+    <?php endif; ?>
+</div>
+
 </div>
 
 <?php
