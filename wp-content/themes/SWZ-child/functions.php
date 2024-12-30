@@ -152,7 +152,6 @@ function check_api_key_permission($request) {
     }
     return new WP_REST_Response('Unauthorized', 401);
 }
-
 // -------------------------------- Dynamic Page Creation -------------------------------- //
 
 if (!function_exists('upload_image_to_media_library')) {
@@ -245,12 +244,14 @@ if (!function_exists('create_html_pages_from_database')) {
     }
 }
 
-// Add action for scheduled event
-add_action('wp_hourly_check_html_pages', 'create_html_pages_from_database');
+// Hook into the database row insertion to create pages immediately
+add_action('wp_insert_post', 'create_html_pages_on_row_insert', 10, 3);
 
-// Schedule the dynamic page creation check if not already scheduled
-if (!wp_next_scheduled('wp_hourly_check_html_pages')) {
-    wp_schedule_event(time(), 'hourly', 'wp_hourly_check_html_pages');
+function create_html_pages_on_row_insert($post_id, $post, $update) {
+    if ($post->post_type !== 'wp_html_pages' || $update) {
+        return; // Skip if not the correct post type or if this is an update
+    }
+    create_html_pages_from_database();
 }
 
 // -------------------------------- Rewrite Rules -------------------------------- //
@@ -271,8 +272,6 @@ function add_custom_query_var($vars) {
     return $vars;
 }
 add_filter('query_vars', 'add_custom_query_var');
-
-
 
 
 // -------------------------------- Database for car listing names -------------------------------- //
