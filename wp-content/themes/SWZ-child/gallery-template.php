@@ -102,8 +102,9 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 /* Top Section for Image */
 .gallery-card .image-container {
     flex: 2; /* 2/3 of the card height */
-    background-size: contain;
-    background-position: center;
+    background-size: cover;
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent image repetition */
     background-color: #fff;
     display: flex;
     justify-content: center;
