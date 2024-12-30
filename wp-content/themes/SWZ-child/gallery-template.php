@@ -6,9 +6,18 @@
 
 get_header(); // Load the WordPress header
 
-// Get the filter values from the query string
-$search_brand = isset($_GET['brand']) ? sanitize_text_field($_GET['brand']) : '';
-$search_model = isset($_GET['model']) ? sanitize_text_field($_GET['model']) : '';
+// List of sport car brands and models (expandable)
+$sport_car_brands = array(
+    'Porsche' => array('Taycan', '911', 'Panamera'),
+    'Ferrari' => array('Roma', '488', 'SF90'),
+    'Lamborghini' => array('Huracan', 'Aventador', 'Urus'),
+    'BMW' => array('i8', 'M4', 'Z4'),
+    'Mercedes' => array('AMG GT', 'SLS', 'C63'),
+);
+
+// Get the selected brand and model from the dropdown filter
+$selected_brand = isset($_GET['brand']) ? sanitize_text_field($_GET['brand']) : '';
+$selected_model = isset($_GET['model']) ? sanitize_text_field($_GET['model']) : '';
 
 // Query for pages created with the carpage.php template
 $args = array(
@@ -20,12 +29,11 @@ $args = array(
         ),
     ),
     'posts_per_page' => -1, // Get all matching pages
-    's' => $search_brand . ' ' . $search_model, // Search in title (brand and model are included in the title)
 );
 
 $query = new WP_Query($args);
-?>
 
+?>
 <style>
     .gallery-container {
         padding: 20px;
@@ -39,25 +47,29 @@ $query = new WP_Query($args);
         justify-content: center;
         gap: 10px;
     }
-    .filter-bar input {
+    .filter-bar select {
         padding: 8px;
         font-size: 16px;
         width: 200px;
     }
+    .filter-bar button {
+        padding: 8px 16px;
+        font-size: 16px;
+    }
     .gallery-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 20px;
     }
     .gallery-card {
         background-size: cover;
         background-position: center;
         color: #fff;
-        padding: 20px;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
         height: 200px;
+        width: 200px;
         border-radius: 10px;
         text-decoration: none;
         position: relative;
@@ -78,9 +90,29 @@ $query = new WP_Query($args);
 <div class="gallery-container">
     <div class="filter-bar">
         <form method="GET">
-            <input type="text" name="brand" placeholder="Search by Brand" value="<?php echo esc_attr($search_brand); ?>" />
-            <input type="text" name="model" placeholder="Search by Model" value="<?php echo esc_attr($search_model); ?>" />
-            <button type="submit">Search</button>
+            <select name="brand">
+                <option value=""><?php esc_html_e('Marke auswählen', 'text-domain'); ?></option>
+                <?php foreach ($sport_car_brands as $brand => $models) : ?>
+                    <option value="<?php echo esc_attr($brand); ?>" <?php selected($selected_brand, $brand); ?>>
+                        <?php echo esc_html($brand); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <select name="model">
+                <option value=""><?php esc_html_e('Modell auswählen', 'text-domain'); ?></option>
+                <?php
+                if ($selected_brand && isset($sport_car_brands[$selected_brand])) :
+                    foreach ($sport_car_brands[$selected_brand] as $model) :
+                ?>
+                        <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
+                            <?php echo esc_html($model); ?>
+                        </option>
+                <?php
+                    endforeach;
+                endif;
+                ?>
+            </select>
+            <button type="submit"><?php esc_html_e('Filtern', 'text-domain'); ?></button>
         </form>
     </div>
 
@@ -91,16 +123,24 @@ $query = new WP_Query($args);
                 // Get the featured image as background
                 $featured_image = get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300';
 
-                // Extract brand and model from the title
-                $title_parts = explode('–', get_the_title());
-                $brand_model = isset($title_parts[0]) ? $title_parts[0] : get_the_title();
+                // Count occurrences of brand and model in the page content
+                $post_content = strtolower(strip_tags(get_the_content()));
+                $brand_count = $selected_brand ? substr_count($post_content, strtolower($selected_brand)) : 0;
+                $model_count = $selected_model ? substr_count($post_content, strtolower($selected_model)) : 0;
+
+                // Only display the card if the brand or model occurs more than 10 times
+                if (
+                    (!$selected_brand || $brand_count > 10) &&
+                    (!$selected_model || $model_count > 10)
+                ) :
                 ?>
-                <a href="<?php the_permalink(); ?>" class="gallery-card" style="background-image: url('<?php echo esc_url($featured_image); ?>');">
-                    <h3><?php echo esc_html($brand_model); ?></h3>
-                </a>
+                    <a href="<?php the_permalink(); ?>" class="gallery-card" style="background-image: url('<?php echo esc_url($featured_image); ?>');">
+                        <h3><?php the_title(); ?></h3>
+                    </a>
+                <?php endif; ?>
             <?php endwhile; ?>
         <?php else : ?>
-            <p>No cars found. Try adjusting the filter.</p>
+            <p><?php esc_html_e('Keine Autos gefunden. Versuchen Sie, den Filter anzupassen.', 'text-domain'); ?></p>
         <?php endif; ?>
     </div>
 </div>
