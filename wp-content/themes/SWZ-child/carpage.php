@@ -13,9 +13,10 @@ $current_slug = get_query_var('pagename');
 
 // Fetch the HTML content from the database using the slug
 $html_content = $wpdb->get_var($wpdb->prepare(
-    "SELECT content FROM wp_html_pages WHERE slug = %s AND status = 'published'",
+    "SELECT content FROM wp_html_pages WHERE slug = %s AND (status = 'published' OR status = 'draft')",
     $current_slug
 ));
+
 
 // Check if content exists for the given slug
 if (!$html_content) {
