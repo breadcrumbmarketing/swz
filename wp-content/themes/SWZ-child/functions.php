@@ -244,14 +244,32 @@ if (!function_exists('create_html_pages_from_database')) {
     }
 }
 
-// Hook into the database row insertion to create pages immediately
-add_action('wp_insert_post', 'create_html_pages_on_row_insert', 10, 3);
+// Hook for immediate creation of new pages and unprocessed rows
+add_action('wp_insert_post', 'check_and_create_html_pages', 10, 3);
 
-function create_html_pages_on_row_insert($post_id, $post, $update) {
-    if ($post->post_type !== 'wp_html_pages' || $update) {
-        return; // Skip if not the correct post type or if this is an update
+function check_and_create_html_pages($post_id, $post, $update) {
+    global $wpdb;
+
+    // Ensure this is for rows added to wp_html_pages table
+    if ($post->post_type === 'wp_html_pages') {
+        // Immediately create a page for the newly added row
+        create_html_pages_from_database();
+
+        // Check for previously unprocessed rows
+        $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages WHERE status = 'draft'");
+        foreach ($rows as $row) {
+            $existing_page = get_page_by_path($row->slug, OBJECT, 'page');
+            if (!$existing_page) {
+                wp_insert_post(array(
+                    'post_title'   => $row->title,
+                    'post_name'    => $row->slug,
+                    'post_content' => $row->content,
+                    'post_status'  => 'publish',
+                    'post_type'    => 'page',
+                ));
+            }
+        }
     }
-    create_html_pages_from_database();
 }
 
 // -------------------------------- Rewrite Rules -------------------------------- //
