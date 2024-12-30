@@ -206,18 +206,23 @@ if (!function_exists('create_html_pages_from_database')) {
             $existing_page = get_page_by_path($row->slug, OBJECT, 'page');
 
             if (!$existing_page) {
+                // Prepare data, handle potential null or missing fields
+                $post_title = !empty($row->title) ? $row->title : 'Untitled Page';
+                $post_content = !empty($row->content) ? $row->content : 'No content available.';
+                $post_slug = !empty($row->slug) ? $row->slug : uniqid('page-');
+
                 // Insert a new WordPress page
                 $page_id = wp_insert_post(array(
-                    'post_title'   => $row->title,
-                    'post_name'    => $row->slug,
-                    'post_content' => $row->content,
+                    'post_title'   => $post_title,
+                    'post_name'    => $post_slug,
+                    'post_content' => $post_content,
                     'post_status'  => 'publish', // Publish the page
                     'post_type'    => 'page',    // Create as a WordPress page
                 ));
 
                 if (!is_wp_error($page_id)) {
                     // Extract the first image from the HTML content
-                    if (preg_match('/<img[^>]+src="([^">]+)"/i', $row->content, $matches)) {
+                    if (!empty($row->content) && preg_match('/<img[^>]+src="([^">]+)"/i', $row->content, $matches)) {
                         $image_url = $matches[1]; // Get the image URL
 
                         // Upload the image to the WordPress Media Library
@@ -244,33 +249,8 @@ if (!function_exists('create_html_pages_from_database')) {
     }
 }
 
-// Hook for immediate creation of new pages and unprocessed rows
-add_action('wp_insert_post', 'check_and_create_html_pages', 10, 3);
-
-function check_and_create_html_pages($post_id, $post, $update) {
-    global $wpdb;
-
-    // Ensure this is for rows added to wp_html_pages table
-    if ($post->post_type === 'wp_html_pages') {
-        // Immediately create a page for the newly added row
-        create_html_pages_from_database();
-
-        // Check for previously unprocessed rows
-        $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages WHERE status = 'draft'");
-        foreach ($rows as $row) {
-            $existing_page = get_page_by_path($row->slug, OBJECT, 'page');
-            if (!$existing_page) {
-                wp_insert_post(array(
-                    'post_title'   => $row->title,
-                    'post_name'    => $row->slug,
-                    'post_content' => $row->content,
-                    'post_status'  => 'publish',
-                    'post_type'    => 'page',
-                ));
-            }
-        }
-    }
-}
+// Immediate execution to process new and unprocessed rows
+add_action('init', 'create_html_pages_from_database');
 
 // -------------------------------- Rewrite Rules -------------------------------- //
 
