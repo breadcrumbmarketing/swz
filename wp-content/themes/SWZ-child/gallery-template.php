@@ -102,7 +102,6 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 /* Top Section for Image */
 .gallery-card .image-container {
     flex: 2; /* 2/3 of the card height */
-    height: 230px; /* Fixed height for images */
     background-size: contain;
     background-position: center;
     background-color: #fff;
@@ -122,40 +121,55 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 /* Bottom Section for Text */
 .gallery-card .text-container {
     flex: 1; /* 1/3 of the card height */
-    height: 120px; /* Fixed height for the text section */
-    background-color: #fff;
+    position: relative;
+    padding: 10px 15px; /* Consistent padding */
+    text-align: left; /* Align text to the left */
+    font-size: 14px; /* Smaller font size */
+    color: #555;
+    overflow: hidden; /* Ensure consistent height */
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    text-align: center;
-    overflow: hidden; /* Hide overflowing text */
+    justify-content: space-between;
 }
 
 .gallery-card .text-container h3 {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
+    line-height: 1.4;
     margin: 0;
-    color: #000;
-    white-space: nowrap; /* Prevent wrapping */
-    overflow: hidden; /* Hide overflowing text */
-    text-overflow: ellipsis; /* Add "..." at the end of truncated text */
+    display: -webkit-box;
+    -webkit-line-clamp: 4; /* Display a maximum of 4 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .gallery-card .text-container p {
-    font-size: 14px;
-    margin: 5px 0 0;
-    color: #555;
-    white-space: nowrap; /* Prevent wrapping */
-    overflow: hidden; /* Hide overflowing text */
-    text-overflow: ellipsis; /* Add "..." at the end of truncated text */
+    font-size: 12px;
+    color: #777;
+    margin: 0;
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .gallery-grid {
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Smaller cards for mobile */
+    }
+
+    .gallery-card .text-container {
+        padding: 8px 10px;
+    }
+
+    .gallery-card .text-container h3 {
+        font-size: 12px;
+    }
+
+    .gallery-card .text-container p {
+        font-size: 10px;
+        bottom: 5px;
     }
 }
 </style>
