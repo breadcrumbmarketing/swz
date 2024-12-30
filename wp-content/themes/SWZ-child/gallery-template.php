@@ -81,7 +81,6 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     gap: 15px; /* Consistent gap between cards */
     justify-items: center;
 }
-
 .gallery-card {
     background-color: #fff; /* Add white background for the card */
     border: 1px solid #ddd; /* Add border */
@@ -91,8 +90,10 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     color: #000;
     display: flex;
     flex-direction: column;
+    justify-content: space-between; /* Ensure space between image and text */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    height: 400px; /* Fix the card height */
 }
 
 .gallery-card:hover {
@@ -101,19 +102,26 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 .gallery-card img {
-    width: 100%;
-    height: auto;
+    width: 100%; /* Ensure images take full width */
+    height: auto; /* Maintain aspect ratio */
+    flex-grow: 0; /* Ensure image does not stretch */
+    object-fit: cover; /* Make sure the image fits inside the container */
 }
 
 .caption {
     padding: 15px;
     text-align: center;
+    flex-grow: 1; /* Ensures caption text occupies equal space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center text vertically */
 }
 
 .caption h3 {
     font-size: 18px;
     font-weight: bold;
     margin: 0;
+    line-height: 1.4; /* Better text readability */
 }
 
 .caption p {
@@ -127,6 +135,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust for mobile screens */
     }
 }
+
 </style>
 
 <div class="gallery-container">
