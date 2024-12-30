@@ -104,7 +104,7 @@ function handle_write_html_page($data) {
     ));
 
     if ($existing_page) {
-        return new WP_REST_Response('Dieses Fahrzeug wurde bereits zu Ihrer Website hinzugefügt.', 400);
+        return new WP_REST_Response('Dieses Fahrzeug wurde bereits zu Ihrer Website hinzugefuegt.', 400);
     }
 
     // Insert new page into the wp_html_pages table
@@ -122,9 +122,9 @@ function handle_write_html_page($data) {
         // Trigger dynamic page creation immediately
         create_html_pages_from_database(); // Call the function to create the page
 
-        return new WP_REST_Response('HTML-Seite wurde zu Ihrer Website hinzugefügt und erfolgreich erstellt.', 200);
+        return new WP_REST_Response('HTML-Seite wurde zu Ihrer Website hinzugefuegt und erfolgreich erstellt.', 200);
     } else {
-        return new WP_REST_Response('Das Einfügen der HTML-Seite in Ihre Website ist fehlgeschlagen.', 400);
+        return new WP_REST_Response('Das Einfuegen der HTML-Seite in Ihre Website ist fehlgeschlagen.', 400);
     }
 }
 
