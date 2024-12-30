@@ -204,7 +204,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
                     <!-- Bottom Section: Text -->
                     <div class="text-container">
                         <h3><?php the_title(); ?></h3>
-                        <p><?php esc_html_e('Additional text here', 'text-domain'); ?></p>
+                        <p><?php esc_html_e('Mehr lesen', 'text-domain'); ?></p>
                     </div>
                 </a>
             <?php endif; ?>
