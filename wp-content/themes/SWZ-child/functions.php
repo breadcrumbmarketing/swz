@@ -127,7 +127,7 @@ function handle_write_html_page($data) {
     );
 
     if ($insert) {
-        // Immediately create pages for unprocessed rows
+        // Trigger dynamic page creation immediately
         create_html_pages_from_database();
         return new WP_REST_Response('HTML-Seite wurde zu Ihrer Website hinzugefügt und erfolgreich erstellt.', 200);
     } else {
@@ -203,18 +203,25 @@ if (!function_exists('create_html_pages_from_database')) {
                 ));
 
                 if (!is_wp_error($page_id)) {
-                    if (!empty($row->image) && filter_var($row->image, FILTER_VALIDATE_URL)) {
-                        $attachment_id = upload_image_to_media_library($row->image);
+                    // Extract the first image from the content column
+                    if (preg_match('/<img[^>]+src="([^">]+)"/i', $row->content, $matches)) {
+                        $image_url = $matches[1];
+
+                        $attachment_id = upload_image_to_media_library($image_url);
                         if ($attachment_id) {
                             set_post_thumbnail($page_id, $attachment_id);
                         }
                     }
+
+                    // Assign the "carpage.php" template to the new page
+                    update_post_meta($page_id, '_wp_page_template', 'carpage.php');
                 }
             }
         }
     }
 }
 
+// Immediate execution to process new and unprocessed rows
 add_action('init', 'create_html_pages_from_database');
 
 // -------------------------------- Admin Dashboard Button -------------------------------- //
