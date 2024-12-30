@@ -153,95 +153,99 @@ function check_api_key_permission($request) {
     return new WP_REST_Response('Unauthorized', 401);
 }
 
-
 // -------------------------------- Dynamic Page Creation -------------------------------- //
-function upload_image_to_media_library($image_url) {
-    // Include WordPress file handling functions
-    if (!function_exists('media_handle_sideload')) {
-        require_once(ABSPATH . 'wp-admin/includes/file.php');
-        require_once(ABSPATH . 'wp-admin/includes/media.php');
-        require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+if (!function_exists('upload_image_to_media_library')) {
+    function upload_image_to_media_library($image_url) {
+        // Include WordPress file handling functions
+        if (!function_exists('media_handle_sideload')) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/media.php');
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+        }
+
+        // Download the image from the URL
+        $temp_file = download_url($image_url);
+
+        if (is_wp_error($temp_file)) {
+            return false; // Return false if the download failed
+        }
+
+        // Prepare file information
+        $file = array(
+            'name'     => basename($image_url),
+            'type'     => mime_content_type($temp_file),
+            'tmp_name' => $temp_file,
+            'error'    => 0,
+            'size'     => filesize($temp_file),
+        );
+
+        // Upload the file to the WordPress media library
+        $attachment_id = media_handle_sideload($file, 0);
+
+        // Clean up temporary file
+        @unlink($temp_file);
+
+        // Check for upload errors
+        if (is_wp_error($attachment_id)) {
+            return false;
+        }
+
+        return $attachment_id;
     }
-
-    // Download the image from the URL
-    $temp_file = download_url($image_url);
-
-    if (is_wp_error($temp_file)) {
-        return false; // Return false if the download failed
-    }
-
-    // Prepare file information
-    $file = array(
-        'name'     => basename($image_url),
-        'type'     => mime_content_type($temp_file),
-        'tmp_name' => $temp_file,
-        'error'    => 0,
-        'size'     => filesize($temp_file),
-    );
-
-    // Upload the file to the WordPress media library
-    $attachment_id = media_handle_sideload($file, 0);
-
-    // Clean up temporary file
-    @unlink($temp_file);
-
-    // Check for upload errors
-    if (is_wp_error($attachment_id)) {
-        return false;
-    }
-
-    return $attachment_id;
 }
 
-// Create dynamic WordPress pages for unpublished rows in the wp_html_pages table
-function create_html_pages_from_database() {
-    global $wpdb;
+if (!function_exists('create_html_pages_from_database')) {
+    function create_html_pages_from_database() {
+        global $wpdb;
 
-    // Fetch rows from the wp_html_pages table with status 'draft'
-    $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages WHERE status = 'draft'");
+        // Fetch rows from the wp_html_pages table with status 'draft'
+        $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages WHERE status = 'draft'");
 
-    foreach ($rows as $row) {
-        // Check if a WordPress page already exists with the slug
-        $existing_page = get_page_by_path($row->slug, OBJECT, 'page');
+        foreach ($rows as $row) {
+            // Check if a WordPress page already exists with the slug
+            $existing_page = get_page_by_path($row->slug, OBJECT, 'page');
 
-        if (!$existing_page) {
-            // Insert a new WordPress page
-            $page_id = wp_insert_post(array(
-                'post_title'   => $row->title,
-                'post_name'    => $row->slug,
-                'post_content' => $row->content,
-                'post_status'  => 'publish', // Publish the page
-                'post_type'    => 'page',    // Create as a WordPress page
-            ));
+            if (!$existing_page) {
+                // Insert a new WordPress page
+                $page_id = wp_insert_post(array(
+                    'post_title'   => $row->title,
+                    'post_name'    => $row->slug,
+                    'post_content' => $row->content,
+                    'post_status'  => 'publish', // Publish the page
+                    'post_type'    => 'page',    // Create as a WordPress page
+                ));
 
-            if (!is_wp_error($page_id)) {
-                // Extract the first image from the HTML content
-                if (preg_match('/<img[^>]+src="([^">]+)"/i', $row->content, $matches)) {
-                    $image_url = $matches[1]; // Get the image URL
+                if (!is_wp_error($page_id)) {
+                    // Extract the first image from the HTML content
+                    if (preg_match('/<img[^>]+src="([^">]+)"/i', $row->content, $matches)) {
+                        $image_url = $matches[1]; // Get the image URL
 
-                    // Upload the image to the WordPress Media Library
-                    $attachment_id = upload_image_to_media_library($image_url);
+                        // Upload the image to the WordPress Media Library
+                        $attachment_id = upload_image_to_media_library($image_url);
 
-                    if ($attachment_id) {
-                        // Set the uploaded image as the featured image for the page
-                        set_post_thumbnail($page_id, $attachment_id);
+                        if ($attachment_id) {
+                            // Set the uploaded image as the featured image for the page
+                            set_post_thumbnail($page_id, $attachment_id);
+                        }
                     }
+
+                    // Mark the row as 'published' in the database
+                    $wpdb->update(
+                        "{$wpdb->prefix}html_pages",
+                        array('status' => 'published'),
+                        array('id' => $row->id)
+                    );
+
+                    // Assign a custom page template (optional)
+                    update_post_meta($page_id, '_wp_page_template', 'carpage.php'); // Replace with your template filename
                 }
-
-                // Mark the row as 'published' in the database
-                $wpdb->update(
-                    "{$wpdb->prefix}html_pages",
-                    array('status' => 'published'),
-                    array('id' => $row->id)
-                );
-
-                // Assign a custom page template (optional)
-                update_post_meta($page_id, '_wp_page_template', 'carpage.php'); // Replace with your template filename
             }
         }
     }
 }
 
+// Add action for scheduled event
 add_action('wp_hourly_check_html_pages', 'create_html_pages_from_database');
 
 // Schedule the dynamic page creation check if not already scheduled
