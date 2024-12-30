@@ -250,3 +250,97 @@ function add_custom_query_var($vars) {
     return $vars;
 }
 add_filter('query_vars', 'add_custom_query_var');
+
+
+
+
+// -------------------------------- Database for car listing names -------------------------------- //
+function create_brands_models_table() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'car_brands_models';
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        brand_name VARCHAR(255) NOT NULL,
+        model_name VARCHAR(255) NOT NULL
+    ) $charset_collate;";
+
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+}
+add_action('after_switch_theme', 'create_brands_models_table');
+
+
+// -------------------------------- Dashboard for listing names -------------------------------- //
+
+// Add admin menu for managing brands and models
+function add_brands_models_admin_menu() {
+    add_menu_page(
+        'Car Brands & Models', 
+        'Car Brands', 
+        'manage_options', 
+        'car-brands-models', 
+        'brands_models_admin_page', 
+        'dashicons-car', 
+        20
+    );
+}
+add_action('admin_menu', 'add_brands_models_admin_menu');
+
+// Display admin page content
+function brands_models_admin_page() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'car_brands_models';
+
+    // Handle form submissions
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_POST['add_brand_model'])) {
+            $brand = sanitize_text_field($_POST['brand_name']);
+            $model = sanitize_text_field($_POST['model_name']);
+            $wpdb->insert($table_name, ['brand_name' => $brand, 'model_name' => $model]);
+        } elseif (isset($_POST['delete_brand_model'])) {
+            $id = intval($_POST['id']);
+            $wpdb->delete($table_name, ['id' => $id]);
+        }
+    }
+
+    // Fetch all brands and models
+    $brands_models = $wpdb->get_results("SELECT * FROM $table_name");
+    ?>
+    <div class="wrap">
+        <h1>Manage Car Brands & Models</h1>
+        <form method="post">
+            <h2>Add Brand & Model</h2>
+            <input type="text" name="brand_name" placeholder="Brand Name" required>
+            <input type="text" name="model_name" placeholder="Model Name" required>
+            <button type="submit" name="add_brand_model" class="button button-primary">Add</button>
+        </form>
+        <hr>
+        <h2>Existing Brands & Models</h2>
+        <table class="widefat">
+            <thead>
+                <tr>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($brands_models as $item) : ?>
+                    <tr>
+                        <td><?php echo esc_html($item->brand_name); ?></td>
+                        <td><?php echo esc_html($item->model_name); ?></td>
+                        <td>
+                            <form method="post" style="display: inline;">
+                                <input type="hidden" name="id" value="<?php echo esc_attr($item->id); ?>">
+                                <button type="submit" name="delete_brand_model" class="button button-secondary">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+}

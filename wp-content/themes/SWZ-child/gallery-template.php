@@ -6,17 +6,19 @@
 
 get_header(); // Load the WordPress header
 
+// Fetch dynamic car brands and models from the database
+global $wpdb;
+$brands_models_table = $wpdb->prefix . 'car_brands_models';
+$brands_models = $wpdb->get_results("SELECT * FROM $brands_models_table");
 
-
-
-// List of sport car brands and models (expandable)
-$sport_car_brands = array(
-    'Porsche' => array('Taycan', '911', 'Panamera'),
-    'Ferrari' => array('Roma', '488', 'SF90'),
-    'Lamborghini' => array('Huracan', 'Aventador', 'Urus'),
-    'BMW' => array('i8', 'M4', 'Z4'),
-    'Mercedes' => array('AMG GT', 'SLS', 'C63'),
-);
+// Prepare an associative array of brands and their models
+$sport_car_brands = [];
+foreach ($brands_models as $item) {
+    if (!isset($sport_car_brands[$item->brand_name])) {
+        $sport_car_brands[$item->brand_name] = [];
+    }
+    $sport_car_brands[$item->brand_name][] = $item->model_name;
+}
 
 // Get the selected brand and model from the dropdown filter
 $selected_brand = isset($_GET['brand']) ? sanitize_text_field($_GET['brand']) : '';
@@ -46,6 +48,7 @@ $query = new WP_Query($args);
 body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p {
     font-family: 'Poppins', sans-serif;
 }
+
 /* General Styling for Gallery */
 .gallery-container {
     padding: 20px;
