@@ -37,6 +37,8 @@ $query = new WP_Query($args);
 <style>
     .gallery-container {
         padding: 20px;
+        max-width: 1200px; /* Limit the width of the gallery */
+        margin: 0 auto; /* Center the gallery on the page */
         text-align: center;
     }
     .filter-bar {
@@ -58,8 +60,8 @@ $query = new WP_Query($args);
     }
     .gallery-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Minimum card size is 250px */
-        gap: 40px; /* Max gap between cards is 5px */
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Minimum card size is 200px */
+        gap: 10px; /* Smaller gap between cards */
         justify-items: center;
     }
     .gallery-card {
@@ -69,8 +71,8 @@ $query = new WP_Query($args);
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-        height: 100%; /* Responsive height */
-        aspect-ratio: 1 / 1; /* Ensures the cards are square */
+        height: 0;
+        padding-bottom: 100%; /* Ensures the cards remain square */
         border-radius: 10px;
         text-decoration: none;
         position: relative;
@@ -88,11 +90,7 @@ $query = new WP_Query($args);
     }
     @media (max-width: 768px) {
         .gallery-grid {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Minimum card size for smaller screens */
-        }
-        @media (max-width: 1200px) {
-        .gallery-grid {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 2fr)); /* Minimum card size for smaller screens */
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Smaller cards for mobile */
         }
     }
 </style>
