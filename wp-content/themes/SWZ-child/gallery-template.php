@@ -59,7 +59,7 @@ $query = new WP_Query($args);
     .gallery-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Minimum card size is 250px */
-        gap: 5px; /* Max gap between cards is 5px */
+        gap: 40px; /* Max gap between cards is 5px */
         justify-items: center;
     }
     .gallery-card {
@@ -89,6 +89,10 @@ $query = new WP_Query($args);
     @media (max-width: 768px) {
         .gallery-grid {
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Minimum card size for smaller screens */
+        }
+        @media (max-width: 1200px) {
+        .gallery-grid {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 2fr)); /* Minimum card size for smaller screens */
         }
     }
 </style>
