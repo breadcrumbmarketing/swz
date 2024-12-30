@@ -144,15 +144,15 @@ function create_html_pages_from_database() {
     // It can loop through the database and create WordPress pages.
 }
 
-
 // API key check function for authentication
-function check_api_key_permission( $request ) {
+function check_api_key_permission($request) {
     $api_key = $request->get_header('API-Key'); // Get the API key from the header
-    if ($api_key === 'swz_aschaffenburg_breadcrumb_hamy') { // Replace with your secure key
+    if ($api_key === 'your_secure_api_key_here') { // Replace with your secure key
         return true;
     }
     return new WP_REST_Response('Unauthorized', 401);
 }
+
 
 // -------------------------------- Dynamic Page Creation -------------------------------- //
 function upload_image_to_media_library($image_url) {
