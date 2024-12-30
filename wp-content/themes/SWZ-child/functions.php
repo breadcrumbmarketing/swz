@@ -152,10 +152,12 @@ function check_api_key_permission($request) {
     }
     return new WP_REST_Response('Unauthorized', 401);
 }
+
 // -------------------------------- Dynamic Page Creation -------------------------------- //
 
 if (!function_exists('upload_image_to_media_library')) {
-    function upload_image_to_media_library($image_url) {
+    function upload_image_to_media_library($image_url)
+    {
         // Include WordPress file handling functions
         if (!function_exists('media_handle_sideload')) {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
@@ -195,54 +197,45 @@ if (!function_exists('upload_image_to_media_library')) {
 }
 
 if (!function_exists('create_html_pages_from_database')) {
-    function create_html_pages_from_database() {
+    function create_html_pages_from_database()
+    {
         global $wpdb;
 
-        // Fetch rows from the wp_html_pages table with status 'draft'
-        $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages WHERE status = 'draft'");
+        // Fetch all rows from the `wp_html_pages` table
+        $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages");
 
         foreach ($rows as $row) {
             // Check if a WordPress page already exists with the slug
             $existing_page = get_page_by_path($row->slug, OBJECT, 'page');
 
             if (!$existing_page) {
-                // Prepare data, handle potential null or missing fields
+                // Prepare the page data
                 $post_title = !empty($row->title) ? $row->title : 'Untitled Page';
                 $post_content = !empty($row->content) ? $row->content : 'No content available.';
                 $post_slug = !empty($row->slug) ? $row->slug : uniqid('page-');
 
-                // Insert a new WordPress page
+                // Insert the page
                 $page_id = wp_insert_post(array(
                     'post_title'   => $post_title,
                     'post_name'    => $post_slug,
                     'post_content' => $post_content,
-                    'post_status'  => 'publish', // Publish the page
-                    'post_type'    => 'page',    // Create as a WordPress page
+                    'post_status'  => 'publish', // Publish the page immediately
+                    'post_type'    => 'page',    // Set as WordPress page
                 ));
 
                 if (!is_wp_error($page_id)) {
-                    // Extract the first image from the HTML content
+                    // Check for the first image in the content and set it as the featured image
                     if (!empty($row->content) && preg_match('/<img[^>]+src="([^">]+)"/i', $row->content, $matches)) {
-                        $image_url = $matches[1]; // Get the image URL
-
-                        // Upload the image to the WordPress Media Library
+                        $image_url = $matches[1]; // Extract the image URL
                         $attachment_id = upload_image_to_media_library($image_url);
 
                         if ($attachment_id) {
-                            // Set the uploaded image as the featured image for the page
-                            set_post_thumbnail($page_id, $attachment_id);
+                            set_post_thumbnail($page_id, $attachment_id); // Set as featured image
                         }
                     }
 
-                    // Mark the row as 'published' in the database
-                    $wpdb->update(
-                        "{$wpdb->prefix}html_pages",
-                        array('status' => 'published'),
-                        array('id' => $row->id)
-                    );
-
-                    // Assign a custom page template (optional)
-                    update_post_meta($page_id, '_wp_page_template', 'carpage.php'); // Replace with your template filename
+                    // Assign a custom page template
+                    update_post_meta($page_id, '_wp_page_template', 'carpage.php');
                 }
             }
         }
@@ -254,8 +247,8 @@ add_action('init', 'create_html_pages_from_database');
 
 // -------------------------------- Rewrite Rules -------------------------------- //
 
-// Define rewrite rule for custom lexikon slugs
-function add_custom_rewrite_rule() {
+function add_custom_rewrite_rule()
+{
     add_rewrite_rule(
         '^lexikon/([^/]+)/?$',
         'index.php?lexikon_slug=$matches[1]',
@@ -264,13 +257,47 @@ function add_custom_rewrite_rule() {
 }
 add_action('init', 'add_custom_rewrite_rule');
 
-// Register custom query variable for lexikon slug
-function add_custom_query_var($vars) {
-    $vars[] = 'lexikon_slug'; // Register the new query variable
+function add_custom_query_var($vars)
+{
+    $vars[] = 'lexikon_slug';
     return $vars;
 }
 add_filter('query_vars', 'add_custom_query_var');
 
+// -------------------------------- Admin Dashboard Button -------------------------------- //
+
+// Add admin menu for triggering page creation
+function add_create_pages_menu()
+{
+    add_submenu_page(
+        'tools.php',
+        'Create Pages from Database',
+        'Create Pages',
+        'manage_options',
+        'create-pages-from-db',
+        'create_pages_from_db_callback'
+    );
+}
+add_action('admin_menu', 'add_create_pages_menu');
+
+// Callback for the admin page
+function create_pages_from_db_callback()
+{
+    if (isset($_POST['create_pages'])) {
+        create_html_pages_from_database(); // Trigger the page creation function
+        echo '<div class="notice notice-success"><p>Pages have been created successfully from the database.</p></div>';
+    }
+
+    ?>
+    <div class="wrap">
+        <h1>Create Pages from Database</h1>
+        <form method="post">
+            <p>Click the button below to create pages for all database rows that do not yet have a corresponding WordPress page.</p>
+            <button type="submit" name="create_pages" class="button button-primary">Create Pages</button>
+        </form>
+    </div>
+    <?php
+}
 
 // -------------------------------- Database for car listing names -------------------------------- //
 function create_brands_models_table() {
