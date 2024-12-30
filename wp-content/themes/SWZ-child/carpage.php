@@ -48,6 +48,8 @@ html, body {
     margin: 0 !important;
     padding: 0 !important;
     box-sizing: border-box !important;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 /* Ensure header and footer have no margin or padding */
