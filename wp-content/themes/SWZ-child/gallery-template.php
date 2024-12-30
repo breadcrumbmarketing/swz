@@ -6,6 +6,12 @@
 
 get_header(); // Load the WordPress header
 
+/* Import Poppins font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+
+
+
 // List of sport car brands and models (expandable)
 $sport_car_brands = array(
     'Porsche' => array('Taycan', '911', 'Panamera'),
@@ -34,7 +40,18 @@ $args = array(
 $query = new WP_Query($args);
 
 ?>
+
+
 <style>
+/* Import Poppins font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Apply Poppins font */
+body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p {
+    font-family: 'Poppins', sans-serif;
+}
+
+
     .gallery-container {
         padding: 20px;
         max-width: 1200px; /* Limit the width of the gallery */
@@ -60,8 +77,8 @@ $query = new WP_Query($args);
     }
     .gallery-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Minimum card size is 200px */
-        gap: 10px; /* Smaller gap between cards */
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Cards adapt to screen size */
+        gap: 5px; /* Minimal gap between cards */
         justify-items: center;
     }
     .gallery-card {
@@ -71,8 +88,7 @@ $query = new WP_Query($args);
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-        height: 0;
-        padding-bottom: 100%; /* Ensures the cards remain square */
+        aspect-ratio: 1; /* Ensure square cards */
         border-radius: 10px;
         text-decoration: none;
         position: relative;
@@ -82,15 +98,29 @@ $query = new WP_Query($args);
     .gallery-card:hover {
         transform: scale(1.05);
     }
+    .gallery-card .card-text {
+        background: rgba(0, 0, 0, 0.7);
+        padding: 15px;
+        height: 30%; /* Fixed height for text section */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
     .gallery-card h3 {
         margin: 0;
-        background: rgba(0, 0, 0, 0.6);
-        padding: 10px;
-        border-radius: 5px;
+        font-size: 18px;
+        font-weight: bold;
+    
+    }
+    .gallery-card p {
+        margin: 5px 0 0;
+        font-size: 14px;
     }
     @media (max-width: 768px) {
         .gallery-grid {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Smaller cards for mobile */
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust for mobile screens */
         }
     }
 </style>
@@ -143,7 +173,10 @@ $query = new WP_Query($args);
                 ) :
                 ?>
                     <a href="<?php the_permalink(); ?>" class="gallery-card" style="background-image: url('<?php echo esc_url($featured_image); ?>');">
-                        <h3><?php the_title(); ?></h3>
+                        <div class="card-text">
+                            <h3><?php the_title(); ?></h3>
+                            <p><?php echo esc_html($selected_brand . ' ' . $selected_model); ?></p>
+                        </div>
                     </a>
                 <?php endif; ?>
             <?php endwhile; ?>
