@@ -74,19 +74,17 @@ add_action('wp_head', 'swz_add_seo_meta_tags');
 
 
 
-
 // -------------------------------- Remote API -------------------------------- //
 
 // Register the custom REST API endpoint
 function register_html_pages_endpoint() {
-    register_rest_route( 'myapi/v1', '/write_html_page/', array(
+    register_rest_route('myapi/v1', '/write_html_page/', array(
         'methods' => 'POST',
         'callback' => 'handle_write_html_page',
         'permission_callback' => 'check_api_key_permission', // Permission check function
     ));
 }
-add_action( 'rest_api_init', 'register_html_pages_endpoint' );
-
+add_action('rest_api_init', 'register_html_pages_endpoint');
 
 // Callback function to handle the insertion of data into the wp_html_pages table
 function handle_write_html_page($data) {
@@ -96,6 +94,12 @@ function handle_write_html_page($data) {
     $title = sanitize_text_field($data['title']); // Sanitize the title
     $slug = sanitize_title($data['slug']);       // Convert the slug into a URL-friendly format
     $content = $data['content'];                // Use raw HTML content without sanitization
+    $car_brand = sanitize_text_field($data['car_brand']); // Sanitize the car brand
+    $car_model = sanitize_text_field($data['car_model']); // Sanitize the car model
+    $price = sanitize_text_field($data['price']);         // Sanitize the price
+    $co2 = sanitize_text_field($data['co2']);             // Sanitize the CO2
+    $power = sanitize_text_field($data['power']);         // Sanitize the power
+    $image = esc_url_raw($data['image']);                 // Sanitize the image URL
 
     // Check if the slug already exists in the table
     $existing_page = $wpdb->get_var($wpdb->prepare(
@@ -104,17 +108,23 @@ function handle_write_html_page($data) {
     ));
 
     if ($existing_page) {
-        return new WP_REST_Response('Dieses Fahrzeug wurde bereits zu Ihrer Website hinzugefuegt.', 400);
+        return new WP_REST_Response('Dieses Fahrzeug wurde bereits zu Ihrer Website hinzugefügt.', 400);
     }
 
     // Insert new page into the wp_html_pages table
     $insert = $wpdb->insert(
         "{$wpdb->prefix}html_pages",
         array(
-            'title'   => $title,
-            'slug'    => $slug,
-            'content' => $content,
-            'status'  => 'draft', // Set initial status to draft
+            'title'     => $title,
+            'slug'      => $slug,
+            'content'   => $content,
+            'status'    => 'draft', // Set initial status to draft
+            'car_brand' => $car_brand,
+            'car_model' => $car_model,
+            'price'     => $price,
+            'co2'       => $co2,
+            'power'     => $power,
+            'image'     => $image,
         )
     );
 
@@ -122,10 +132,25 @@ function handle_write_html_page($data) {
         // Trigger dynamic page creation immediately
         create_html_pages_from_database(); // Call the function to create the page
 
-        return new WP_REST_Response('HTML-Seite wurde zu Ihrer Website hinzugefuegt und erfolgreich erstellt.', 200);
+        return new WP_REST_Response('HTML-Seite wurde zu Ihrer Website hinzugefügt und erfolgreich erstellt.', 200);
     } else {
-        return new WP_REST_Response('Das Einfuegen der HTML-Seite in Ihre Website ist fehlgeschlagen.', 400);
+        return new WP_REST_Response('Das Einfügen der HTML-Seite in Ihre Website ist fehlgeschlagen.', 400);
     }
+}
+
+// Example function to dynamically create pages
+function create_html_pages_from_database() {
+    // Your logic for dynamically creating pages goes here.
+    // It can loop through the database and create WordPress pages.
+}
+
+// API key check function for authentication
+function check_api_key_permission($request) {
+    $api_key = $request->get_header('API-Key'); // Get the API key from the header
+    if ($api_key === 'your_secure_api_key_here') { // Replace with your secure key
+        return true;
+    }
+    return new WP_REST_Response('Unauthorized', 401);
 }
 
 // API key check function for authentication
