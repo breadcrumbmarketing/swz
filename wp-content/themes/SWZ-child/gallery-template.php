@@ -39,7 +39,6 @@ $args = array(
 $query = new WP_Query($args);
 
 ?>
-
 <style>
 /* Import Poppins font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -103,6 +102,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 /* Top Section for Image */
 .gallery-card .image-container {
     flex: 2; /* 2/3 of the card height */
+    height: 230px; /* Fixed height for images */
     background-size: contain;
     background-position: center;
     background-color: #fff;
@@ -122,6 +122,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 /* Bottom Section for Text */
 .gallery-card .text-container {
     flex: 1; /* 1/3 of the card height */
+    height: 120px; /* Fixed height for the text section */
     background-color: #fff;
     display: flex;
     flex-direction: column;
@@ -129,6 +130,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     align-items: center;
     padding: 10px;
     text-align: center;
+    overflow: hidden; /* Hide overflowing text */
 }
 
 .gallery-card .text-container h3 {
@@ -136,12 +138,18 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     font-weight: 600;
     margin: 0;
     color: #000;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Add "..." at the end of truncated text */
 }
 
 .gallery-card .text-container p {
     font-size: 14px;
     margin: 5px 0 0;
     color: #555;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Add "..." at the end of truncated text */
 }
 
 /* Responsive Adjustments */
@@ -150,8 +158,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Smaller cards for mobile */
     }
 }
-
 </style>
+
 
 <div class="gallery-container">
     <div class="filter-bar">
