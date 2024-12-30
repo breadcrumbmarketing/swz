@@ -6,22 +6,6 @@
 
 get_header(); // Load the WordPress header
 
-
-
-
-// List of sport car brands and models (expandable)
-$sport_car_brands = array(
-    'Porsche' => array('Taycan', '911', 'Panamera'),
-    'Ferrari' => array('Roma', '488', 'SF90'),
-    'Lamborghini' => array('Huracan', 'Aventador', 'Urus'),
-    'BMW' => array('i8', 'M4', 'Z4'),
-    'Mercedes' => array('AMG GT', 'SLS', 'C63'),
-);
-
-// Get the selected brand and model from the dropdown filter
-$selected_brand = isset($_GET['brand']) ? sanitize_text_field($_GET['brand']) : '';
-$selected_model = isset($_GET['model']) ? sanitize_text_field($_GET['model']) : '';
-
 // Query for pages created with the carpage.php template
 $args = array(
     'post_type' => 'page',
@@ -36,7 +20,39 @@ $args = array(
 
 $query = new WP_Query($args);
 
+// Initialize an empty array for car brands and models
+$car_data = array();
+
+if ($query->have_posts()) {
+    while ($query->have_posts()) {
+        $query->the_post();
+
+        // Extract brand and model from the title
+        $title = get_the_title();
+        preg_match('/\b(\w+)\b.*?(\b\w+\b)/', $title, $matches);
+
+        if (count($matches) >= 3) {
+            $brand = $matches[1];
+            $model = $matches[2];
+
+            // Group models under the corresponding brand
+            if (!isset($car_data[$brand])) {
+                $car_data[$brand] = array();
+            }
+            if (!in_array($model, $car_data[$brand])) {
+                $car_data[$brand][] = $model;
+            }
+        }
+    }
+    wp_reset_postdata(); // Reset the query
+}
+
+// Get the selected brand and model from the dropdown filter
+$selected_brand = isset($_GET['brand']) ? sanitize_text_field($_GET['brand']) : '';
+$selected_model = isset($_GET['model']) ? sanitize_text_field($_GET['model']) : '';
+
 ?>
+
 
 <style>
 /* Import Poppins font */
@@ -151,33 +167,39 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 </style>
 
 <div class="gallery-container">
-    <div class="filter-bar">
-        <form method="GET">
-            <select name="brand">
-                <option value=""><?php esc_html_e('Marke auswählen', 'text-domain'); ?></option>
-                <?php foreach ($sport_car_brands as $brand => $models) : ?>
-                    <option value="<?php echo esc_attr($brand); ?>" <?php selected($selected_brand, $brand); ?>>
-                        <?php echo esc_html($brand); ?>
+    
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+    <form method="GET">
+        <!-- Brand Dropdown -->
+        <select name="brand" onchange="this.form.submit();">
+            <option value=""><?php esc_html_e('Marke auswählen', 'text-domain'); ?></option>
+            <?php foreach ($car_data as $brand => $models) : ?>
+                <option value="<?php echo esc_attr($brand); ?>" <?php selected($selected_brand, $brand); ?>>
+                    <?php echo esc_html($brand); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+        <!-- Model Dropdown -->
+        <select name="model">
+            <option value=""><?php esc_html_e('Modell auswählen', 'text-domain'); ?></option>
+            <?php
+            if ($selected_brand && isset($car_data[$selected_brand])) :
+                foreach ($car_data[$selected_brand] as $model) :
+            ?>
+                    <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
+                        <?php echo esc_html($model); ?>
                     </option>
-                <?php endforeach; ?>
-            </select>
-            <select name="model">
-                <option value=""><?php esc_html_e('Modell auswählen', 'text-domain'); ?></option>
-                <?php
-                if ($selected_brand && isset($sport_car_brands[$selected_brand])) :
-                    foreach ($sport_car_brands[$selected_brand] as $model) :
-                ?>
-                        <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
-                            <?php echo esc_html($model); ?>
-                        </option>
-                <?php
-                    endforeach;
-                endif;
-                ?>
-            </select>
-            <button type="submit"><?php esc_html_e('Filtern', 'text-domain'); ?></button>
-        </form>
-    </div>
+            <?php
+                endforeach;
+            endif;
+            ?>
+        </select>
+        <button type="submit"><?php esc_html_e('Filtern', 'text-domain'); ?></button>
+    </form>
+</div>
 
     <div class="gallery-grid">
     <?php if ($query->have_posts()) : ?>
