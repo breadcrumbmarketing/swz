@@ -73,7 +73,6 @@ add_action('wp_head', 'swz_add_seo_meta_tags');
 
 
 
-
 // -------------------------------- Remote API -------------------------------- //
 
 // Register the custom REST API endpoint
@@ -91,15 +90,15 @@ function handle_write_html_page($data) {
     global $wpdb;
 
     // Sanitize input data
-    $title = sanitize_text_field($data['title']); // Sanitize the title
-    $slug = sanitize_title($data['slug']);       // Convert the slug into a URL-friendly format
-    $content = $data['content'];                // Use raw HTML content without sanitization
-    $car_brand = sanitize_text_field($data['car_brand']); // Sanitize the car brand
-    $car_model = sanitize_text_field($data['car_model']); // Sanitize the car model
-    $price = sanitize_text_field($data['price']);         // Sanitize the price
-    $co2 = sanitize_text_field($data['co2']);             // Sanitize the CO2
-    $power = sanitize_text_field($data['power']);         // Sanitize the power
-    $image = esc_url_raw($data['image']);                 // Sanitize the image URL
+    $title = sanitize_text_field($data['title']);
+    $slug = sanitize_title($data['slug']);
+    $content = $data['content'];
+    $car_brand = sanitize_text_field($data['car_brand']);
+    $car_model = sanitize_text_field($data['car_model']);
+    $price = sanitize_text_field($data['price']);
+    $co2 = sanitize_text_field($data['co2']);
+    $power = sanitize_text_field($data['power']);
+    $image = esc_url_raw($data['image']);
 
     // Check if the slug already exists in the table
     $existing_page = $wpdb->get_var($wpdb->prepare(
@@ -118,7 +117,6 @@ function handle_write_html_page($data) {
             'title'     => $title,
             'slug'      => $slug,
             'content'   => $content,
-            'status'    => 'draft', // Set initial status to draft
             'car_brand' => $car_brand,
             'car_model' => $car_model,
             'price'     => $price,
@@ -129,25 +127,18 @@ function handle_write_html_page($data) {
     );
 
     if ($insert) {
-        // Trigger dynamic page creation immediately
-        create_html_pages_from_database(); // Call the function to create the page
-
+        // Immediately create pages for unprocessed rows
+        create_html_pages_from_database();
         return new WP_REST_Response('HTML-Seite wurde zu Ihrer Website hinzugefügt und erfolgreich erstellt.', 200);
     } else {
         return new WP_REST_Response('Das Einfügen der HTML-Seite in Ihre Website ist fehlgeschlagen.', 400);
     }
 }
 
-// Example function to dynamically create pages
-function create_html_pages_from_database() {
-    // Your logic for dynamically creating pages goes here.
-    // It can loop through the database and create WordPress pages.
-}
-
-// API key check function for authentication
+// Function to check API key permission
 function check_api_key_permission($request) {
-    $api_key = $request->get_header('API-Key'); // Get the API key from the header
-    if ($api_key === 'your_secure_api_key_here') { // Replace with your secure key
+    $api_key = $request->get_header('API-Key');
+    if ($api_key === 'your_secure_api_key_here') { // Replace with your secure API key
         return true;
     }
     return new WP_REST_Response('Unauthorized', 401);
@@ -156,23 +147,18 @@ function check_api_key_permission($request) {
 // -------------------------------- Dynamic Page Creation -------------------------------- //
 
 if (!function_exists('upload_image_to_media_library')) {
-    function upload_image_to_media_library($image_url)
-    {
-        // Include WordPress file handling functions
+    function upload_image_to_media_library($image_url) {
         if (!function_exists('media_handle_sideload')) {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
             require_once(ABSPATH . 'wp-admin/includes/media.php');
             require_once(ABSPATH . 'wp-admin/includes/image.php');
         }
 
-        // Download the image from the URL
         $temp_file = download_url($image_url);
-
         if (is_wp_error($temp_file)) {
-            return false; // Return false if the download failed
+            return false;
         }
 
-        // Prepare file information
         $file = array(
             'name'     => basename($image_url),
             'type'     => mime_content_type($temp_file),
@@ -181,13 +167,9 @@ if (!function_exists('upload_image_to_media_library')) {
             'size'     => filesize($temp_file),
         );
 
-        // Upload the file to the WordPress media library
         $attachment_id = media_handle_sideload($file, 0);
-
-        // Clean up temporary file
         @unlink($temp_file);
 
-        // Check for upload errors
         if (is_wp_error($attachment_id)) {
             return false;
         }
@@ -200,99 +182,59 @@ if (!function_exists('create_html_pages_from_database')) {
     function create_html_pages_from_database() {
         global $wpdb;
 
-        // Fetch rows from the wp_html_pages table
+        // Fetch all rows from the wp_html_pages table
         $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages");
-
-        if (empty($rows)) {
-            error_log('No rows found in the database for processing.');
-            return;
-        }
 
         foreach ($rows as $row) {
             // Check if a WordPress page already exists with the slug
             $existing_page = get_page_by_path($row->slug, OBJECT, 'page');
 
-            if ($existing_page) {
-                error_log('Page already exists for slug: ' . $row->slug);
-                continue; // Skip if page already exists
-            }
+            if (!$existing_page) {
+                $post_title = !empty($row->title) ? $row->title : 'Untitled Page';
+                $post_content = !empty($row->content) ? $row->content : 'No content available.';
+                $post_slug = !empty($row->slug) ? $row->slug : uniqid('page-');
 
-            // Prepare data, handle potential null or missing fields
-            $post_title = !empty($row->title) ? $row->title : 'Untitled Page';
-            $post_content = !empty($row->content) ? $row->content : 'No content available.';
-            $post_slug = !empty($row->slug) ? $row->slug : uniqid('page-');
+                $page_id = wp_insert_post(array(
+                    'post_title'   => $post_title,
+                    'post_name'    => $post_slug,
+                    'post_content' => $post_content,
+                    'post_status'  => 'publish',
+                    'post_type'    => 'page',
+                ));
 
-            // Insert a new WordPress page
-            $page_id = wp_insert_post(array(
-                'post_title'   => $post_title,
-                'post_name'    => $post_slug,
-                'post_content' => $post_content,
-                'post_status'  => 'publish',
-                'post_type'    => 'page',
-            ));
-
-            if (!is_wp_error($page_id)) {
-                error_log('Page created successfully with ID: ' . $page_id);
-
-                // Handle image upload if provided
-                if (!empty($row->image) && filter_var($row->image, FILTER_VALIDATE_URL)) {
-                    $attachment_id = upload_image_to_media_library($row->image);
-                    if ($attachment_id) {
-                        set_post_thumbnail($page_id, $attachment_id);
-                        error_log('Featured image set for page ID: ' . $page_id);
+                if (!is_wp_error($page_id)) {
+                    if (!empty($row->image) && filter_var($row->image, FILTER_VALIDATE_URL)) {
+                        $attachment_id = upload_image_to_media_library($row->image);
+                        if ($attachment_id) {
+                            set_post_thumbnail($page_id, $attachment_id);
+                        }
                     }
                 }
-            } else {
-                error_log('Failed to create page for slug: ' . $row->slug . '. Error: ' . $page_id->get_error_message());
             }
         }
     }
 }
 
-
-// Immediate execution to process new and unprocessed rows
 add_action('init', 'create_html_pages_from_database');
-
-// -------------------------------- Rewrite Rules -------------------------------- //
-
-function add_custom_rewrite_rule()
-{
-    add_rewrite_rule(
-        '^lexikon/([^/]+)/?$',
-        'index.php?lexikon_slug=$matches[1]',
-        'top'
-    );
-}
-add_action('init', 'add_custom_rewrite_rule');
-
-function add_custom_query_var($vars)
-{
-    $vars[] = 'lexikon_slug';
-    return $vars;
-}
-add_filter('query_vars', 'add_custom_query_var');
 
 // -------------------------------- Admin Dashboard Button -------------------------------- //
 
-// Add admin menu for triggering page creation
-function add_create_pages_menu()
-{
-    add_submenu_page(
-        'tools.php',
+function add_create_pages_menu() {
+    add_menu_page(
         'Create Pages from Database',
         'Create Pages',
         'manage_options',
         'create-pages-from-db',
-        'create_pages_from_db_callback'
+        'create_pages_from_db_callback',
+        'dashicons-welcome-add-page',
+        20
     );
 }
 add_action('admin_menu', 'add_create_pages_menu');
 
-// Callback for the admin page
-function create_pages_from_db_callback()
-{
+function create_pages_from_db_callback() {
     if (isset($_POST['create_pages'])) {
-        create_html_pages_from_database(); // Trigger the page creation function
+        create_html_pages_from_database();
         echo '<div class="notice notice-success"><p>Pages have been created successfully from the database.</p></div>';
     }
 
