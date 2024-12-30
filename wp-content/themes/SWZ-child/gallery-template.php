@@ -38,7 +38,6 @@ $query = new WP_Query($args);
 
 ?>
 
-
 <style>
 /* Import Poppins font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -48,78 +47,86 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     font-family: 'Poppins', sans-serif;
 }
 
+.gallery-container {
+    padding: 20px;
+    max-width: 1200px; /* Limit the width of the gallery */
+    margin: 0 auto; /* Center the gallery on the page */
+    text-align: center;
+}
 
-    .gallery-container {
-        padding: 20px;
-        max-width: 1200px; /* Limit the width of the gallery */
-        margin: 0 auto; /* Center the gallery on the page */
-        text-align: center;
-    }
-    .filter-bar {
-        margin-bottom: 20px;
-    }
-    .filter-bar form {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-    }
-    .filter-bar select {
-        padding: 8px;
-        font-size: 16px;
-        width: 200px;
-    }
-    .filter-bar button {
-        padding: 8px 16px;
-        font-size: 16px;
-    }
+.filter-bar {
+    margin-bottom: 20px;
+}
+
+.filter-bar form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.filter-bar select {
+    padding: 8px;
+    font-size: 16px;
+    width: 200px;
+}
+
+.filter-bar button {
+    padding: 8px 16px;
+    font-size: 16px;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Cards adapt to screen size */
+    gap: 15px; /* Consistent gap between cards */
+    justify-items: center;
+}
+
+.gallery-card {
+    background-color: #fff; /* Add white background for the card */
+    border: 1px solid #ddd; /* Add border */
+    border-radius: 10px;
+    overflow: hidden;
+    text-decoration: none;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-card img {
+    width: 100%;
+    height: auto;
+}
+
+.caption {
+    padding: 15px;
+    text-align: center;
+}
+
+.caption h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.caption p {
+    font-size: 14px;
+    margin: 5px 0 0;
+    color: #555;
+}
+
+@media (max-width: 768px) {
     .gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Cards adapt to screen size */
-        gap: 5px; /* Minimal gap between cards */
-        justify-items: center;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust for mobile screens */
     }
-    .gallery-card {
-        background-size: cover;
-        background-position: center;
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        aspect-ratio: 1; /* Ensure square cards */
-        border-radius: 10px;
-        text-decoration: none;
-        position: relative;
-        overflow: hidden;
-        transition: transform 0.3s ease;
-    }
-    .gallery-card:hover {
-        transform: scale(1.05);
-    }
-    .gallery-card .card-text {
-        background: rgba(0, 0, 0, 0.7);
-        padding: 15px;
-        height: 30%; /* Fixed height for text section */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
-    .gallery-card h3 {
-        margin: 0;
-        font-size: 18px;
-        font-weight: bold;
-    
-    }
-    .gallery-card p {
-        margin: 5px 0 0;
-        font-size: 14px;
-    }
-    @media (max-width: 768px) {
-        .gallery-grid {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust for mobile screens */
-        }
-    }
+}
 </style>
 
 <div class="gallery-container">
@@ -169,10 +176,13 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
                     (!$selected_model || $model_count > 10)
                 ) :
                 ?>
-                    <a href="<?php the_permalink(); ?>" class="gallery-card" style="background-image: url('<?php echo esc_url($featured_image); ?>');">
-                        <div class="card-text">
+                    <a href="<?php the_permalink(); ?>" class="gallery-card">
+                        <img src="<?php echo esc_url($featured_image); ?>" alt="<?php the_title(); ?>">
+                        <div class="caption">
                             <h3><?php the_title(); ?></h3>
-                            <p><?php echo esc_html($selected_brand . ' ' . $selected_model); ?></p>
+                            <?php if ($selected_brand || $selected_model) : ?>
+                                <p><?php echo esc_html($selected_brand . ' ' . $selected_model); ?></p>
+                            <?php endif; ?>
                         </div>
                     </a>
                 <?php endif; ?>
