@@ -82,18 +82,17 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     justify-items: center;
 }
 .gallery-card {
-    background-color: #fff; /* Add white background for the card */
-    border: 1px solid #ddd; /* Add border */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #ddd;
     border-radius: 10px;
     overflow: hidden;
     text-decoration: none;
     color: #000;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Ensure space between image and text */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    height: 400px; /* Fix the card height */
+    height: 400px; /* Fixed card height */
 }
 
 .gallery-card:hover {
@@ -101,38 +100,53 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.gallery-card img {
-    width: 100%; /* Ensure images take full width */
-    height: auto; /* Maintain aspect ratio */
-    flex-grow: 0; /* Ensure image does not stretch */
-    object-fit: cover; /* Make sure the image fits inside the container */
+/* Top container for the image */
+.gallery-card .image-container {
+    height: 50%; /* Takes 50% of the card height */
+    background-size: cover;
+    background-position: center;
+    background-color: #f5f5f5; /* Default background color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.caption {
-    padding: 15px;
-    text-align: center;
-    flex-grow: 1; /* Ensures caption text occupies equal space */
+/* Placeholder for missing images */
+.gallery-card .image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Ensures the image fits within the container */
+}
+
+/* Bottom container for the text */
+.gallery-card .text-container {
+    height: 50%; /* Takes 50% of the card height */
+    background-color: #fff; /* White background for text */
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Center text vertically */
+    justify-content: center; /* Centers the text vertically */
+    align-items: center; /* Centers the text horizontally */
+    padding: 10px;
+    text-align: center;
 }
 
-.caption h3 {
-    font-size: 18px;
+.gallery-card .text-container h3 {
+    font-size: 16px;
     font-weight: bold;
     margin: 0;
-    line-height: 1.4; /* Better text readability */
+    line-height: 1.4;
 }
 
-.caption p {
+.gallery-card .text-container p {
     font-size: 14px;
     margin: 5px 0 0;
     color: #555;
 }
 
+/* Responsive behavior */
 @media (max-width: 768px) {
     .gallery-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust for mobile screens */
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjusts for smaller screens */
     }
 }
 
