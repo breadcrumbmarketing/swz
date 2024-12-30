@@ -197,50 +197,58 @@ if (!function_exists('upload_image_to_media_library')) {
 }
 
 if (!function_exists('create_html_pages_from_database')) {
-    function create_html_pages_from_database()
-    {
+    function create_html_pages_from_database() {
         global $wpdb;
 
-        // Fetch all rows from the `wp_html_pages` table
+        // Fetch rows from the wp_html_pages table
         $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages");
+
+        if (empty($rows)) {
+            error_log('No rows found in the database for processing.');
+            return;
+        }
 
         foreach ($rows as $row) {
             // Check if a WordPress page already exists with the slug
             $existing_page = get_page_by_path($row->slug, OBJECT, 'page');
 
-            if (!$existing_page) {
-                // Prepare the page data
-                $post_title = !empty($row->title) ? $row->title : 'Untitled Page';
-                $post_content = !empty($row->content) ? $row->content : 'No content available.';
-                $post_slug = !empty($row->slug) ? $row->slug : uniqid('page-');
+            if ($existing_page) {
+                error_log('Page already exists for slug: ' . $row->slug);
+                continue; // Skip if page already exists
+            }
 
-                // Insert the page
-                $page_id = wp_insert_post(array(
-                    'post_title'   => $post_title,
-                    'post_name'    => $post_slug,
-                    'post_content' => $post_content,
-                    'post_status'  => 'publish', // Publish the page immediately
-                    'post_type'    => 'page',    // Set as WordPress page
-                ));
+            // Prepare data, handle potential null or missing fields
+            $post_title = !empty($row->title) ? $row->title : 'Untitled Page';
+            $post_content = !empty($row->content) ? $row->content : 'No content available.';
+            $post_slug = !empty($row->slug) ? $row->slug : uniqid('page-');
 
-                if (!is_wp_error($page_id)) {
-                    // Check for the first image in the content and set it as the featured image
-                    if (!empty($row->content) && preg_match('/<img[^>]+src="([^">]+)"/i', $row->content, $matches)) {
-                        $image_url = $matches[1]; // Extract the image URL
-                        $attachment_id = upload_image_to_media_library($image_url);
+            // Insert a new WordPress page
+            $page_id = wp_insert_post(array(
+                'post_title'   => $post_title,
+                'post_name'    => $post_slug,
+                'post_content' => $post_content,
+                'post_status'  => 'publish',
+                'post_type'    => 'page',
+            ));
 
-                        if ($attachment_id) {
-                            set_post_thumbnail($page_id, $attachment_id); // Set as featured image
-                        }
+            if (!is_wp_error($page_id)) {
+                error_log('Page created successfully with ID: ' . $page_id);
+
+                // Handle image upload if provided
+                if (!empty($row->image) && filter_var($row->image, FILTER_VALIDATE_URL)) {
+                    $attachment_id = upload_image_to_media_library($row->image);
+                    if ($attachment_id) {
+                        set_post_thumbnail($page_id, $attachment_id);
+                        error_log('Featured image set for page ID: ' . $page_id);
                     }
-
-                    // Assign a custom page template
-                    update_post_meta($page_id, '_wp_page_template', 'carpage.php');
                 }
+            } else {
+                error_log('Failed to create page for slug: ' . $row->slug . '. Error: ' . $page_id->get_error_message());
             }
         }
     }
 }
+
 
 // Immediate execution to process new and unprocessed rows
 add_action('init', 'create_html_pages_from_database');
