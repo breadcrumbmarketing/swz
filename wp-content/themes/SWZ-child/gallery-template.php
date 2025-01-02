@@ -54,7 +54,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     max-width: 1200px;
     margin: 0 auto;
     text-align: center;
-    background-color: #f5f5f5; /* Light background for the gallery */
+    background-color:rgba(245, 245, 245, 0); /* Light background for the gallery */
 }
 
 .filter-bar {
