@@ -308,17 +308,21 @@ jQuery(document).ready(function($) {
         infinite: true,
         slidesToShow: 3,
         slidesToScroll: 1,
+        prevArrow: '<button class="slick-prev" aria-label="Previous"></button>',
+        nextArrow: '<button class="slick-next" aria-label="Next"></button>',
         responsive: [
             {
-                breakpoint: 768, // Adjusts when the screen size is below 768 pixels
+                breakpoint: 768, // Defines when the screen size is below 768 pixels
                 settings: {
-                    slidesToShow: 1, // Shows only one slide per time on mobile
-                    slidesToScroll: 1
+                    slidesToShow: 1, // Shows only one slide at a time on mobile
+                    slidesToScroll: 1,
+                    arrows: false // Hides arrows on mobile
                 }
             }
         ]
     });
 });
+
 </script>
 
     <?php
