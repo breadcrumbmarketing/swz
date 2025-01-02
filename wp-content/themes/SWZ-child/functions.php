@@ -255,3 +255,62 @@ function create_pages_from_db_callback() {
     </div>
     <?php
 }
+
+
+
+
+// ------------------------- for home page recently viewd cars ......... //
+function enqueue_slick_slider(){
+    wp_enqueue_style('slick-css', 'path_to/slick.css');
+    wp_enqueue_style('slick-theme-css', 'path_to/slick-theme.css');
+    wp_enqueue_script('slick-js', 'path_to/slick.min.js', array('jquery'), null, true);
+}
+add_action('wp_enqueue_scripts', 'enqueue_slick_slider');
+
+function recently_viewed_cars_shortcode() {
+    ob_start();
+    ?>
+    <div class="recently-viewed-slider">
+        <?php
+        $args = array(
+            'post_type' => 'page',
+            'meta_query' => array(
+                array(
+                    'key' => '_wp_page_template',
+                    'value' => 'carpage.php'
+                ),
+            ),
+            'posts_per_page' => 10
+        );
+        $query = new WP_Query($args);
+        if ($query->have_posts()) :
+            while ($query->have_posts()) : $query->the_post();
+                $image_url = get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300';
+                ?>
+                <div class="slide">
+                    <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title(); ?>">
+                    <h3><?php the_title(); ?></h3>
+                    <a href="<?php the_permalink(); ?>" class="more-link">Mehr lesen</a>
+                </div>
+                <?php
+            endwhile;
+        endif;
+        wp_reset_postdata();
+        ?>
+    </div>
+    <script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('.recently-viewed-slider').slick({
+            autoplay: true,
+            autoplaySpeed: 2000,
+            arrows: true,
+            infinite: true,
+            slidesToShow: 4,
+            slidesToScroll: 1
+        });
+    });
+    </script>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('recently_viewed_cars', 'recently_viewed_cars_shortcode');

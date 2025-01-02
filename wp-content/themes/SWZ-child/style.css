@@ -59,3 +59,20 @@ html, body {
 .page-header{
    display: none; 
 }
+
+
+
+/* Recently car */
+.recently-viewed-slider .slide {
+    margin: 15px;
+    text-align: center;
+}
+.recently-viewed-slider .slide img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+.recently-viewed-slider h3 {
+    font-size: 16px;
+    padding: 5px;
+}
