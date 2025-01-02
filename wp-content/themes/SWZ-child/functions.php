@@ -288,11 +288,11 @@ function recently_viewed_cars_shortcode() {
             while ($query->have_posts()) : $query->the_post();
                 $image_url = get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300x150';
                 ?>
-                <div class="slide">
-                    <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title(); ?>" style="max-width:100%; height:auto;">
-                    <h3><?php the_title(); ?></h3>
-                    <a href="<?php the_permalink(); ?>" class="more-link">Mehr lesen</a>
-                </div>
+               <div class="slide">
+    <div class="image-container" style="background-image: url('<?php echo esc_url($image_url); ?>');"></div>
+    <h3><?php the_title(); ?></h3>
+    <a href="<?php the_permalink(); ?>" class="more-link">Mehr lesen</a>
+</div>
                 <?php
             endwhile;
         endif;
