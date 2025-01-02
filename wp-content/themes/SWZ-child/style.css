@@ -83,3 +83,13 @@ html, body {
     border-radius: 5px;
 }
 
+a {
+    color: #fbfbfb; /* Standard-Linkfarbe (z. B. Blau) */
+    text-decoration: none; /* Entfernt die Unterstreichung */
+    font-weight: bold; /* Hebt die Links hervor */
+  }
+  
+  a:hover {
+    color: #DE4F3E; /* Farbe beim Hover (z. B. Gold) */
+    text-decoration: underline; /* Unterstreicht den Link beim Hover */
+  }
