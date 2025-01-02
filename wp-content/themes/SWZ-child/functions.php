@@ -300,17 +300,27 @@ function recently_viewed_cars_shortcode() {
         ?>
     </div>
     <script type="text/javascript">
-    jQuery(document).ready(function($) {
-        $('.recently-viewed-slider').slick({
-            autoplay: true,
-            autoplaySpeed: 2000,
-            arrows: true,
-            infinite: true,
-            slidesToShow: 3,
-            slidesToScroll: 1
-        });
+jQuery(document).ready(function($) {
+    $('.recently-viewed-slider').slick({
+        autoplay: true,
+        autoplaySpeed: 2000,
+        arrows: true,
+        infinite: true,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        responsive: [
+            {
+                breakpoint: 768, // Adjusts when the screen size is below 768 pixels
+                settings: {
+                    slidesToShow: 1, // Shows only one slide per time on mobile
+                    slidesToScroll: 1
+                }
+            }
+        ]
     });
-    </script>
+});
+</script>
+
     <?php
     return ob_get_clean();
 }
