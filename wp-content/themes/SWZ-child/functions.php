@@ -301,27 +301,36 @@ function recently_viewed_cars_shortcode() {
     </div>
     <script type="text/javascript">
 jQuery(document).ready(function($) {
-    $('.recently-viewed-slider').slick({
+    var $slider = $('.recently-viewed-slider');
+
+    $slider.slick({
         autoplay: true,
         autoplaySpeed: 2000,
-        arrows: true,
+        arrows: false, // Disable default arrows
         infinite: true,
         slidesToShow: 3,
         slidesToScroll: 1,
-        prevArrow: '<button class="button slick-prev"><div class="button-box"><svg class="button-elem" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L11.83 12z"/></svg></div></button>',
-        nextArrow: '<button class="button slick-next"><div class="button-box"><svg class="button-elem" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="transform: rotate(0deg);"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L12.17 12z"/></svg></div></button>',
         responsive: [
             {
-                breakpoint: 768, // Adjusts when the screen size is below 768 pixels
+                breakpoint: 768,
                 settings: {
-                    slidesToShow: 1, // Shows only one slide per time on mobile
-                    slidesToScroll: 1,
-                    arrows: false // Hides arrows on mobile
+                    slidesToShow: 1,
+                    slidesToScroll: 1
                 }
             }
         ]
     });
+
+    // Custom arrow functionality
+    $('.slick-prev').click(function() {
+        $slider.slick('slickPrev');
+    });
+
+    $('.slick-next').click(function() {
+        $slider.slick('slickNext');
+    });
 });
+
 
 
 </script>
