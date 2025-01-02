@@ -260,10 +260,11 @@ function create_pages_from_db_callback() {
 
 
 // ------------------------- for home page recently viewd cars ......... //
-function enqueue_slick_slider(){
-    wp_enqueue_style('slick-css', 'path_to/slick.css');
-    wp_enqueue_style('slick-theme-css', 'path_to/slick-theme.css');
-    wp_enqueue_script('slick-js', 'path_to/slick.min.js', array('jquery'), null, true);
+function enqueue_slick_slider() {
+    // Path to the Slick Carousel CSS and JS files in your theme or use a CDN
+    wp_enqueue_style('slick-css', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css');
+    wp_enqueue_style('slick-theme-css', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css');
+    wp_enqueue_script('slick-js', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js', array('jquery'), null, true);
 }
 add_action('wp_enqueue_scripts', 'enqueue_slick_slider');
 
@@ -277,18 +278,18 @@ function recently_viewed_cars_shortcode() {
             'meta_query' => array(
                 array(
                     'key' => '_wp_page_template',
-                    'value' => 'carpage.php'
+                    'value' => 'carpage.php',
                 ),
             ),
-            'posts_per_page' => 10
+            'posts_per_page' => 10,
         );
         $query = new WP_Query($args);
         if ($query->have_posts()) :
             while ($query->have_posts()) : $query->the_post();
-                $image_url = get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300';
+                $image_url = get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300x150';
                 ?>
                 <div class="slide">
-                    <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title(); ?>">
+                    <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title(); ?>" style="max-width:100%; height:auto;">
                     <h3><?php the_title(); ?></h3>
                     <a href="<?php the_permalink(); ?>" class="more-link">Mehr lesen</a>
                 </div>
@@ -305,7 +306,7 @@ function recently_viewed_cars_shortcode() {
             autoplaySpeed: 2000,
             arrows: true,
             infinite: true,
-            slidesToShow: 4,
+            slidesToShow: 3,
             slidesToScroll: 1
         });
     });
