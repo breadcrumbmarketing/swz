@@ -180,6 +180,14 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     bottom: 10px;
     left: 15px;
 }
+.filter-but {
+    color: white;
+}
+.filter-but:hover {
+  /* Hover state changes */
+  background-color: #DE4F3E;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -221,7 +229,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
                     </option>
                 <?php endforeach; ?>
             </select>
-            <button type="submit">Filtern</button>
+            <button type="submit" class="filter-but" >Filtern</button>
         </form>
     </div>
     <div class="gallery-grid">
