@@ -183,13 +183,27 @@ header, footer {
         font-size: 0.85rem !important; /* Adjust font size for mobile */
     }
 }
-
+.back-button {
+        display: block;
+        width: 200px;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 16px;
+        text-align: center;
+        background-color: #DE4F3E;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
     </style>
 </head>
 <body>
     <div class="full-width-content">
         <?php echo $html_content; ?>
+        <button onclick="window.history.back();" class="back-button">Zurück</button>
     </div>
+   
 </body>
 </html>
 <?php
