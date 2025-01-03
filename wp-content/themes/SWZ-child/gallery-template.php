@@ -6,47 +6,60 @@
 
 get_header(); // Load the WordPress header
 
-// Handle filter input
+global $wpdb;
+
+// Initialize filters
 $selected_brand = isset($_GET['brand']) ? sanitize_text_field($_GET['brand']) : '';
 $selected_model = isset($_GET['model']) ? sanitize_text_field($_GET['model']) : '';
 
-// Query for pages with specific meta data
+// Build the base args for WP_Query
 $args = array(
-    'post_type' => 'page',
+    'post_type'      => 'page',
     'posts_per_page' => -1,
-    'meta_query' => array(
-        'relation' => 'AND',
+    'meta_query'     => array(
         array(
-            'key' => '_wp_page_template',
+            'key'   => '_wp_page_template',
             'value' => 'carpage.php',
-        ),
-        array(
-            'key' => 'car_brand',
-            'value' => $selected_brand,
-            'compare' => '='
-        ),
-        array(
-            'key' => 'car_model',
-            'value' => $selected_model,
-            'compare' => '='
         )
     )
 );
 
+// Add brand and model query if selected
+if (!empty($selected_brand)) {
+    $args['meta_query'][] = array(
+        'key'     => 'car_brand',
+        'value'   => $selected_brand,
+        'compare' => '='
+    );
+}
+
+if (!empty($selected_model)) {
+    $args['meta_query'][] = array(
+        'key'     => 'car_model',
+        'value'   => $selected_model,
+        'compare' => '='
+    );
+}
+
 $query = new WP_Query($args);
 
-// Gather distinct brands and models for filters
+// Gather data for dropdowns
+$all_pages = get_posts(array(
+    'post_type'      => 'page',
+    'posts_per_page' => -1,
+    'meta_key'       => '_wp_page_template',
+    'meta_value'     => 'carpage.php'
+));
+
 $brands = [];
 $models = [];
-if ($query->have_posts()) {
-    while ($query->have_posts()) {
-        $query->the_post();
-        $brand = get_post_meta(get_the_ID(), 'car_brand', true);
-        $model = get_post_meta(get_the_ID(), 'car_model', true);
-        $brands[$brand] = $brand;
-        if ($selected_brand && $brand == $selected_brand) {
-            $models[$model] = $model;
-        }
+
+foreach ($all_pages as $page) {
+    $brand = get_post_meta($page->ID, 'car_brand', true);
+    $model = get_post_meta($page->ID, 'car_model', true);
+    $brands[$brand] = $brand;
+    if ($selected_brand && $brand === $selected_brand) {
+        $models[$model] = $model;
     }
 }
 
@@ -210,20 +223,17 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
             <button type="submit">Filtern</button>
         </form>
     </div>
-
     <div class="gallery-grid">
-        <?php if ($query->have_posts()) : ?>
-            <?php while ($query->have_posts()) : $query->the_post(); ?>
-                <a href="<?php the_permalink(); ?>" class="gallery-card">
-                    <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');">
-                    </div>
-                    <div class="text-container">
-                        <h3><?php the_title(); ?></h3>
-                        <p>Mehr lesen</p>
-                    </div>
-                </a>
-            <?php endwhile; ?>
-        <?php else : ?>
+        <?php if ($query->have_posts()) : while ($query->have_posts()) : $query->the_post(); ?>
+            <a href="<?php the_permalink(); ?>" class="gallery-card">
+                <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');">
+                </div>
+                <div class="text-container">
+                    <h3><?php the_title(); ?></h3>
+                    <p>Mehr lesen</p>
+                </div>
+            </a>
+        <?php endwhile; else : ?>
             <p>Keine Autos gefunden. Versuchen Sie, den Filter anzupassen.</p>
         <?php endif; ?>
     </div>
