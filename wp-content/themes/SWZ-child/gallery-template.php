@@ -213,45 +213,41 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 /* Pagination styles */
+.pagination-container {
+    display: flex;
+    justify-content: center; /* Centers the pagination links horizontally */
+    align-items: center; /* Aligns items vertically in the center */
+    padding: 20px 0; /* Adds space above and below the pagination */
+    width: 100%; /* Ensures the container spans the full width of its parent */
+}
+
 .paginationgswz {
     display: flex;
-    justify-content: center; /* Center the pagination horizontally */
-    padding: 20px 0; /* Padding around the pagination for spacing */
+    list-style: none; /* Removes default list styling */
+    padding: 0;
 }
 
-.page-number {
-    margin: 0 5px;
-    padding: 8px 16px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #f5f5f5;
+.paginationgswz .page-number,
+.paginationgswz .page-navigation-button {
+    margin: 0 5px; /* Spacing between pagination items */
+    padding: 8px 12px; /* Padding inside pagination items for better touch */
+    border: 1px solid #ccc; /* Adds a subtle border around the pagination items */
+    text-decoration: none; /* Removes underline from links */
+    color: inherit; /* Inherits the text color from parent elements */
+    background-color: #f5f5f5; /* Light grey background for pagination items */
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
-.page-number.active, .page-number:hover {
-    background-color: #007bff;
-    color: white;
+.paginationgswz .page-number.active,
+.paginationgswz .page-navigation-button:hover {
+    background-color: #007bff; /* Changes background to a blue on active/hover */
+    color: white; /* White text color on active/hover */
+    border-color: #007bff; /* Blue border color on active/hover */
 }
 
-.page-navigation-button {
-    padding: 8px 16px;
-    margin: 0 5px;
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    color: #333;
-    cursor: pointer;
-    text-decoration: none;
-    border-radius: 4px;
-}
-
-.page-navigation-button:hover {
-    background-color: #e2e6ea;
-}
-
-.page-navigation-button.disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.paginationgswz .page-navigation-button.disabled {
+    opacity: 0.5; /* Dim the button when disabled */
+    cursor: default; /* Show the default cursor on disabled */
 }
 
 </style>
@@ -288,7 +284,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
                 </div>
             </a>
         <?php endwhile; ?>
-        <!-- Pagination -->
+        <!--  Pagination -->
+    <div class="pagination-container">
         <div class="paginationgswz">
             <?php
             echo paginate_links(array(
@@ -299,6 +296,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
             ));
             ?>
         </div>
+    </div>
         <?php else : ?>
             <p>Keine Autos gefunden. Versuchen Sie, den Filter anzupassen.</p>
         <?php endif; ?>
