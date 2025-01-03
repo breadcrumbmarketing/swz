@@ -143,7 +143,6 @@ function check_api_key_permission($request) {
     }
     return new WP_REST_Response('Unauthorized', 401);
 }
-
 // -------------------------------- Dynamic Page Creation -------------------------------- //
 
 if (!function_exists('upload_image_to_media_library')) {
@@ -203,11 +202,9 @@ if (!function_exists('create_html_pages_from_database')) {
                 ));
 
                 if (!is_wp_error($page_id)) {
-                    // Extract the first image from the content column
-                    if (preg_match('/<img[^>]+src="([^">]+)"/i', $row->content, $matches)) {
-                        $image_url = $matches[1];
-
-                        $attachment_id = upload_image_to_media_library($image_url);
+                    // Use the "image" column to set the featured image
+                    if (!empty($row->image) && filter_var($row->image, FILTER_VALIDATE_URL)) {
+                        $attachment_id = upload_image_to_media_library($row->image);
                         if ($attachment_id) {
                             set_post_thumbnail($page_id, $attachment_id);
                         }
