@@ -176,7 +176,6 @@ if (!function_exists('upload_image_to_media_library')) {
         return $attachment_id;
     }
 }
-
 if (!function_exists('create_html_pages_from_database')) {
     function create_html_pages_from_database() {
         global $wpdb;
@@ -209,6 +208,14 @@ if (!function_exists('create_html_pages_from_database')) {
                             set_post_thumbnail($page_id, $attachment_id);
                         }
                     }
+
+                    // Save car details as post meta
+                    update_post_meta($page_id, 'car_brand', $row->car_brand);
+                    update_post_meta($page_id, 'car_model', $row->car_model);
+                    update_post_meta($page_id, 'price', $row->price);
+                    update_post_meta($page_id, 'co2', $row->co2);
+                    update_post_meta($page_id, 'power', $row->power);
+                    update_post_meta($page_id, 'created_at', $row->created_at);
 
                     // Assign the "carpage.php" template to the new page
                     update_post_meta($page_id, '_wp_page_template', 'carpage.php');
