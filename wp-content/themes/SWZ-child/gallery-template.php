@@ -11,11 +11,13 @@ global $wpdb;
 // Initialize filters
 $selected_brand = isset($_GET['brand']) ? sanitize_text_field($_GET['brand']) : '';
 $selected_model = isset($_GET['model']) ? sanitize_text_field($_GET['model']) : '';
+$current_page = get_query_var('paged') ? get_query_var('paged') : 1;
 
-// Build the base args for WP_Query
+// Build the base args for WP_Query with pagination
 $args = array(
     'post_type'      => 'page',
-    'posts_per_page' => -1,
+    'posts_per_page' => 12,
+    'paged'          => $current_page,
     'meta_query'     => array(
         array(
             'key'   => '_wp_page_template',
@@ -63,6 +65,7 @@ foreach ($all_pages as $page) {
     }
 }
 
+asort($brands); // Sort brands alphabetically
 ?>
 
 <style>
@@ -209,7 +212,6 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     }
 }
 </style>
-
 <div class="gallery-container">
     <div class="filter-bar">
         <form method="GET">
@@ -242,7 +244,19 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
                     <p>Mehr lesen</p>
                 </div>
             </a>
-        <?php endwhile; else : ?>
+        <?php endwhile; ?>
+        <!-- Pagination -->
+        <div class="pagination">
+            <?php
+            echo paginate_links(array(
+                'total' => $query->max_num_pages,
+                'current' => $current_page,
+                'prev_text' => __('« Prev'),
+                'next_text' => __('Next »'),
+            ));
+            ?>
+        </div>
+        <?php else : ?>
             <p>Keine Autos gefunden. Versuchen Sie, den Filter anzupassen.</p>
         <?php endif; ?>
     </div>
