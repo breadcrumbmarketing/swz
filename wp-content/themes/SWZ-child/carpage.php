@@ -184,18 +184,27 @@ header, footer {
     }
 }
 .back-button {
-        display: block;
-        width: 200px;
-        margin: 20px auto;
-        padding: 10px 20px;
-        font-size: 16px;
-        text-align: center;
-        background-color: #DE4F3E;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+    display: block;
+    width: 200px;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    background-color: #DE4F3E; /* Solid background color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
+}
+
+.back-button:hover {
+    background-color: transparent; /* Transparent background on hover */
+    color: #DE4F3E; /* Orange text color on hover */
+    border: 2px solid#DE4F3E; /* Solid border with orange color on hover */
+}
+
+
     </style>
 </head>
 <body>
