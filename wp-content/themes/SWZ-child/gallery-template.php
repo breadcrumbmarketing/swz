@@ -221,12 +221,14 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* Add styles for the pagination bar to ensure it stays below the cards */
 /* Pagination styles */
-.pagination-container {
+.paginationgswz {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+    justify-content: center; /* Center the pagination horizontally */
+    padding: 20px 0; /* Padding around the pagination for spacing */
+    background-color: #fff; /* Optional: for different background */
+    border-top: 1px solid #ddd; /* Optional: if you need a border above the pagination */
 }
+
 
 .page-number {
     margin: 0 5px;
@@ -235,12 +237,13 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     border-radius: 4px;
     background-color: #f5f5f5;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .page-number.active {
-    background-color: #DE4F3E;
+    background-color: #007bff;
     color: white;
-    border-color: #DE4F3E;
+    border-color: #007bff;
 }
 
 .page-navigation-button {
@@ -252,6 +255,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     cursor: pointer;
     text-decoration: none;
     border-radius: 4px;
+    transition: background-color 0.3s;
 }
 
 .page-navigation-button:hover {
@@ -263,12 +267,19 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     cursor: not-allowed;
 }
 
-/* Ensure the gallery grid and pagination area are in a flex column */
+/* Ensuring pagination stays at the bottom and within visual consistency */
 .gallery-and-pagination {
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Ensures pagination is pushed to the bottom */
-    height: 100%; /* Adjust as per the height of the gallery container */
+    justify-content: space-between; /* Ensures pagination is pushed to the bottom if fewer items are present */
+    height: auto; /* Adapts to content height */
+}
+
+/* Additional styling for responsiveness and layout integrity */
+@media (max-width: 768px) {
+    .paginationgswz {
+        margin-top: 10px; /* Less space on smaller screens */
+    }
 }
 
 
