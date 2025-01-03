@@ -6,39 +6,57 @@
 
 get_header(); // Load the WordPress header
 
-// Fetch dynamic car brands and models from the database
 global $wpdb;
-$brands_models_table = $wpdb->prefix . 'car_brands_models';
-$brands_models = $wpdb->get_results("SELECT * FROM $brands_models_table");
 
-// Prepare an associative array of brands and their models
-$sport_car_brands = [];
-foreach ($brands_models as $item) {
-    if (!isset($sport_car_brands[$item->brand_name])) {
-        $sport_car_brands[$item->brand_name] = [];
-    }
-    $sport_car_brands[$item->brand_name][] = $item->model_name;
+// Fetch distinct car brands and models from the database
+$distinct_brands = $wpdb->get_results("SELECT DISTINCT car_brand FROM {$wpdb->prefix}html_pages WHERE car_brand IS NOT NULL ORDER BY car_brand ASC");
+
+$brands_models = array();
+foreach ($distinct_brands as $brand) {
+    $models = $wpdb->get_results($wpdb->prepare(
+        "SELECT DISTINCT car_model FROM {$wpdb->prefix}html_pages WHERE car_brand = %s AND car_model IS NOT NULL ORDER BY car_model ASC",
+        $brand->car_brand
+    ));
+    $brands_models[$brand->car_brand] = array_map(function($item) {
+        return $item->car_model;
+    }, $models);
 }
 
 // Get the selected brand and model from the dropdown filter
 $selected_brand = isset($_GET['brand']) ? sanitize_text_field($_GET['brand']) : '';
 $selected_model = isset($_GET['model']) ? sanitize_text_field($_GET['model']) : '';
 
-// Query for pages created with the carpage.php template
+// Building the filter query
 $args = array(
     'post_type' => 'page',
+    'posts_per_page' => -1, // Get all matching pages
     'meta_query' => array(
         array(
             'key' => '_wp_page_template',
             'value' => 'carpage.php', // Filter pages created with carpage.php template
-        ),
-    ),
-    'posts_per_page' => -1, // Get all matching pages
+        )
+    )
 );
 
-$query = new WP_Query($args);
+if (!empty($selected_brand)) {
+    $args['meta_query'][] = array(
+        'key' => 'car_brand',
+        'value' => $selected_brand,
+        'compare' => '='
+    );
+}
 
+if (!empty($selected_model)) {
+    $args['meta_query'][] = array(
+        'key' => 'car_model',
+        'value' => $selected_model,
+        'compare' => '='
+    );
+}
+
+$query = new WP_Query($args);
 ?>
+
 <style>
 /* Import Poppins font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -175,74 +193,48 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 </style>
 
-
 <div class="gallery-container">
     <div class="filter-bar">
         <form method="GET">
-            <select name="brand">
-                <option value=""><?php esc_html_e('Marke auswählen', 'text-domain'); ?></option>
-                <?php foreach ($sport_car_brands as $brand => $models) : ?>
-                    <option value="<?php echo esc_attr($brand); ?>" <?php selected($selected_brand, $brand); ?>>
-                        <?php echo esc_html($brand); ?>
+            <select name="brand" onchange="this.form.submit()">
+                <option value="">Marke auswählen</option>
+                <?php foreach ($distinct_brands as $brand): ?>
+                    <option value="<?php echo esc_attr($brand->car_brand); ?>" <?php selected($selected_brand, $brand->car_brand); ?>>
+                        <?php echo esc_html($brand->car_brand); ?>
                     </option>
                 <?php endforeach; ?>
             </select>
             <select name="model">
-                <option value=""><?php esc_html_e('Modell auswählen', 'text-domain'); ?></option>
-                <?php
-                if ($selected_brand && isset($sport_car_brands[$selected_brand])) :
-                    foreach ($sport_car_brands[$selected_brand] as $model) :
-                ?>
+                <option value="">Modell auswählen</option>
+                <?php if (!empty($selected_brand) && !empty($brands_models[$selected_brand])): ?>
+                    <?php foreach ($brands_models[$selected_brand] as $model): ?>
                         <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
                             <?php echo esc_html($model); ?>
                         </option>
-                <?php
-                    endforeach;
-                endif;
-                ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </select>
-            <button type="submit"><?php esc_html_e('Filtern', 'text-domain'); ?></button>
+            <button type="submit">Filtern</button>
         </form>
     </div>
 
     <div class="gallery-grid">
-    <?php if ($query->have_posts()) : ?>
-        <?php while ($query->have_posts()) : $query->the_post(); ?>
-            <?php
-            // Get the featured image or a placeholder
-            $featured_image = get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300';
-
-            // Count occurrences of brand and model in the page content
-            $post_content = strtolower(strip_tags(get_the_content()));
-            $brand_count = $selected_brand ? substr_count($post_content, strtolower($selected_brand)) : 0;
-            $model_count = $selected_model ? substr_count($post_content, strtolower($selected_model)) : 0;
-
-            // Only display the card if the brand or model occurs more than 10 times
-            if (
-                (!$selected_brand || $brand_count > 10) &&
-                (!$selected_model || $model_count > 10)
-            ) :
-            ?>
+        <?php if ($query->have_posts()) : ?>
+            <?php while ($query->have_posts()) : $query->the_post(); ?>
                 <a href="<?php the_permalink(); ?>" class="gallery-card">
-                    <!-- Top Section: Image -->
-                    <div class="image-container" style="background-image: url('<?php echo esc_url($featured_image); ?>');">
-                    </div>
-                    <!-- Bottom Section: Text -->
+                    <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');"></div>
                     <div class="text-container">
                         <h3><?php the_title(); ?></h3>
-                        <p><?php esc_html_e('Mehr lesen', 'text-domain'); ?></p>
+                        <p>Mehr lesen</p>
                     </div>
                 </a>
-            <?php endif; ?>
-        <?php endwhile; ?>
-    <?php else : ?>
-        <p><?php esc_html_e('Keine Autos gefunden. Versuchen Sie, den Filter anzupassen.', 'text-domain'); ?></p>
-    <?php endif; ?>
-</div>
-
+            <?php endwhile; ?>
+        <?php else : ?>
+            <p>Keine Autos gefunden. Versuchen Sie, den Filter anzupassen.</p>
+        <?php endif; ?>
+    </div>
 </div>
 
 <?php
-wp_reset_postdata(); // Reset the query
 get_footer(); // Load the WordPress footer
 ?>
