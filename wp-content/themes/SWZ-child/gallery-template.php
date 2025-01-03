@@ -117,8 +117,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     overflow: hidden;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 350px; /* Fixed height for consistency */
-    width: 250px; /* Fixed width */
+    height: 300px; /* Fixed height for consistency */
+    width: 280px; /* Fixed width */
 }
 
 .gallery-card:hover {
