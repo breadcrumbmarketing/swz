@@ -211,24 +211,13 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
         bottom: 5px;
     }
 }
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 10px;
-    justify-content: center;
-    min-height: 360px; /* Ensures minimum height to maintain pagination position */
-}
 
-/* Add styles for the pagination bar to ensure it stays below the cards */
 /* Pagination styles */
 .paginationgswz {
     display: flex;
     justify-content: center; /* Center the pagination horizontally */
     padding: 20px 0; /* Padding around the pagination for spacing */
-    background-color: #fff; /* Optional: for different background */
-    border-top: 1px solid #ddd; /* Optional: if you need a border above the pagination */
 }
-
 
 .page-number {
     margin: 0 5px;
@@ -240,10 +229,9 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     transition: background-color 0.3s;
 }
 
-.page-number.active {
+.page-number.active, .page-number:hover {
     background-color: #007bff;
     color: white;
-    border-color: #007bff;
 }
 
 .page-navigation-button {
@@ -255,7 +243,6 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     cursor: pointer;
     text-decoration: none;
     border-radius: 4px;
-    transition: background-color 0.3s;
 }
 
 .page-navigation-button:hover {
@@ -266,22 +253,6 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     opacity: 0.6;
     cursor: not-allowed;
 }
-
-/* Ensuring pagination stays at the bottom and within visual consistency */
-.gallery-and-pagination {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Ensures pagination is pushed to the bottom if fewer items are present */
-    height: auto; /* Adapts to content height */
-}
-
-/* Additional styling for responsiveness and layout integrity */
-@media (max-width: 768px) {
-    .paginationgswz {
-        margin-top: 10px; /* Less space on smaller screens */
-    }
-}
-
 
 </style>
 <div class="gallery-container">
