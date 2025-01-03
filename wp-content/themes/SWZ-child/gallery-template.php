@@ -8,10 +8,10 @@ get_header(); // Load the WordPress header
 
 global $wpdb;
 
-// Fetch distinct car brands and models from the database
+// Prepare dropdown data
 $distinct_brands = $wpdb->get_results("SELECT DISTINCT car_brand FROM {$wpdb->prefix}html_pages WHERE car_brand IS NOT NULL ORDER BY car_brand ASC");
 
-$brands_models = array();
+$brands_models = [];
 foreach ($distinct_brands as $brand) {
     $models = $wpdb->get_results($wpdb->prepare(
         "SELECT DISTINCT car_model FROM {$wpdb->prefix}html_pages WHERE car_brand = %s AND car_model IS NOT NULL ORDER BY car_model ASC",
@@ -22,40 +22,37 @@ foreach ($distinct_brands as $brand) {
     }, $models);
 }
 
-// Get the selected brand and model from the dropdown filter
+// Handle filter input
 $selected_brand = isset($_GET['brand']) ? sanitize_text_field($_GET['brand']) : '';
 $selected_model = isset($_GET['model']) ? sanitize_text_field($_GET['model']) : '';
 
-// Building the filter query
+// Build the query for matching pages based on title from wp_html_pages
+$matched_pages = [];
+if (!empty($selected_brand) && !empty($selected_model)) {
+    $matched_pages = $wpdb->get_col($wpdb->prepare(
+        "SELECT post_id FROM {$wpdb->prefix}posts
+         JOIN {$wpdb->prefix}html_pages ON {$wpdb->prefix}posts.post_title = {$wpdb->prefix}html_pages.title
+         WHERE {$wpdb->prefix}html_pages.car_brand = %s AND {$wpdb->prefix}html_pages.car_model = %s AND
+         {$wpdb->prefix}posts.post_type = 'page' AND {$wpdb->prefix}posts.post_status = 'publish'",
+        $selected_brand, $selected_model
+    ));
+}
+
 $args = array(
-    'post_type' => 'page',
-    'posts_per_page' => -1, // Get all matching pages
-    'meta_query' => array(
+    'post_type'      => 'page',
+    'posts_per_page' => -1,
+    'post__in'       => $matched_pages, // Only include IDs that match the filter
+    'meta_query'     => array(
         array(
-            'key' => '_wp_page_template',
-            'value' => 'carpage.php', // Filter pages created with carpage.php template
+            'key'   => '_wp_page_template',
+            'value' => 'carpage.php',
         )
     )
 );
 
-if (!empty($selected_brand)) {
-    $args['meta_query'][] = array(
-        'key' => 'car_brand',
-        'value' => $selected_brand,
-        'compare' => '='
-    );
-}
-
-if (!empty($selected_model)) {
-    $args['meta_query'][] = array(
-        'key' => 'car_model',
-        'value' => $selected_model,
-        'compare' => '='
-    );
-}
-
 $query = new WP_Query($args);
 ?>
+
 
 <style>
 /* Import Poppins font */
@@ -194,8 +191,10 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 </style>
 
 <div class="gallery-container">
+    <!-- Filtering Form -->
     <div class="filter-bar">
         <form method="GET">
+            <!-- Brand Selection -->
             <select name="brand" onchange="this.form.submit()">
                 <option value="">Marke auswählen</option>
                 <?php foreach ($distinct_brands as $brand): ?>
@@ -204,9 +203,10 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
                     </option>
                 <?php endforeach; ?>
             </select>
-            <select name="model">
+            <!-- Model Selection -->
+            <select name="model" onchange="this.form.submit()">
                 <option value="">Modell auswählen</option>
-                <?php if (!empty($selected_brand) && !empty($brands_models[$selected_brand])): ?>
+                <?php if (!empty($selected_brand) && isset($brands_models[$selected_brand])): ?>
                     <?php foreach ($brands_models[$selected_brand] as $model): ?>
                         <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
                             <?php echo esc_html($model); ?>
@@ -214,15 +214,18 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>
+            <!-- Filter Button -->
             <button type="submit">Filtern</button>
         </form>
     </div>
 
+    <!-- Gallery Grid -->
     <div class="gallery-grid">
         <?php if ($query->have_posts()) : ?>
             <?php while ($query->have_posts()) : $query->the_post(); ?>
                 <a href="<?php the_permalink(); ?>" class="gallery-card">
-                    <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');"></div>
+                    <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');">
+                    </div>
                     <div class="text-container">
                         <h3><?php the_title(); ?></h3>
                         <p>Mehr lesen</p>
@@ -235,6 +238,4 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     </div>
 </div>
 
-<?php
-get_footer(); // Load the WordPress footer
-?>
+<?php get_footer(); ?>
