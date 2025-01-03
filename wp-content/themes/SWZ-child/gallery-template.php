@@ -220,31 +220,57 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 /* Add styles for the pagination bar to ensure it stays below the cards */
-.paginationgswz {
-    display: block;
-    width: 100%;
-    text-align: center;
-    padding: 20px 0;
-    margin-top: 20px; /* Adjust based on your design needs */
+/* Pagination styles */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
 }
 
-.paginationgswz a {
-    color: #333;
+.page-number {
+    margin: 0 5px;
     padding: 8px 16px;
-    text-decoration: none;
-    transition: background-color .3s;
     border: 1px solid #ddd;
-    margin: 0 4px;
-    border-radius: 5px;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    cursor: pointer;
 }
 
-.paginationgswz a.active {
+.page-number.active {
     background-color: #DE4F3E;
     color: white;
-    border: 1px solid #DE4F3E;
+    border-color: #DE4F3E;
 }
 
-.paginationgswz a:hover:not(.active) { background-color: #ddd; }
+.page-navigation-button {
+    padding: 8px 16px;
+    margin: 0 5px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #333;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.page-navigation-button:hover {
+    background-color: #e2e6ea;
+}
+
+.page-navigation-button.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Ensure the gallery grid and pagination area are in a flex column */
+.gallery-and-pagination {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Ensures pagination is pushed to the bottom */
+    height: 100%; /* Adjust as per the height of the gallery container */
+}
+
 
 </style>
 <div class="gallery-container">
