@@ -229,7 +229,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
                     </option>
                 <?php endforeach; ?>
             </select>
-            <button type="submit" class="filter-but" >Filtern</button>
+            <button type="submit" class="filter-but">Filtern</button>
         </form>
     </div>
     <div class="gallery-grid">
