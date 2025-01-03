@@ -220,7 +220,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 /* Add styles for the pagination bar to ensure it stays below the cards */
-.pagination {
+.paginationgswz {
     display: block;
     width: 100%;
     text-align: center;
@@ -228,7 +228,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     margin-top: 20px; /* Adjust based on your design needs */
 }
 
-.pagination a {
+.paginationgswz a {
     color: #333;
     padding: 8px 16px;
     text-decoration: none;
@@ -238,13 +238,13 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     border-radius: 5px;
 }
 
-.pagination a.active {
+.paginationgswz a.active {
     background-color: #DE4F3E;
     color: white;
     border: 1px solid #DE4F3E;
 }
 
-.pagination a:hover:not(.active) { background-color: #ddd; }
+.paginationgswz a:hover:not(.active) { background-color: #ddd; }
 
 </style>
 <div class="gallery-container">
@@ -281,7 +281,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
             </a>
         <?php endwhile; ?>
         <!-- Pagination -->
-        <div class="pagination">
+        <div class="paginationgswz">
             <?php
             echo paginate_links(array(
                 'total' => $query->max_num_pages,
