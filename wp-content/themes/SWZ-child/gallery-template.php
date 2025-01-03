@@ -103,11 +103,11 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjusts to fit the container but not exceeding 1fr */
     gap: 10px; /* Minimal gap between cards */
+    justify-content: center; /* Centers cards in the grid when fewer items */
 }
 
-/* Individual Card Styling */
 .gallery-card {
     display: flex;
     flex-direction: column;
@@ -118,6 +118,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     height: 350px; /* Fixed height for consistency */
+    width: 250px; /* Fixed width */
 }
 
 .gallery-card:hover {
