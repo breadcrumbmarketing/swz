@@ -8,57 +8,14 @@ get_header(); // Load the WordPress header
 
 global $wpdb;
 
-// Prepare dropdown data
-$distinct_brands = $wpdb->get_results("SELECT DISTINCT car_brand FROM {$wpdb->prefix}html_pages WHERE car_brand IS NOT NULL ORDER BY car_brand ASC");
-
-$brands_models = [];
-foreach ($distinct_brands as $brand) {
-    $models = $wpdb->get_results($wpdb->prepare(
-        "SELECT DISTINCT car_model FROM {$wpdb->prefix}html_pages WHERE car_brand = %s AND car_model IS NOT NULL ORDER BY car_model ASC",
-        $brand->car_brand
-    ));
-    $brands_models[$brand->car_brand] = array_map(function($item) {
-        return $item->car_model;
-    }, $models);
-}
-
-// Handle filter input
+// Initialize filters
 $selected_brand = isset($_GET['brand']) ? sanitize_text_field($_GET['brand']) : '';
 $selected_model = isset($_GET['model']) ? sanitize_text_field($_GET['model']) : '';
-$selected_sort = isset($_GET['sort']) ? $_GET['sort'] : '';
 
-// Determine sort order
-$order = 'ASC';
-if (strpos($selected_sort, 'desc') !== false) {
-    $order = 'DESC';
-}
-
-// Determine meta_key based on sort choice
-$meta_key = '';
-switch ($selected_sort) {
-    case 'price_asc':
-    case 'price_desc':
-        $meta_key = 'price';
-        break;
-    case 'power_asc':
-    case 'power_desc':
-        $meta_key = 'power';
-        break;
-    case 'co2_asc':
-    case 'co2_desc':
-        $meta_key = 'co2';
-        break;
-    case 'date_newer':
-        $meta_key = 'created_at';
-        break;
-}
-
+// Build the base args for WP_Query
 $args = array(
     'post_type'      => 'page',
     'posts_per_page' => -1,
-    'meta_key'       => $meta_key,
-    'orderby'        => 'meta_value_num',
-    'order'          => $order,
     'meta_query'     => array(
         array(
             'key'   => '_wp_page_template',
@@ -67,9 +24,46 @@ $args = array(
     )
 );
 
-$query = new WP_Query($args);
-?>
+// Add brand and model query if selected
+if (!empty($selected_brand)) {
+    $args['meta_query'][] = array(
+        'key'     => 'car_brand',
+        'value'   => $selected_brand,
+        'compare' => '='
+    );
+}
 
+if (!empty($selected_model)) {
+    $args['meta_query'][] = array(
+        'key'     => 'car_model',
+        'value'   => $selected_model,
+        'compare' => '='
+    );
+}
+
+$query = new WP_Query($args);
+
+// Gather data for dropdowns
+$all_pages = get_posts(array(
+    'post_type'      => 'page',
+    'posts_per_page' => -1,
+    'meta_key'       => '_wp_page_template',
+    'meta_value'     => 'carpage.php'
+));
+
+$brands = [];
+$models = [];
+
+foreach ($all_pages as $page) {
+    $brand = get_post_meta($page->ID, 'car_brand', true);
+    $model = get_post_meta($page->ID, 'car_model', true);
+    $brands[$brand] = $brand;
+    if ($selected_brand && $brand === $selected_brand) {
+        $models[$model] = $model;
+    }
+}
+
+?>
 
 <style>
 /* Import Poppins font */
@@ -207,46 +201,29 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     }
 }
 </style>
+
 <div class="gallery-container">
-    <!-- Filtering Form -->
     <div class="filter-bar">
         <form method="GET">
-            <!-- Brand Selection -->
             <select name="brand" onchange="this.form.submit()">
                 <option value="">Marke auswählen</option>
-                <?php foreach ($distinct_brands as $brand): ?>
-                    <option value="<?php echo esc_attr($brand->car_brand); ?>" <?php selected($selected_brand, $brand->car_brand); ?>>
-                        <?php echo esc_html($brand->car_brand); ?>
+                <?php foreach ($brands as $brand): ?>
+                    <option value="<?php echo esc_attr($brand); ?>" <?php selected($selected_brand, $brand); ?>>
+                        <?php echo esc_html($brand); ?>
                     </option>
                 <?php endforeach; ?>
             </select>
-            <!-- Model Selection -->
             <select name="model" onchange="this.form.submit()">
                 <option value="">Modell auswählen</option>
-                <?php if (!empty($selected_brand) && isset($brands_models[$selected_brand])): ?>
-                    <?php foreach ($brands_models[$selected_brand] as $model): ?>
-                        <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
-                            <?php echo esc_html($model); ?>
-                        </option>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </select>
-            <!-- Sorting Dropdown -->
-            <select name="sort" onchange="this.form.submit()">
-                <option value="">Sortieren nach</option>
-                <option value="price_asc">Preis aufsteigend</option>
-                <option value="price_desc">Preis absteigend</option>
-                <option value="power_asc">Leistung aufsteigend</option>
-                <option value="power_desc">Leistung absteigend</option>
-                <option value="co2_asc">CO2 aufsteigend</option>
-                <option value="co2_desc">CO2 absteigend</option>
-                <option value="date_newer">Neueste</option>
+                <?php foreach ($models as $model): ?>
+                    <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
+                        <?php echo esc_html($model); ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
             <button type="submit">Filtern</button>
         </form>
     </div>
-
-    <!-- Gallery Grid -->
     <div class="gallery-grid">
         <?php if ($query->have_posts()) : while ($query->have_posts()) : $query->the_post(); ?>
             <a href="<?php the_permalink(); ?>" class="gallery-card">
