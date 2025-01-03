@@ -211,6 +211,41 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
         bottom: 5px;
     }
 }
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+    justify-content: center;
+    min-height: 360px; /* Ensures minimum height to maintain pagination position */
+}
+
+/* Add styles for the pagination bar to ensure it stays below the cards */
+.pagination {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 20px; /* Adjust based on your design needs */
+}
+
+.pagination a {
+    color: #333;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+    margin: 0 4px;
+    border-radius: 5px;
+}
+
+.pagination a.active {
+    background-color: #DE4F3E;
+    color: white;
+    border: 1px solid #DE4F3E;
+}
+
+.pagination a:hover:not(.active) { background-color: #ddd; }
+
 </style>
 <div class="gallery-container">
     <div class="filter-bar">
