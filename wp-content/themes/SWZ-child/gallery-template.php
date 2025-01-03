@@ -6,53 +6,51 @@
 
 get_header(); // Load the WordPress header
 
-global $wpdb;
-
-// Prepare dropdown data
-$distinct_brands = $wpdb->get_results("SELECT DISTINCT car_brand FROM {$wpdb->prefix}html_pages WHERE car_brand IS NOT NULL ORDER BY car_brand ASC");
-
-$brands_models = [];
-foreach ($distinct_brands as $brand) {
-    $models = $wpdb->get_results($wpdb->prepare(
-        "SELECT DISTINCT car_model FROM {$wpdb->prefix}html_pages WHERE car_brand = %s AND car_model IS NOT NULL ORDER BY car_model ASC",
-        $brand->car_brand
-    ));
-    $brands_models[$brand->car_brand] = array_map(function($item) {
-        return $item->car_model;
-    }, $models);
-}
-
 // Handle filter input
 $selected_brand = isset($_GET['brand']) ? sanitize_text_field($_GET['brand']) : '';
 $selected_model = isset($_GET['model']) ? sanitize_text_field($_GET['model']) : '';
 
-// Build the query for matching pages based on title from wp_html_pages
-$matched_pages = [];
-if (!empty($selected_brand) && !empty($selected_model)) {
-    $matched_pages = $wpdb->get_col($wpdb->prepare(
-        "SELECT post_id FROM {$wpdb->prefix}posts
-         JOIN {$wpdb->prefix}html_pages ON {$wpdb->prefix}posts.post_title = {$wpdb->prefix}html_pages.title
-         WHERE {$wpdb->prefix}html_pages.car_brand = %s AND {$wpdb->prefix}html_pages.car_model = %s AND
-         {$wpdb->prefix}posts.post_type = 'page' AND {$wpdb->prefix}posts.post_status = 'publish'",
-        $selected_brand, $selected_model
-    ));
-}
-
+// Query for pages with specific meta data
 $args = array(
-    'post_type'      => 'page',
+    'post_type' => 'page',
     'posts_per_page' => -1,
-    'post__in'       => $matched_pages, // Only include IDs that match the filter
-    'meta_query'     => array(
+    'meta_query' => array(
+        'relation' => 'AND',
         array(
-            'key'   => '_wp_page_template',
+            'key' => '_wp_page_template',
             'value' => 'carpage.php',
+        ),
+        array(
+            'key' => 'car_brand',
+            'value' => $selected_brand,
+            'compare' => '='
+        ),
+        array(
+            'key' => 'car_model',
+            'value' => $selected_model,
+            'compare' => '='
         )
     )
 );
 
 $query = new WP_Query($args);
-?>
 
+// Gather distinct brands and models for filters
+$brands = [];
+$models = [];
+if ($query->have_posts()) {
+    while ($query->have_posts()) {
+        $query->the_post();
+        $brand = get_post_meta(get_the_ID(), 'car_brand', true);
+        $model = get_post_meta(get_the_ID(), 'car_model', true);
+        $brands[$brand] = $brand;
+        if ($selected_brand && $brand == $selected_brand) {
+            $models[$model] = $model;
+        }
+    }
+}
+
+?>
 
 <style>
 /* Import Poppins font */
@@ -191,35 +189,28 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 </style>
 
 <div class="gallery-container">
-    <!-- Filtering Form -->
     <div class="filter-bar">
         <form method="GET">
-            <!-- Brand Selection -->
             <select name="brand" onchange="this.form.submit()">
                 <option value="">Marke auswählen</option>
-                <?php foreach ($distinct_brands as $brand): ?>
-                    <option value="<?php echo esc_attr($brand->car_brand); ?>" <?php selected($selected_brand, $brand->car_brand); ?>>
-                        <?php echo esc_html($brand->car_brand); ?>
+                <?php foreach ($brands as $brand): ?>
+                    <option value="<?php echo esc_attr($brand); ?>" <?php selected($selected_brand, $brand); ?>>
+                        <?php echo esc_html($brand); ?>
                     </option>
                 <?php endforeach; ?>
             </select>
-            <!-- Model Selection -->
             <select name="model" onchange="this.form.submit()">
                 <option value="">Modell auswählen</option>
-                <?php if (!empty($selected_brand) && isset($brands_models[$selected_brand])): ?>
-                    <?php foreach ($brands_models[$selected_brand] as $model): ?>
-                        <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
-                            <?php echo esc_html($model); ?>
-                        </option>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                <?php foreach ($models as $model): ?>
+                    <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
+                        <?php echo esc_html($model); ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
-            <!-- Filter Button -->
             <button type="submit">Filtern</button>
         </form>
     </div>
 
-    <!-- Gallery Grid -->
     <div class="gallery-grid">
         <?php if ($query->have_posts()) : ?>
             <?php while ($query->have_posts()) : $query->the_post(); ?>
