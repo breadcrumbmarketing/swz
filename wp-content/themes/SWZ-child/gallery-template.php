@@ -321,7 +321,9 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     cursor: not-allowed;
 }
 
-
+.custom-logo-link {
+    display: none !important;
+}
 
 </style>
 <div class="gallery-container">
