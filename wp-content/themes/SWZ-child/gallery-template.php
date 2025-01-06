@@ -338,75 +338,72 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 </style>
 <div class="gallery-container">
-<div class="filter-bar">
-    <form method="GET" id="filter-form">
-        <select name="brand" onchange="this.form.submit()">
-            <option value="">Marke auswählen</option>
-            <?php foreach ($brands as $brand): ?>
-                <option value="<?php echo esc_attr($brand); ?>" <?php selected($selected_brand, $brand); ?>>
-                    <?php echo esc_html($brand); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-        <select name="model" onchange="this.form.submit()">
-            <option value="">Modell auswählen</option>
-            <?php foreach ($models as $model): ?>
-                <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
-                    <?php echo esc_html($model); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-        <!-- Clear Filter Button -->
-        <button type="button" class="clear-filter-button" onclick="clearFilters()">Filter entfernen</button>
-    </form>
-</div>
+    <div class="filter-bar">
+        <form method="GET" id="filter-form">
+            <select name="brand" onchange="this.form.submit()">
+                <option value="">Marke auswählen</option>
+                <?php foreach ($brands as $brand): ?>
+                    <option value="<?php echo esc_attr($brand); ?>" <?php selected($selected_brand, $brand); ?>>
+                        <?php echo esc_html($brand); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <select name="model" onchange="this.form.submit()">
+                <option value="">Modell auswählen</option>
+                <?php foreach ($models as $model): ?>
+                    <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
+                        <?php echo esc_html($model); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <!-- Clear Filter Button -->
+            <button type="button" class="clear-filter-button" onclick="clearFilters()">Filter entfernen</button>
+        </form>
+    </div>
     <div class="gallery-grid">
         <?php if ($query->have_posts()) : while ($query->have_posts()) : $query->the_post(); ?>
             <a href="<?php the_permalink(); ?>" class="gallery-card">
                 <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');">
                 </div>
-                
-
-
-
                 <h2 class="testbericht">Testbericht: <?php echo esc_html(get_post_meta(get_the_ID(), 'car_brand', true)); ?></h2> 
                 <div class="text-container">
-    
-    <h3><?php the_title(); ?></h3> <!-- Title of the car -->
-    <p class="more-info">Mehr lesen</p> <!-- More info button or link -->
-</div>
-
-
-
-
-
-
+                    <h3><?php the_title(); ?></h3>
+                    <p class="more-info">Mehr lesen</p>
+                </div>
             </a>
         <?php endwhile; ?>
-        <!-- New Div for Pagination -->
-    <div class="pagination-container">
-        <div class="paginationgswz">
-            <?php
-            echo paginate_links(array(
-                'total' => $query->max_num_pages,
-                'current' => $current_page,
-                'prev_text' => __('« Prev'),
-                'next_text' => __('Next »'),
-            ));
-            ?>
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <div class="paginationgswz">
+                <?php
+                echo paginate_links(array(
+                    'total' => $query->max_num_pages,
+                    'current' => $current_page,
+                    'prev_text' => __('« Prev'),
+                    'next_text' => __('Next »'),
+                ));
+                ?>
+            </div>
         </div>
-    </div>
         <?php else : ?>
             <p>Keine Autos gefunden. Versuchen Sie, den Filter anzupassen.</p>
         <?php endif; ?>
     </div>
 </div>
+
 <script>
     function clearFilters() {
         // Reset the form to default values
         document.getElementById('filter-form').reset();
-        // Submit the form to show all cases
-        document.getElementById('filter-form').submit();
+
+        // Clear the URL parameters (brand and model)
+        const url = new URL(window.location.href);
+        url.searchParams.delete('brand');
+        url.searchParams.delete('model');
+
+        // Redirect to the updated URL (without filters)
+        window.location.href = url.toString();
     }
 </script>
+
 <?php get_footer(); ?>
