@@ -175,10 +175,12 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 .gallery-card .text-container p {
     font-size: 12px;
-    color: #777;
+    color: black;
     position: absolute;
     bottom: 10px;
     left: 15px;
+    z-index: 9999;
+    top:0px
 }
 
 .filter-but {
@@ -208,6 +210,33 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
         font-size: 10px;
         bottom: 5px;
     }
+}
+.testbericht {
+    font-size: 12px; /* Smaller font size */
+    color: #666; /* Dark grey color */
+    font-style: italic; /* Italic font style */
+    margin-bottom: 5px; /* Extra space below the text */
+   
+}
+
+
+.text-container h2.testbericht {
+    margin-bottom: 5px; /* Reduces the space between the 'Testbericht' and the title */
+    font-size: 16px; /* Adjust the font size if needed */
+}
+
+.text-container h3 {
+    margin-top: 0; /* Removes space above the h3 */
+    margin-bottom: 10px; /* Adjusts space between the title and the paragraph */
+}
+
+.text-container p.more-info {
+    visibility: visible; /* Makes the 'Mehr lesen' always visible */
+    opacity: 1; /* Ensures it's not transparent */
+    transition: opacity 0.3s ease; /* Smooth transition for hover effect */
+}
+.text-container p.more-info:hover {
+    color: #DE4F3E; /* Changes color on hover */
 }
 
 /* Pagination styles */
@@ -280,10 +309,22 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
             <a href="<?php the_permalink(); ?>" class="gallery-card">
                 <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');">
                 </div>
+                
+
+
+
+
                 <div class="text-container">
-                    <h3><?php the_title(); ?></h3>
-                    <p>Mehr lesen</p>
-                </div>
+    <h2 class="testbericht">Testbericht: <?php echo esc_html(get_post_meta(get_the_ID(), 'car_brand', true)); ?></h2> <!-- Dynamically display car brand -->
+    <h3><?php the_title(); ?></h3> <!-- Title of the car -->
+    <p class="more-info">Mehr lesen</p> <!-- More info button or link -->
+</div>
+
+
+
+
+
+
             </a>
         <?php endwhile; ?>
         <!-- New Div for Pagination -->
