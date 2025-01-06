@@ -219,18 +219,18 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     }
 }
 .testbericht {
-    font-size: 20px; /* Smaller font size */
-    color: black; /* Dark grey color */
-    margin-bottom: 5px; /* Extra space below the text */
+    font-size: 1.5em;  
+    color: black;  
+    margin-bottom: 5px;  
     text-align: left;
     margin-left: 15px;
-   
+    font-weight: bold;
 }
 
 
 .text-container h2.testbericht {
     margin-bottom: 0; /* Reduces the space between the 'Testbericht' and the title */
-    font-size: 20px; /* Adjust the font size if needed */
+    font-size: 1.5em; /* Adjust the font size if needed */
     font-weight: bold;
 }
 
