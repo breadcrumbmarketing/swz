@@ -105,9 +105,10 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 .gallery-grid {
-    grid-template-columns: repeat(3, 1fr); /* Adjusts to fit 3 cards per row */
-    gap: 20px; /* Adjust gap if needed for spacing */
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjusts to fit the container but not exceeding 1fr */
+    gap: 10px; /* Minimal gap between cards */
+    justify-content: center; /* Centers cards in the grid when fewer items */
 }
 
 .gallery-card {
@@ -119,9 +120,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     overflow: hidden;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: auto;  
-    width: calc(33.333% - 20px);  
-    min-height: 400px;
+    height: 30vh; /* Fixed height for consistency */
+    width: 280px; /* Fixed width */
 }
 
 .gallery-card:hover {
@@ -131,7 +131,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* Top Section for Image */
 .gallery-card .image-container {
-    height: 40vh; /* Increased height for the image */
+    height: 35vh; /* Updated to use 35% of the viewport height */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -193,21 +193,22 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 /* Responsive Adjustments */
-@media (max-width: 1200px) {
-    .gallery-grid {
-        grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns on smaller screens */
-    }
-    .gallery-card {
-        width: calc(50% - 20px); /* Adjust width when 2 columns */
-    }
-}
-
 @media (max-width: 768px) {
     .gallery-grid {
-        grid-template-columns: 1fr; /* 1 column on very small screens */
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Smaller cards for mobile */
     }
-    .gallery-card {
-        width: 100%; /* Full width on small screens */
+
+    .gallery-card .text-container {
+        padding: 8px 10px;
+    }
+
+    .gallery-card .text-container h3 {
+        font-size: 12px;
+    }
+
+    .gallery-card .text-container p {
+        font-size: 10px;
+        bottom: 5px;
     }
 }
 
