@@ -84,6 +84,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     margin: 0 auto;
     text-align: center;
     background-color: rgba(245, 245, 245, 0); /* Light background for the gallery */
+    padding-bottom: 20px;
 }
 
 .filter-bar {
@@ -202,7 +203,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 
 .filter-but {
-    color: black;
+    color: white;
 }
 .filter-but:hover {
   /* Hover state changes */
