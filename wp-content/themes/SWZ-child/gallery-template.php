@@ -202,12 +202,13 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 
 .filter-but {
-    color: white;
+    color: black;
 }
 .filter-but:hover {
   /* Hover state changes */
   background-color: #DE4F3E;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: white;
 }
 
 /* Responsive Adjustments */
@@ -253,47 +254,74 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 
 
-/* Pagination styles */
+/* Pagination Container */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    z-index: 1000; /* Ensure it stays above other content */
+}
+
+/* Pagination Links */
 .paginationgswz {
     display: flex;
-    justify-content: center; /* Center the pagination horizontally */
-    padding: 20px 0; /* Padding around the pagination for spacing */
+    gap: 10px; /* Space between pagination items */
 }
 
-.page-number {
-    margin: 0 5px;
-    padding: 8px 16px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #f5f5f5;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.page-number.active, .page-number:hover {
-    background-color: #007bff;
-    color: white;
-}
-
-.page-navigation-button {
-    padding: 8px 16px;
-    margin: 0 5px;
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    color: #333;
-    cursor: pointer;
+.paginationgswz a,
+.paginationgswz span {
+    display: inline-block;
+    padding: 8px 12px;
     text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+/* Current Page */
+.paginationgswz span.current {
+    background-color: #0073e6; /* Highlight color for current page */
+    color: #fff;
     border-radius: 4px;
 }
 
-.page-navigation-button:hover {
-    background-color: #e2e6ea;
+/* Hover Effect */
+.paginationgswz a:hover {
+    background-color: #f0f0f0; /* Light background on hover */
+    color: #0073e6; /* Change text color on hover */
 }
 
-.page-navigation-button.disabled {
-    opacity: 0.6;
+/* Previous and Next Buttons */
+.paginationgswz .prev,
+.paginationgswz .next {
+    font-weight: 600;
+    background-color: #f0f0f0; /* Light background for prev/next buttons */
+    border-radius: 4px;
+}
+
+.paginationgswz .prev:hover,
+.paginationgswz .next:hover {
+    background-color: #0073e6; /* Highlight on hover */
+    color: #fff;
+}
+
+/* Disabled Buttons (if applicable) */
+.paginationgswz .disabled {
+    color: #ccc;
+    pointer-events: none;
     cursor: not-allowed;
 }
+
+
 
 </style>
 <div class="gallery-container">
