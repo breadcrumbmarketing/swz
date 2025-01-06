@@ -391,8 +391,17 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
             <a href="<?php the_permalink(); ?>" class="gallery-card">
                 <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');">
                 </div>
-                <h2 class="testbericht">Testbericht: <?php echo esc_html(get_post_meta(get_the_ID(), 'car_brand', true)); ?></h2> 
-                <div class="text-container">
+                <h2 class="testbericht">
+    Testbericht: 
+    <?php 
+        // Get the car brand and car model from the database
+        $car_brand = esc_html(get_post_meta(get_the_ID(), 'car_brand', true));
+        $car_model = esc_html(get_post_meta(get_the_ID(), 'car_model', true));
+        
+        // Concatenate the car brand and car model with a space in between
+        echo $car_brand . ' ' . $car_model;
+    ?>
+</h2>                <div class="text-container">
                     <h3><?php the_title(); ?></h3>
                     <p class="more-info">Mehr lesen</p>
                 </div>
