@@ -157,14 +157,15 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* Bottom Section for Text */
 .gallery-card .text-container {
-    position: relative; /* Ensures it can properly contain absolutely positioned elements */
-    flex: 1; /* Adjusts based on available space */
-    padding: 10px 15px; /* Consistent padding */
-    text-align: left; /* Aligns text to the left */
+    position: relative; /* Establishes a positioning context for absolutely positioned children */
+    flex: 1; /* Takes up the remaining space in the flex container */
+    padding: 10px 15px; /* Consistent padding around the content */
+    text-align: left; /* Text aligned to the left */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Distributes space between items */
-    height: 35%; /* Adjusted height proportion */
+    justify-content: space-between; /* Space distribution for inner items */
+    height: auto; /* Adjusted for content size */
+    overflow: hidden; /* Hides anything out of the bound */
 }
 
 .gallery-card .text-container h3 {
@@ -183,12 +184,22 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 .gallery-card .text-container p {
     font-size: 12px;
     color: black;
-    position: absolute;
-    bottom: 10px;
-    left: 15px;
-    z-index: 9999;
-    top:0px
+    position: absolute; /* Absolutely positioned relative to the nearest positioned ancestor */
+    bottom: 10px; /* 10px from the bottom of the container */
+    left: 15px; /* 15px from the left of the container */
+    margin: 0; /* Resets any default margin */
+    color: black; /* Text color */
+    font-size: 12px; /* Font size */
+    visibility: visible; /* Always visible */
+    opacity: 1; /* Full opacity */
+    transition: color 0.3s ease;
+    background-color: transparent;
 }
+
+.gallery-card .text-container p:hover {
+   color: #DE4F3E
+}
+
 
 .filter-but {
     color: white;
@@ -239,23 +250,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     margin-top: 5px; /* Removes space above the h3 */
     margin-bottom: 10px; /* Adjusts space between the title and the paragraph */
 }
-.more-info {
-    position: fixed;
-    bottom: 5px;
-}
-.text-container p.more-info {
-    position: absolute; /* Absolutely positions within the relative container */
-    bottom: 10px; /* Positions 10px from the bottom */
-    left: 15px; /* Positions 15px from the left */
-    color: #555; /* Sets text color */
-    visibility: visible; /* Ensures it's always visible */
-    opacity: 1; /* Fully opaque */
-    font-size: 12px; /* Smaller font size for consistency */
-    transition: color 0.3s ease; /* Smooth color transition on hover */
-}
-.text-container p.more-info:hover {
-    color: #DE4F3E; /* Changes color on hover */
-}
+
+
 
 /* Pagination styles */
 .paginationgswz {
