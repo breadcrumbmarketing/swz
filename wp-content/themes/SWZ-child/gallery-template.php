@@ -234,7 +234,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     }
 
     .gallery-card {
-        height: 100%; /* Allow the card height to adjust based on content */
+        height: 600px; /* Allow the card height to adjust based on content */
         width: 100%; /* Ensure the card takes up the full width */
     }
 
