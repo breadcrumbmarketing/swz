@@ -83,8 +83,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     max-width: 1200px;
     margin: 0 auto;
     text-align: center;
-    background-color: rgba(245, 245, 245, 0); /* Light background for the gallery */
-    padding-bottom: 20px;
+    background-color: rgba(192, 17, 17, 0); /* Light background for the gallery */
+    padding-bottom: 80px;
 }
 
 .filter-bar {
