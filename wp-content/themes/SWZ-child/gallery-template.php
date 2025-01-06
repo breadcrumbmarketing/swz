@@ -326,7 +326,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 
 
-                <h2 class="testbericht" style="font-size: 1em !important;">Testbericht: <?php echo esc_html(get_post_meta(get_the_ID(), 'car_brand', true)); ?></h2>
+                <h2 class="testbericht"><span style="font-size: 1em !important;">Testbericht:</span> <?php echo esc_html(get_post_meta(get_the_ID(), 'car_brand', true)); ?></h2>
                 <div class="text-container">
     
     <h3><?php the_title(); ?></h3> <!-- Title of the car -->
