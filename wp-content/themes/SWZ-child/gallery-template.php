@@ -131,7 +131,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* Top Section for Image */
 .gallery-card .image-container {
-    height: 40%; /* Adjusted to 60% of the card's height */
+    height: 45%; /* Adjusted to 60% of the card's height */
     background-size: cover;
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Prevent image repetition */
@@ -157,7 +157,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* Bottom Section for Text */
 .gallery-card .text-container {
-    height: 60%; /* Adjusted to 40% of the card's height */
+    height: 35%; /* Adjusted to 40% of the card's height */
     padding: 10px 15px; /* Consistent padding */
     text-align: left; /* Align text to the left */
     font-size: 14px; /* Smaller font size */
@@ -168,7 +168,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 .gallery-card .text-container h3 {
-    font-size: 14px;
+    font-size: 16px;
+    color: black;
     font-weight: 600;
     line-height: 1.4;
     margin: 0;
@@ -218,8 +219,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     }
 }
 .testbericht {
-    font-size: 20px; /* Smaller font size */
-    color: #666; /* Dark grey color */
+    font-size: 2em; /* Smaller font size */
+    color: black; /* Dark grey color */
     font-style: default; /* Italic font style */
     margin-bottom: 5px; /* Extra space below the text */
     text-align: left;
@@ -230,12 +231,12 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 .text-container h2.testbericht {
     margin-bottom: 0; /* Reduces the space between the 'Testbericht' and the title */
-    font-size: 20px; /* Adjust the font size if needed */
+    font-size: 2em; /* Adjust the font size if needed */
     font-weight: bold;
 }
 
 .text-container h3 {
-    font-size: 16px;
+    font-size: 1em;
     margin-top: 5px; /* Removes space above the h3 */
     margin-bottom: 10px; /* Adjusts space between the title and the paragraph */
 }
