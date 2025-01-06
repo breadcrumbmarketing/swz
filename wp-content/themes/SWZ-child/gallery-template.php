@@ -219,9 +219,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     }
 }
 .testbericht {
-    font-size: 1,3em !important; /* Smaller font size */
+    font-size: 20px; /* Smaller font size */
     color: black; /* Dark grey color */
-    font-style: default; /* Italic font style */
     margin-bottom: 5px; /* Extra space below the text */
     text-align: left;
     margin-left: 15px;
@@ -231,7 +230,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 .text-container h2.testbericht {
     margin-bottom: 0; /* Reduces the space between the 'Testbericht' and the title */
-    font-size: 1,3em !important; /* Adjust the font size if needed */
+    font-size: 20px; /* Adjust the font size if needed */
     font-weight: bold;
 }
 
