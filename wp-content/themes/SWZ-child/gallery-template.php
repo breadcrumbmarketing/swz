@@ -120,7 +120,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     overflow: hidden;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 500px; /* Fixed height for consistency */
+    height: 300px; /* Fixed height for consistency */
     width: 280px; /* Fixed width */
 }
 
@@ -131,10 +131,10 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* Top Section for Image */
 .gallery-card .image-container {
-    flex: 2; /* 2/3 of the card height */
+    height: 35vh; /* Updated to use 35% of the viewport height */
     background-size: cover;
-    background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Prevent image repetition */
+    background-position: center;
+    background-repeat: no-repeat;
     background-color: #fff;
     display: flex;
     justify-content: center;
@@ -151,13 +151,13 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* Bottom Section for Text */
 .gallery-card .text-container {
-    flex: 1; /* 1/3 of the card height */
+    height: 65vh; /* Updated to use 65% of the viewport height to make the total 100% */
     position: relative;
-    padding: 10px 15px; /* Consistent padding */
-    text-align: left; /* Align text to the left */
-    font-size: 14px; /* Smaller font size */
+    padding: 10px 15px;
+    text-align: left;
+    font-size: 14px;
     color: #555;
-    overflow: hidden; /* Ensure consistent height */
+    overflow: auto; /* Allows scrolling if the text overflows */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
