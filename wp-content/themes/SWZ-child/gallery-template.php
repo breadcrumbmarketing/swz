@@ -83,7 +83,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     max-width: 1200px;
     margin: 0 auto;
     text-align: center;
-    background-color:rgba(245, 245, 245, 0); /* Light background for the gallery */
+    background-color: rgba(245, 245, 245, 0); /* Light background for the gallery */
 }
 
 .filter-bar {
@@ -106,7 +106,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjusts to fit the container but not exceeding 1fr */
+    grid-template-columns: repeat(3, 1fr); /* Three columns layout */
     gap: 10px; /* Minimal gap between cards */
     justify-content: center; /* Centers cards in the grid when fewer items */
 }
@@ -120,8 +120,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     overflow: hidden;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 30vh; /* Fixed height for consistency */
-    width: 280px; /* Fixed width */
+    height: 450px; /* Adjusted fixed height for consistency */
+    width: 100%; /* Adjust width as per grid column width */
 }
 
 .gallery-card:hover {
@@ -131,10 +131,10 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* Top Section for Image */
 .gallery-card .image-container {
-    height: 35vh; /* Updated to use 35% of the viewport height */
+    height: 40%; /* Adjusted to 60% of the card's height */
     background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent image repetition */
     background-color: #fff;
     display: flex;
     justify-content: center;
@@ -151,13 +151,11 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* Bottom Section for Text */
 .gallery-card .text-container {
-    height: 65vh; /* Updated to use 65% of the viewport height to make the total 100% */
-    position: relative;
-    padding: 10px 15px;
-    text-align: left;
-    font-size: 14px;
+    height: 60%; /* Adjusted to 40% of the card's height */
+    padding: 10px 15px; /* Consistent padding */
+    text-align: left; /* Align text to the left */
+    font-size: 14px; /* Smaller font size */
     color: #555;
-    overflow: auto; /* Allows scrolling if the text overflows */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -178,11 +176,11 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 .gallery-card .text-container p {
     font-size: 12px;
     color: #777;
-    margin: 0;
     position: absolute;
     bottom: 10px;
     left: 15px;
 }
+
 .filter-but {
     color: white;
 }
@@ -213,41 +211,45 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 /* Pagination styles */
-.pagination-container {
-    display: flex;
-    justify-content: center; /* Centers the pagination links horizontally */
-    align-items: center; /* Aligns items vertically in the center */
-    padding: 20px 0; /* Adds space above and below the pagination */
-    width: 100%; /* Ensures the container spans the full width of its parent */
-}
-
 .paginationgswz {
     display: flex;
-    list-style: none; /* Removes default list styling */
-    padding: 0;
+    justify-content: center; /* Center the pagination horizontally */
+    padding: 20px 0; /* Padding around the pagination for spacing */
 }
 
-.paginationgswz .page-number,
-.paginationgswz .page-navigation-button {
-    margin: 0 5px; /* Spacing between pagination items */
-    padding: 8px 12px; /* Padding inside pagination items for better touch */
-    border: 1px solid #ccc; /* Adds a subtle border around the pagination items */
-    text-decoration: none; /* Removes underline from links */
-    color: inherit; /* Inherits the text color from parent elements */
-    background-color: #f5f5f5; /* Light grey background for pagination items */
+.page-number {
+    margin: 0 5px;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f5f5f5;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.paginationgswz .page-number.active,
-.paginationgswz .page-navigation-button:hover {
-    background-color: #007bff; /* Changes background to a blue on active/hover */
-    color: white; /* White text color on active/hover */
-    border-color: #007bff; /* Blue border color on active/hover */
+.page-number.active, .page-number:hover {
+    background-color: #007bff;
+    color: white;
 }
 
-.paginationgswz .page-navigation-button.disabled {
-    opacity: 0.5; /* Dim the button when disabled */
-    cursor: default; /* Show the default cursor on disabled */
+.page-navigation-button {
+    padding: 8px 16px;
+    margin: 0 5px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #333;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.page-navigation-button:hover {
+    background-color: #e2e6ea;
+}
+
+.page-navigation-button.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 </style>
@@ -284,7 +286,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
                 </div>
             </a>
         <?php endwhile; ?>
-        <!--  Pagination -->
+        <!-- New Div for Pagination -->
     <div class="pagination-container">
         <div class="paginationgswz">
             <?php
