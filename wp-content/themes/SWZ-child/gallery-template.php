@@ -226,24 +226,47 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 
 /* Responsive Adjustments */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
     .gallery-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Smaller cards for mobile */
+        grid-template-columns: 1fr; /* Display only one card per row on mobile */
+        gap: 20px; /* Add some spacing between cards */
+    }
+
+    .gallery-card {
+        height: auto; /* Allow the card height to adjust based on content */
+        width: 100%; /* Ensure the card takes up the full width */
     }
 
     .gallery-card .text-container {
-        padding: 8px 10px;
+        padding: 10px 15px; /* Adjust padding for better spacing */
     }
 
     .gallery-card .text-container h3 {
-        font-size: 12px;
+        font-size: 14px; /* Slightly larger font size for better readability */
     }
 
     .gallery-card .text-container p {
-        font-size: 10px;
-        bottom: 5px;
+        font-size: 12px; /* Adjust font size for mobile */
+        bottom: 10px; /* Position the "Mehr lesen" text */
+    }
+
+    .testbericht {
+        font-size: 1.2em; /* Adjust font size for mobile */
+    }
+
+    .filter-bar form {
+        flex-direction: column; /* Stack filter dropdowns vertically on mobile */
+        gap: 10px; /* Add spacing between dropdowns */
+    }
+
+    .filter-bar select,
+    .filter-bar button {
+        width: 100%; /* Make dropdowns and buttons full width */
+        font-size: 14px; /* Adjust font size for mobile */
     }
 }
+
 .testbericht {
     font-size: 1.5em;  
     color: black;  
