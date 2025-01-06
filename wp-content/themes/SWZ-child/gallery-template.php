@@ -79,7 +79,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* General Styling for Gallery */
 .gallery-container {
-    padding: 20px;
+    padding: 40px;
     max-width: 1200px;
     margin: 0 auto;
     text-align: center;
