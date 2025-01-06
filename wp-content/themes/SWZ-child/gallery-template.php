@@ -231,7 +231,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 .text-container h2.testbericht {
     margin-bottom: 0; /* Reduces the space between the 'Testbericht' and the title */
-    font-size: 2em; /* Adjust the font size if needed */
+    font-size: 1,5em; /* Adjust the font size if needed */
     font-weight: bold;
 }
 
