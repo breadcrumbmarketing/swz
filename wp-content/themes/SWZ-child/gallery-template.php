@@ -219,7 +219,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     }
 }
 .testbericht {
-    font-size: 2em; /* Smaller font size */
+    font-size: 1,5em; /* Smaller font size */
     color: black; /* Dark grey color */
     font-style: default; /* Italic font style */
     margin-bottom: 5px; /* Extra space below the text */
