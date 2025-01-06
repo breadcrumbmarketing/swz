@@ -149,6 +149,12 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     object-fit: contain;
 }
 
+
+.text-container {
+    padding: 10px 15px;  /* Check if padding is too much */
+    align-items: start;  /* Align items to the start to reduce vertical space usage */
+}
+
 /* Bottom Section for Text */
 .gallery-card .text-container {
     height: 60%; /* Adjusted to 40% of the card's height */
@@ -212,21 +218,25 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     }
 }
 .testbericht {
-    font-size: 12px; /* Smaller font size */
+    font-size: 20px; /* Smaller font size */
     color: #666; /* Dark grey color */
-    font-style: italic; /* Italic font style */
+    font-style: default; /* Italic font style */
     margin-bottom: 5px; /* Extra space below the text */
+    text-align: left;
+    margin-left: 15px;
    
 }
 
 
 .text-container h2.testbericht {
-    margin-bottom: 5px; /* Reduces the space between the 'Testbericht' and the title */
-    font-size: 16px; /* Adjust the font size if needed */
+    margin-bottom: 0; /* Reduces the space between the 'Testbericht' and the title */
+    font-size: 20px; /* Adjust the font size if needed */
+    font-weight: bold;
 }
 
 .text-container h3 {
-    margin-top: 0; /* Removes space above the h3 */
+    font-size: 16px;
+    margin-top: 5px; /* Removes space above the h3 */
     margin-bottom: 10px; /* Adjusts space between the title and the paragraph */
 }
 
@@ -234,6 +244,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     visibility: visible; /* Makes the 'Mehr lesen' always visible */
     opacity: 1; /* Ensures it's not transparent */
     transition: opacity 0.3s ease; /* Smooth transition for hover effect */
+    margin-top: 5px;
+    color: #555; 
 }
 .text-container p.more-info:hover {
     color: #DE4F3E; /* Changes color on hover */
@@ -313,9 +325,9 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 
 
-
+                <h2 class="testbericht">Testbericht: <?php echo esc_html(get_post_meta(get_the_ID(), 'car_brand', true)); ?></h2> 
                 <div class="text-container">
-    <h2 class="testbericht">Testbericht: <?php echo esc_html(get_post_meta(get_the_ID(), 'car_brand', true)); ?></h2> <!-- Dynamically display car brand -->
+    
     <h3><?php the_title(); ?></h3> <!-- Title of the car -->
     <p class="more-info">Mehr lesen</p> <!-- More info button or link -->
 </div>
