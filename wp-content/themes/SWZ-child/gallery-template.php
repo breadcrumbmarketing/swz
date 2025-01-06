@@ -157,14 +157,14 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* Bottom Section for Text */
 .gallery-card .text-container {
-    height: 35%; /* Adjusted to 40% of the card's height */
+    position: relative; /* Ensures it can properly contain absolutely positioned elements */
+    flex: 1; /* Adjusts based on available space */
     padding: 10px 15px; /* Consistent padding */
-    text-align: left; /* Align text to the left */
-    font-size: 14px; /* Smaller font size */
-    color: #555;
+    text-align: left; /* Aligns text to the left */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-between; /* Distributes space between items */
+    height: 35%; /* Adjusted height proportion */
 }
 
 .gallery-card .text-container h3 {
@@ -239,13 +239,19 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     margin-top: 5px; /* Removes space above the h3 */
     margin-bottom: 10px; /* Adjusts space between the title and the paragraph */
 }
-
+.more-info {
+    position: fixed;
+    bottom: 5px;
+}
 .text-container p.more-info {
-    visibility: visible; /* Makes the 'Mehr lesen' always visible */
-    opacity: 1; /* Ensures it's not transparent */
-    transition: opacity 0.3s ease; /* Smooth transition for hover effect */
-    margin-top: 5px;
-    color: #555; 
+    position: absolute; /* Absolutely positions within the relative container */
+    bottom: 10px; /* Positions 10px from the bottom */
+    left: 15px; /* Positions 15px from the left */
+    color: #555; /* Sets text color */
+    visibility: visible; /* Ensures it's always visible */
+    opacity: 1; /* Fully opaque */
+    font-size: 12px; /* Smaller font size for consistency */
+    transition: color 0.3s ease; /* Smooth color transition on hover */
 }
 .text-container p.more-info:hover {
     color: #DE4F3E; /* Changes color on hover */
