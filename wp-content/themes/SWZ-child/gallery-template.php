@@ -87,24 +87,6 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     padding-bottom: 80px;
 }
 
-.filter-bar {
-    margin-bottom: 20px;
-}
-
-.filter-bar form {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.filter-bar select,
-.filter-bar button {
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-}
-
 .gallery-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* Three columns layout */
@@ -202,6 +184,27 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 
+
+
+
+.filter-bar {
+    margin-bottom: 20px;
+}
+
+.filter-bar form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.filter-bar select,
+.filter-bar button {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
 .filter-but {
     color: white;
 }
@@ -211,6 +214,13 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   color: white;
 }
+
+
+
+
+
+
+
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -328,27 +338,28 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 </style>
 <div class="gallery-container">
-    <div class="filter-bar">
-        <form method="GET">
-            <select name="brand" onchange="this.form.submit()">
-                <option value="">Marke auswählen</option>
-                <?php foreach ($brands as $brand): ?>
-                    <option value="<?php echo esc_attr($brand); ?>" <?php selected($selected_brand, $brand); ?>>
-                        <?php echo esc_html($brand); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <select name="model" onchange="this.form.submit()">
-                <option value="">Modell auswählen</option>
-                <?php foreach ($models as $model): ?>
-                    <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
-                        <?php echo esc_html($model); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <button type="submit" class="filter-but">Filtern</button>
-        </form>
-    </div>
+<div class="filter-bar">
+    <form method="GET" id="filter-form">
+        <select name="brand" onchange="this.form.submit()">
+            <option value="">Marke auswählen</option>
+            <?php foreach ($brands as $brand): ?>
+                <option value="<?php echo esc_attr($brand); ?>" <?php selected($selected_brand, $brand); ?>>
+                    <?php echo esc_html($brand); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <select name="model" onchange="this.form.submit()">
+            <option value="">Modell auswählen</option>
+            <?php foreach ($models as $model): ?>
+                <option value="<?php echo esc_attr($model); ?>" <?php selected($selected_model, $model); ?>>
+                    <?php echo esc_html($model); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <!-- Clear Filter Button -->
+        <button type="button" class="clear-filter-button" onclick="clearFilters()">Filter entfernen</button>
+    </form>
+</div>
     <div class="gallery-grid">
         <?php if ($query->have_posts()) : while ($query->have_posts()) : $query->the_post(); ?>
             <a href="<?php the_permalink(); ?>" class="gallery-card">
@@ -390,5 +401,12 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
         <?php endif; ?>
     </div>
 </div>
-
+<script>
+    function clearFilters() {
+        // Reset the form to default values
+        document.getElementById('filter-form').reset();
+        // Submit the form to show all cases
+        document.getElementById('filter-form').submit();
+    }
+</script>
 <?php get_footer(); ?>
