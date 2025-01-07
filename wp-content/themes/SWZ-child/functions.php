@@ -275,6 +275,22 @@ add_action('wp_enqueue_scripts', 'enqueue_slick_slider');
 function recently_viewed_cars_shortcode() {
     ob_start();
     ?>
+    <style>
+      .more-link {
+    color:  black;
+    background-color:rgb(206, 205, 205); /* Light gray background */
+    border-radius: solid 3px; /* Rounded corners */
+    border-color: transparent;
+    text-decoration: none; /* Remove underline */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+.more-link:hover {
+    color:  #DE4F3E; /* White text color on hover */
+    background-color:rgba(222, 78, 62, 0); /* Orange background on hover */
+    text-decoration: none; /* Ensure no underline on hover */
+    border-color:  #DE4F3E;
+}
     <div class="recently-viewed-slider">
         <?php
         $args = array(
