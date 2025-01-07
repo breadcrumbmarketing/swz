@@ -59,7 +59,9 @@ html, body {
 .page-header{
    display: none; 
 }
-
+.ccopyright.show {
+    display: none !important;
+}
 
 
 /* Recently car */
