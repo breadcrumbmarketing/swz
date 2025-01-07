@@ -357,7 +357,7 @@ body.gallery-template-page {
 .paginationgswz .prev:hover,
 .paginationgswz .next:hover {
     background-color: #DE4F3E !important; /* Highlight on hover */
-    color: #fff;
+    color: #fff !important;
 }
 
 /* Disabled Buttons (if applicable) */
