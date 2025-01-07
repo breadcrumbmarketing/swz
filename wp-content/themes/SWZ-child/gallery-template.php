@@ -219,9 +219,9 @@ body.gallery-template-page {
 }
 .filter-but:hover {
   /* Hover state changes */
-  background-color: #DE4F3E;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  color: white;
+  background-color: #DE4F3E !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)!important;
+  color: white!important;
 }
 .clear-filter-button 
 {
