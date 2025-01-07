@@ -223,7 +223,7 @@ body.gallery-template-page {
 }
 .clear-filter-button 
 {
-    color: white;
+    color: black;
 }
 
 
