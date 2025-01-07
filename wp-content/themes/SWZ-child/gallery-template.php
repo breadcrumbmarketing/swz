@@ -81,7 +81,9 @@ body.gallery-template-page {
     
       background: linear-gradient(180deg, #ffffff, rgb(238, 247, 252)) !important;
 }
-
+.copyright.show {
+    display: none !important ;
+}
 /* General Styling for Gallery */
 .gallery-container {
     padding: 35px;
