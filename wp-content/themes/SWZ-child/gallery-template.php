@@ -190,7 +190,27 @@ body.gallery-template-page {
 
 .gallery-card .text-container p:hover {
    color: #DE4F3E !important;
+   
+   
 }
+
+
+
+
+
+.gallery-card {
+    text-decoration: none; /* Ensure no underline by default */
+}
+
+.gallery-card:hover {
+    text-decoration: none; /* Ensure no underline on hover */
+}
+
+
+
+
+
+
 
 
 
@@ -204,7 +224,9 @@ body.gallery-template-page {
     display: flex;
     justify-content: center;
     gap: 10px;
+    
 }
+
 
 .filter-bar select,
 .filter-bar button {
@@ -212,10 +234,12 @@ body.gallery-template-page {
     font-size: 16px;
     border-radius: 5px;
     border: 1px solid #ddd;
+   
 }
 
 .filter-but {
     color: white;
+    
 }
 .clear-filter-button:hover {
   /* Hover state changes */
@@ -273,6 +297,7 @@ body.gallery-template-page {
     .filter-bar button {
         width: 100%; /* Make dropdowns and buttons full width */
         font-size: 14px; /* Adjust font size for mobile */
+      
     }
 }
 
