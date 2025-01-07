@@ -343,3 +343,27 @@ jQuery(document).ready(function($) {
     return ob_get_clean();
 }
 add_shortcode('recently_viewed_cars', 'recently_viewed_cars_shortcode');
+
+
+
+////// for custome body of templates
+
+function add_body_class_to_elementor() {
+    // Check if Elementor is active
+    if (defined('ELEMENTOR_VERSION')) {
+        // Add body_class() to the body tag
+        add_filter('body_class', function($classes) {
+            return $classes;
+        });
+    }
+}
+add_action('init', 'add_body_class_to_elementor');
+
+function custom_body_class_for_gallery_template($classes) {
+    // Check if the current page is using the 'gallery-template.php' template
+    if (is_page_template('gallery-template.php')) {
+        $classes[] = 'gallery-template-page'; // Add a custom class
+    }
+    return $classes;
+}
+add_filter('body_class', 'custom_body_class_for_gallery_template');

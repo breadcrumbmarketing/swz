@@ -76,6 +76,11 @@ asort($brands); // Sort brands alphabetically
 body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p {
     font-family: 'Poppins', sans-serif;
 }
+/* Override background for the Gallery Template page */
+body.gallery-template-page {
+    
+      background: linear-gradient(180deg, #ffffff, rgb(238, 247, 252)) !important;
+}
 
 /* General Styling for Gallery */
 .gallery-container {
