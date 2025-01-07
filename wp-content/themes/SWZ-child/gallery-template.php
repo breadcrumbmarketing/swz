@@ -189,7 +189,7 @@ body.gallery-template-page {
 }
 
 .gallery-card .text-container p:hover {
-   color: #DE4F3E
+   color: #DE4F3E !important;
 }
 
 
