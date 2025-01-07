@@ -291,6 +291,7 @@ function recently_viewed_cars_shortcode() {
     text-decoration: none; /* Ensure no underline on hover */
     border-color:  #DE4F3E;
 }
+</style>
     <div class="recently-viewed-slider">
         <?php
         $args = array(
