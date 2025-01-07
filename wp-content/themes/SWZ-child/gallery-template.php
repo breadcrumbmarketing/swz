@@ -217,7 +217,7 @@ body.gallery-template-page {
 .filter-but {
     color: white;
 }
-.filter-but:hover {
+.clear-filter-button:hover {
   /* Hover state changes */
   background-color: #DE4F3E !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)!important;
@@ -335,7 +335,7 @@ body.gallery-template-page {
 
 /* Current Page */
 .paginationgswz span.current {
-    background-color: #0073e6; /* Highlight color for current page */
+    background-color: #DE4F3E !important; /* Highlight color for current page */
     color: #fff;
     border-radius: 4px;
 }
@@ -343,7 +343,7 @@ body.gallery-template-page {
 /* Hover Effect */
 .paginationgswz a:hover {
     background-color: #f0f0f0; /* Light background on hover */
-    color: #0073e6; /* Change text color on hover */
+    color: #DE4F3E !important; /* Change text color on hover */
 }
 
 /* Previous and Next Buttons */
@@ -356,7 +356,7 @@ body.gallery-template-page {
 
 .paginationgswz .prev:hover,
 .paginationgswz .next:hover {
-    background-color: #0073e6; /* Highlight on hover */
+    background-color: #DE4F3E !important; /* Highlight on hover */
     color: #fff;
 }
 
