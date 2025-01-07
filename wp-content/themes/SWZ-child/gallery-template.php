@@ -78,6 +78,8 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 /* Override background for the Gallery Template page */
 body.gallery-template-page {
+    margin: 0;
+    height: 100vh;
     
       background: linear-gradient(180deg, #ffffff, rgb(238, 247, 252)) !important;
 }
