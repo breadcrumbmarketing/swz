@@ -144,6 +144,7 @@ function check_api_key_permission($request) {
     return new WP_REST_Response('Unauthorized', 401);
 }
 // -------------------------------- Dynamic Page Creation -------------------------------- //
+
 if (!function_exists('upload_image_to_media_library')) {
     function upload_image_to_media_library($image_url) {
         if (!function_exists('media_handle_sideload')) {
@@ -179,22 +180,6 @@ if (!function_exists('create_html_pages_from_database')) {
     function create_html_pages_from_database() {
         global $wpdb;
 
-        // Check if the import has already been completed
-        if (get_option('html_pages_import_complete')) {
-            return;
-        }
-
-        // Get or create the parent page 'Fahrzeug Daten'
-        $parent_page = get_page_by_title('Fahrzeug Daten');
-        if (!$parent_page) {
-            $parent_page_id = wp_insert_post(array(
-                'post_title' => 'Fahrzeug Daten',
-                'post_type' => 'page',
-                'post_status' => 'publish',
-            ));
-            $parent_page = get_page($parent_page_id);
-        }
-
         // Fetch all rows from the wp_html_pages table
         $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages");
 
@@ -213,7 +198,6 @@ if (!function_exists('create_html_pages_from_database')) {
                     'post_content' => $post_content,
                     'post_status'  => 'publish',
                     'post_type'    => 'page',
-                    'post_parent'  => $parent_page->ID, // Set the parent page
                 ));
 
                 if (!is_wp_error($page_id)) {
@@ -238,9 +222,6 @@ if (!function_exists('create_html_pages_from_database')) {
                 }
             }
         }
-
-        // Mark the import as complete
-        update_option('html_pages_import_complete', true);
     }
 }
 
