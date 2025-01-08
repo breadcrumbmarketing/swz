@@ -212,8 +212,8 @@ if (!function_exists('create_html_pages_from_database')) {
             if (!$existing_page) {
                 $post_title = !empty($row->title) ? $row->title : 'Untitled Page';
                 $post_content = !empty($row->content) ? $row->content : 'No content available.';
-                $post_slug = !empty($row->slug) ? $row->slug : uniqid('page-');
-
+                $post_slug = !empty($row->slug) ? $row->slug : 'page-' . $row->id;
+                
                 $page_id = wp_insert_post(array(
                     'post_title' => $post_title,
                     'post_name' => $post_slug,
