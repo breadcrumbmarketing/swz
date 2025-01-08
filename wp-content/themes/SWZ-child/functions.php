@@ -187,13 +187,26 @@ if (!function_exists('create_html_pages_from_database')) {
         $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages");
 
         foreach ($rows as $row) {
-            // Check if a WordPress page already exists with the slug
-            $existing_page = get_page_by_path($row->slug, OBJECT, 'page');
+            // Sanitize the slug
+            if (!empty($row->slug)) {
+                $post_slug = sanitize_title($row->slug);
+            } else {
+                // Fallback to title if slug is empty
+                $post_slug = sanitize_title($row->title);
+            }
+
+            // Check if a WordPress page already exists with the slug under the parent page
+            $args = array(
+                'post_type'  => 'page',
+                'name'       => $post_slug,
+                'post_parent' => $parent_page_id,
+            );
+            $query = new WP_Query($args);
+            $existing_page = $query->have_posts() ? $query->posts[0] : null;
 
             if (!$existing_page) {
                 $post_title = !empty($row->title) ? $row->title : 'Untitled Page';
                 $post_content = !empty($row->content) ? $row->content : 'No content available.';
-                $post_slug = !empty($row->slug) ? $row->slug : uniqid('page-');
 
                 $page_id = wp_insert_post(array(
                     'post_title'   => $post_title,
@@ -201,7 +214,7 @@ if (!function_exists('create_html_pages_from_database')) {
                     'post_content' => $post_content,
                     'post_status'  => 'publish',
                     'post_type'    => 'page',
-                    'post_parent'  => $parent_page_id, // Assign parent page ID
+                    'post_parent'  => $parent_page_id,
                 ));
 
                 if (!is_wp_error($page_id)) {
