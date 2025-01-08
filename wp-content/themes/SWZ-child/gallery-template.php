@@ -451,8 +451,8 @@ body.gallery-template-page {
                 echo paginate_links(array(
                     'total' => $query->max_num_pages,
                     'current' => $current_page,
-                    'prev_text' => __('« Prev'),
-                    'next_text' => __('Next »'),
+                    'prev_text' => __('« Zurück'),
+                    'next_text' => __('Weiter »'),
                 ));
                 ?>
             </div>
