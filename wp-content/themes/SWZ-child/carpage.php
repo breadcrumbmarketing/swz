@@ -50,6 +50,7 @@ html, body {
     box-sizing: border-box !important;
     margin-bottom: 0;
     padding-bottom: 0;
+    padding-top: -10px !important;
 }
 
 /* Ensure header and footer have no margin or padding */
