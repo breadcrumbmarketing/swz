@@ -42,7 +42,6 @@ html, body {
 /* Ensure the full-width-content fills the entire viewport */
 .full-width-content {
     width: 100% !important;
-    height: 100% !important;
     overflow-x: hidden !important; /* Hide horizontal scrolling */
     overflow-y: auto !important; /* Allow vertical scrolling */
     background: linear-gradient(180deg, #ffffff, rgb(238, 247, 252)) !important; /* Minimal white gradient */
@@ -204,7 +203,11 @@ header, footer {
     border: 2px solid#DE4F3E; /* Solid border with orange color on hover */
 }
 
+footer {
+            position: relative;
+        }
 
+        
     </style>
 </head>
 <body>
