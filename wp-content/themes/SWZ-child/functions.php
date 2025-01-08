@@ -145,37 +145,6 @@ function check_api_key_permission($request) {
 }
 // -------------------------------- Dynamic Page Creation -------------------------------- //
 
-if (!function_exists('upload_image_to_media_library')) {
-    function upload_image_to_media_library($image_url) {
-        if (!function_exists('media_handle_sideload')) {
-            require_once(ABSPATH . 'wp-admin/includes/file.php');
-            require_once(ABSPATH . 'wp-admin/includes/media.php');
-            require_once(ABSPATH . 'wp-admin/includes/image.php');
-        }
-
-        $temp_file = download_url($image_url);
-        if (is_wp_error($temp_file)) {
-            return false;
-        }
-
-        $file = array(
-            'name'     => basename($image_url),
-            'type'     => mime_content_type($temp_file),
-            'tmp_name' => $temp_file,
-            'error'    => 0,
-            'size'     => filesize($temp_file),
-        );
-
-        $attachment_id = media_handle_sideload($file, 0);
-        @unlink($temp_file);
-
-        if (is_wp_error($attachment_id)) {
-            return false;
-        }
-
-        return $attachment_id;
-    }
-}
 if (!function_exists('create_html_pages_from_database')) {
     function create_html_pages_from_database() {
         global $wpdb;
@@ -192,12 +161,18 @@ if (!function_exists('create_html_pages_from_database')) {
                 $post_content = !empty($row->content) ? $row->content : 'No content available.';
                 $post_slug = !empty($row->slug) ? $row->slug : uniqid('page-');
 
+                // Get the parent page ID for "Fahrzeug Daten"
+                $parent_page = get_page_by_path('fahrzeug-daten', OBJECT, 'page');
+                $parent_id = $parent_page ? $parent_page->ID : 0;
+
+                // Insert the new page
                 $page_id = wp_insert_post(array(
                     'post_title'   => $post_title,
                     'post_name'    => $post_slug,
                     'post_content' => $post_content,
                     'post_status'  => 'publish',
                     'post_type'    => 'page',
+                    'post_parent'  => $parent_id, // Set the parent page
                 ));
 
                 if (!is_wp_error($page_id)) {
@@ -219,14 +194,30 @@ if (!function_exists('create_html_pages_from_database')) {
 
                     // Assign the "carpage.php" template to the new page
                     update_post_meta($page_id, '_wp_page_template', 'carpage.php');
+
+                    // Flash cache mechanism to notify user
+                    set_transient('newly_created_page', $page_id, 60); // Cache the new page ID for 60 seconds
                 }
             }
         }
     }
 }
 
+// Flash notification function for newly created page
+function display_new_page_flash() {
+    if ($new_page_id = get_transient('newly_created_page')) {
+        $new_page_url = get_permalink($new_page_id);
+        echo "<div class='notice notice-success is-dismissible'>";
+        echo "<p>Die Seite wurde erfolgreich erstellt. <a href='{$new_page_url}' target='_blank'>Hier ansehen</a>.</p>";
+        echo "</div>";
+        delete_transient('newly_created_page'); // Clear the transient after display
+    }
+}
+add_action('admin_notices', 'display_new_page_flash');
+
 // Immediate execution to process new and unprocessed rows
 add_action('init', 'create_html_pages_from_database');
+
 
 // -------------------------------- Admin Dashboard Button -------------------------------- //
 
