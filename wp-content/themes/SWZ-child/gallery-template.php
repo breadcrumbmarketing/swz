@@ -81,7 +81,7 @@ body.gallery-template-page {
     margin: 0;
     height: 100vh;
     
-      background: linear-gradient(180deg, #ffffff, rgb(238, 247, 252)) !important;
+      /* background: linear-gradient(180deg, #ffffff, rgb(238, 247, 252)) !important;*/
 }
 .copyright.show {
     display: none !important ;
