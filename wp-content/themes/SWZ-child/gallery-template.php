@@ -249,7 +249,7 @@ body.gallery-template-page {
 }
 .clear-filter-button 
 {
-    color: black;
+    color: white;
 }
 
 
@@ -335,7 +335,7 @@ body.gallery-template-page {
     position: fixed;
     bottom: 0;
     left: 0;
-    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+    background-color: rgba(37, 37, 37, 0.9); /* Semi-transparent background */
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     z-index: 1000; /* Ensure it stays above other content */
 }
@@ -356,12 +356,14 @@ body.gallery-template-page {
     font-weight: 500;
     border-radius: 4px;
     transition: all 0.3s ease;
+    color: white;
 }
 
 /* Current Page */
 .paginationgswz span.current {
-    background-color: #DE4F3E !important; /* Highlight color for current page */
-    color: #fff;
+  /*  background-color: #DE4F3E!important; /* Highlight color for current page */
+  border: solid 2px  #DE4F3E;
+    color: white;
     border-radius: 4px;
 }
 
@@ -377,6 +379,7 @@ body.gallery-template-page {
     font-weight: 600;
     background-color: #f0f0f0; /* Light background for prev/next buttons */
     border-radius: 4px;
+    color:  #DE4F3E;
 }
 
 .paginationgswz .prev:hover,
