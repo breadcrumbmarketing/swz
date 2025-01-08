@@ -48,7 +48,7 @@ function swz_add_seo_meta_tags() {
     <meta property="og:description" content="<?php echo get_the_excerpt() ? get_the_excerpt() : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sed urna in justo euismod condimentum.'; ?>">
     <meta property="og:type" content="website">
     <meta property="og:url" content="<?php echo get_permalink(); ?>">
-    <meta property="og:image" content="<?php echo get_stylesheet_directory_uri(); ?>/path/to/your/default-og-image.jpg">
+    <meta property="og:image" content="<?php echo get_stylesheet_directory_uri(); ?>/screenshot.png">
     <meta property="og:site_name" content="Sportwagen Zentrum">
     <meta property="og:locale" content="de_DE">
 
@@ -275,23 +275,7 @@ add_action('wp_enqueue_scripts', 'enqueue_slick_slider');
 function recently_viewed_cars_shortcode() {
     ob_start();
     ?>
-    <style>
-      .more-link {
-    color:  black;
-    background-color:rgb(206, 205, 205); /* Light gray background */
-    border-radius: solid 3px; /* Rounded corners */
-    border-color: transparent;
-    text-decoration: none; /* Remove underline */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
-}
 
-.more-link:hover {
-    color:  #DE4F3E; /* White text color on hover */
-    background-color:rgba(222, 78, 62, 0); /* Orange background on hover */
-    text-decoration: none; /* Ensure no underline on hover */
-    border-color:  #DE4F3E;
-}
-</style>
     <div class="recently-viewed-slider">
         <?php
         $args = array(
