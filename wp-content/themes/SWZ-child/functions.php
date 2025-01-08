@@ -144,6 +144,7 @@ function check_api_key_permission($request) {
     return new WP_REST_Response('Unauthorized', 401);
 }
 // -------------------------------- Dynamic Page Creation -------------------------------- //
+
 if (!function_exists('upload_image_to_media_library')) {
     function upload_image_to_media_library($image_url) {
         if (!function_exists('media_handle_sideload')) {
@@ -175,38 +176,21 @@ if (!function_exists('upload_image_to_media_library')) {
         return $attachment_id;
     }
 }
-
 if (!function_exists('create_html_pages_from_database')) {
     function create_html_pages_from_database() {
         global $wpdb;
-
-        // Create or retrieve the parent page ID
-        $parent_page_id = create_parent_page();
 
         // Fetch all rows from the wp_html_pages table
         $rows = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}html_pages");
 
         foreach ($rows as $row) {
-            // Sanitize the slug
-            if (!empty($row->slug)) {
-                $post_slug = sanitize_title($row->slug);
-            } else {
-                // Fallback to title if slug is empty
-                $post_slug = sanitize_title($row->title);
-            }
-
-            // Check if a WordPress page already exists with the slug under the parent page
-            $args = array(
-                'post_type'  => 'page',
-                'name'       => $post_slug,
-                'post_parent' => $parent_page_id,
-            );
-            $query = new WP_Query($args);
-            $existing_page = $query->have_posts() ? $query->posts[0] : null;
+            // Check if a WordPress page already exists with the slug
+            $existing_page = get_page_by_path($row->slug, OBJECT, 'page');
 
             if (!$existing_page) {
                 $post_title = !empty($row->title) ? $row->title : 'Untitled Page';
                 $post_content = !empty($row->content) ? $row->content : 'No content available.';
+                $post_slug = !empty($row->slug) ? $row->slug : uniqid('page-');
 
                 $page_id = wp_insert_post(array(
                     'post_title'   => $post_title,
@@ -214,7 +198,6 @@ if (!function_exists('create_html_pages_from_database')) {
                     'post_content' => $post_content,
                     'post_status'  => 'publish',
                     'post_type'    => 'page',
-                    'post_parent'  => $parent_page_id,
                 ));
 
                 if (!is_wp_error($page_id)) {
@@ -242,30 +225,9 @@ if (!function_exists('create_html_pages_from_database')) {
     }
 }
 
-// Function to create or retrieve the parent page
-if (!function_exists('create_parent_page')) {
-    function create_parent_page() {
-        $parent_page_title = 'Fahrzeug Daten'; // Set the parent page title
-        $parent_page = get_page_by_title($parent_page_title);
-
-        if (!$parent_page) {
-            $parent_page_id = wp_insert_post(array(
-                'post_title'   => $parent_page_title,
-                'post_name'    => sanitize_title($parent_page_title),
-                'post_content' => 'This is the parent page for car data.',
-                'post_status'  => 'publish',
-                'post_type'    => 'page',
-            ));
-        } else {
-            $parent_page_id = $parent_page->ID;
-        }
-
-        return $parent_page_id;
-    }
-}
-
 // Immediate execution to process new and unprocessed rows
 add_action('init', 'create_html_pages_from_database');
+
 // -------------------------------- Admin Dashboard Button -------------------------------- //
 
 function add_create_pages_menu() {
