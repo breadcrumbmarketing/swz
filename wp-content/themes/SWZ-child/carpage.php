@@ -11,12 +11,30 @@ global $wpdb;
 // Get the slug from the current URL
 $current_slug = get_query_var('pagename');
 
+// Set the parent page to "Fahrzeug Daten"
+$parent_page_slug = 'fahrzeug-daten'; // The slug of the parent page
+$parent_page = get_page_by_path($parent_page_slug); // Get the parent page by slug
+
+if ($parent_page) {
+    $parent_page_id = $parent_page->ID;
+
+    // Get the current page
+    global $post;
+
+    if ($post->post_parent != $parent_page_id) {
+        // Update the parent page for the current page
+        wp_update_post([
+            'ID' => $post->ID,
+            'post_parent' => $parent_page_id,
+        ]);
+    }
+}
+
 // Fetch the HTML content from the database using the slug
 $html_content = $wpdb->get_var($wpdb->prepare(
     "SELECT content FROM wp_html_pages WHERE slug = %s AND (status = 'published' OR status = 'draft')",
     $current_slug
 ));
-
 
 // Check if content exists for the given slug
 if (!$html_content) {
@@ -24,7 +42,7 @@ if (!$html_content) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
