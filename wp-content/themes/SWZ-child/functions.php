@@ -179,15 +179,9 @@ if (!function_exists('create_html_pages_from_database')) {
     function create_html_pages_from_database() {
         global $wpdb;
 
-        // Check if the user 'Autohaus' exists, create if not
-        $autohaus_user = get_user_by('login', 'Autohaus');
-        if (!$autohaus_user) {
-            $autohaus_user_id = wp_insert_user(array(
-                'user_login' => 'Autohaus',
-                'display_name' => 'Autohaus',
-                'role' => 'author', // Assign appropriate role
-            ));
-            $autohaus_user = get_user_by('id', $autohaus_user_id);
+        // Check if the import has already been completed
+        if (get_option('html_pages_import_complete')) {
+            return;
         }
 
         // Get or create the parent page 'Fahrzeug Daten'
@@ -195,9 +189,8 @@ if (!function_exists('create_html_pages_from_database')) {
         if (!$parent_page) {
             $parent_page_id = wp_insert_post(array(
                 'post_title' => 'Fahrzeug Daten',
-                'post_name' => 'fahrzeug-daten',
-                'post_status' => 'publish',
                 'post_type' => 'page',
+                'post_status' => 'publish',
             ));
             $parent_page = get_page($parent_page_id);
         }
@@ -212,16 +205,15 @@ if (!function_exists('create_html_pages_from_database')) {
             if (!$existing_page) {
                 $post_title = !empty($row->title) ? $row->title : 'Untitled Page';
                 $post_content = !empty($row->content) ? $row->content : 'No content available.';
-                $post_slug = !empty($row->slug) ? $row->slug : 'page-' . $row->id;
-                
+                $post_slug = !empty($row->slug) ? $row->slug : uniqid('page-');
+
                 $page_id = wp_insert_post(array(
-                    'post_title' => $post_title,
-                    'post_name' => $post_slug,
+                    'post_title'   => $post_title,
+                    'post_name'    => $post_slug,
                     'post_content' => $post_content,
-                    'post_status' => 'publish',
-                    'post_type' => 'page',
-                    'post_author' => $autohaus_user->ID, // Set the author
-                    'post_parent' => $parent_page->ID, // Set the parent page
+                    'post_status'  => 'publish',
+                    'post_type'    => 'page',
+                    'post_parent'  => $parent_page->ID, // Set the parent page
                 ));
 
                 if (!is_wp_error($page_id)) {
@@ -246,6 +238,9 @@ if (!function_exists('create_html_pages_from_database')) {
                 }
             }
         }
+
+        // Mark the import as complete
+        update_option('html_pages_import_complete', true);
     }
 }
 
