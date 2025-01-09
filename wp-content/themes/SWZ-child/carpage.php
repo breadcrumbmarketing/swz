@@ -256,11 +256,9 @@ footer {
 
 .edit-bgcolor {
           
-        font-family: 'Poppins', sans-serif !important;
-        font-weight: 600 !important;
-        text-align: justify !important;
+     
         padding-top: 20px !important;
-        font-size: 32px !important;
+     
        }
 
 .themeBtn-icon-wrapper {
