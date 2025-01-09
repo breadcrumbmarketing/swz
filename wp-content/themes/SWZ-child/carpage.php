@@ -218,8 +218,15 @@ footer {
             position: relative;
         }
 
-        
-    </style>
+.elementor-1319.elementor-element.elementor-element-379a34c.elementor-widget-container  {
+    
+color: white !important;
+}
+
+
+
+
+</style>
 </head>
 <body>
     <div class="full-width-content">
