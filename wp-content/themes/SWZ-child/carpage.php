@@ -131,7 +131,7 @@ header, footer {
 }
 
 .custom-prices {
-font-size: 30px !important ; 
+font-size: 28px !important ; 
 background-color: transparent !important ; 
 }
 
