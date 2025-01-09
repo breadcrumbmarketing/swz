@@ -257,11 +257,15 @@ footer {
 .edit-bgcolor {
           
         font-family: 'Poppins', sans-serif !important;
-        font-weight: 400 !important;
+        font-weight: 600 !important;
         text-align: justify !important;
         padding-top: 20px !important;
-        font-size: 25px !important;
+        font-size: 32px !important;
        }
+
+.themeBtn-icon-wrapper {
+    background-color: #DE4F3E  !important;
+}      
 </style>
 </head>
 <body>
