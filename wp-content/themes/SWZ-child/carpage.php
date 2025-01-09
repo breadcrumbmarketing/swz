@@ -130,6 +130,11 @@ header, footer {
     font-weight: bold !important;
 }
 
+.custom-prices {
+font-size: 30px !important ; 
+background-color: transparent !important ; 
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .accordion-header {
