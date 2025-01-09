@@ -30,6 +30,34 @@ if (!$html_content) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Full Width HTML Page</title>
     <style>
+
+
+@font-face {
+        font-family: 'Poppins';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap') !important;
+      }
+      
+      @font-face {
+        font-family: 'Poppins';
+        font-style: normal;
+        font-weight: bold;
+        font-display: swap;
+        src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap') !important;
+      }
+      
+      @font-face {
+        font-family: 'Poppins';
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap') !important;
+      }
+
+
+
 /* Ensure no gap between HTML, header, and footer */
 html, body {
     margin: 0 !important;
@@ -218,14 +246,22 @@ footer {
             position: relative;
         }
 
-.elementor-1319.elementor-element.elementor-element-379a34c.elementor-widget-container  {
-    
-color: white !important;
+
+
+.aa-col-12.landing-heading {
+    font-size: 18px;
+    text-align: justify;
+    padding-top: 50px;
 }
 
-
-
-
+.edit-bgcolor {
+          
+        font-family: 'Poppins', sans-serif !important;
+        font-weight: 400 !important;
+        text-align: justify !important;
+        padding-top: 20px !important;
+        font-size: 25px !important;
+       }
 </style>
 </head>
 <body>
