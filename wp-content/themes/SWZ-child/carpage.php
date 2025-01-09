@@ -135,6 +135,11 @@ font-size: 30px !important ;
 background-color: transparent !important ; 
 }
 
+.footer_bottom {
+
+    display: none !important;
+
+}
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .accordion-header {
