@@ -261,7 +261,7 @@ footer {
      
        }
 
-.themeBtn-icon-wrapper {
+.themeBtn {
     background-color: #DE4F3E  !important;
 }      
 </style>
