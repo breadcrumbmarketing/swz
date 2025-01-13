@@ -15,10 +15,10 @@ $current_page = get_query_var('paged') ? get_query_var('paged') : 1;
 
 // Build the base args for WP_Query with pagination
 $args = array(
-    'post_type'      => 'post', // Change to "post" for Testberichte
-    'posts_per_page' => 12, // Display 12 posts per page
+    'post_type'      => 'post',
+    'posts_per_page' => 12,
     'paged'          => $current_page,
-    'category_name'  => 'Testbericht', // Only show posts from the "Testbericht" category
+    'category_name'  => 'testbericht', // Only include posts from "Testbericht" category
 );
 
 // Add brand and model query if selected
@@ -44,7 +44,7 @@ $query = new WP_Query($args);
 $all_posts = get_posts(array(
     'post_type'      => 'post',
     'posts_per_page' => -1,
-    'category_name'  => 'Testbericht', // Fetch only posts from the "Testbericht" category
+    'category_name'  => 'testbericht', // Only gather from the "Testbericht" category
 ));
 
 $brands = [];
@@ -53,14 +53,19 @@ $models = [];
 foreach ($all_posts as $post) {
     $brand = get_post_meta($post->ID, 'car_brand', true);
     $model = get_post_meta($post->ID, 'car_model', true);
-    $brands[$brand] = $brand;
-    if ($selected_brand && $brand === $selected_brand) {
+
+    if (!empty($brand)) {
+        $brands[$brand] = $brand;
+    }
+    if (!empty($model)) {
         $models[$model] = $model;
     }
 }
 
 asort($brands); // Sort brands alphabetically
+asort($models); // Sort models alphabetically
 ?>
+
 
 <style>
 /* Import Poppins font */
@@ -397,7 +402,6 @@ body.gallery-template-page {
     <!-- Filter Bar -->
     <div class="filter-bar">
         <form method="GET" id="filter-form">
-            <!-- Dropdown for Car Brand -->
             <select name="brand" onchange="this.form.submit()">
                 <option value="">Marke auswählen</option>
                 <?php foreach ($brands as $brand): ?>
@@ -406,7 +410,6 @@ body.gallery-template-page {
                     </option>
                 <?php endforeach; ?>
             </select>
-            <!-- Dropdown for Car Model -->
             <select name="model" onchange="this.form.submit()">
                 <option value="">Modell auswählen</option>
                 <?php foreach ($models as $model): ?>
@@ -419,14 +422,13 @@ body.gallery-template-page {
             <button type="button" class="clear-filter-button" onclick="clearFilters()">Filter entfernen</button>
         </form>
     </div>
+
     <!-- Gallery Grid -->
     <div class="gallery-grid">
         <?php if ($query->have_posts()) : while ($query->have_posts()) : $query->the_post(); ?>
             <a href="<?php the_permalink(); ?>" class="gallery-card">
-                <!-- Image Container -->
                 <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');">
                 </div>
-                <!-- Car Title -->
                 <h2 class="testbericht">
                     <?php 
                         $car_brand = esc_html(get_post_meta(get_the_ID(), 'car_brand', true));
@@ -434,9 +436,9 @@ body.gallery-template-page {
                         echo $car_brand . ' ' . $car_model;
                     ?>
                 </h2>
-                <!-- Post Title -->
                 <div class="text-container">
                     <h3><?php the_title(); ?></h3>
+                    <p class="excerpt"><?php echo wp_trim_words(get_the_content(), 20, '...'); ?></p>
                     <p class="more-info">Mehr lesen</p>
                 </div>
             </a>
@@ -455,7 +457,7 @@ body.gallery-template-page {
             </div>
         </div>
         <?php else : ?>
-            <p>Keine Testberichte gefunden. Versuchen Sie, den Filter anzupassen.</p>
+            <p>Keine Testberichte gefunden. Passen Sie den Filter an.</p>
         <?php endif; ?>
     </div>
 </div>
