@@ -170,12 +170,13 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     -webkit-box-orient: vertical;
 }
 
+
 /* CTA (Mehr lesen) Button */
 .gallery-card .text-container .more-info {
     font-size: 14px; /* Font size for the "Mehr lesen" button */
     font-weight: bold; /* Make it stand out */
     text-transform: uppercase; /* Make text uppercase for emphasis */
-    color: black; /* Ensure the default color is black */
+    color: rgb(250, 250, 250); /* Ensure the default color is black */
     text-align: center; /* Center align the button text */
     padding: 5px 10px; /* Add some padding for spacing */
     border: 1px solid black; /* Optional border for a button look */
@@ -183,12 +184,25 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     margin-top: 10px; /* Add spacing above the button */
     background-color: transparent; /* Ensure background is transparent */
     transition: all 0.3s ease; /* Smooth hover transition */
+    border-radius: 8px;
+    background-color: #404040;
 }
 
 .gallery-card .text-container .more-info:hover {
     background-color: #DE4F3E; /* Background changes to red on hover */
     color: white; /* Text changes to white on hover */
     border-color: #DE4F3E; /* Border matches the hover background */
+}
+
+/* Ensure the <a> tag inside .more-info inherits styles correctly */
+.gallery-card .text-container .more-info a {
+    color: inherit; /* Inherit color from parent */
+    text-decoration: none; /* Remove underline if present */
+}
+
+/* Fix: Ensure the <a> tag's hover state does not override the parent */
+.gallery-card .text-container .more-info:hover a {
+    color: inherit; /* Inherit hover color from parent */
 }
 
 /* Filter Bar */
@@ -325,6 +339,9 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     }
 }
 
+.h2 {
+    font-family: 'Poppins', sans-serif; 
+}
 </style>
 <div class="gallery-container">
     <!-- Filter Bar -->
