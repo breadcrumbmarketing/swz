@@ -172,16 +172,23 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* CTA (Mehr lesen) Button */
 .gallery-card .text-container .more-info {
-    text-align: center;
-    font-size: 14px;
-    font-weight: bold;
-    color: #DE4F3E;
-    cursor: pointer;
-    transition: color 0.3s ease;
+    font-size: 14px; /* Font size for the "Mehr lesen" button */
+    font-weight: bold; /* Make it stand out */
+    text-transform: uppercase; /* Make text uppercase for emphasis */
+    color: black; /* Ensure the default color is black */
+    text-align: center; /* Center align the button text */
+    padding: 5px 10px; /* Add some padding for spacing */
+    border: 1px solid black; /* Optional border for a button look */
+    display: inline-block; /* Inline block for proper spacing */
+    margin-top: 10px; /* Add spacing above the button */
+    background-color: transparent; /* Ensure background is transparent */
+    transition: all 0.3s ease; /* Smooth hover transition */
 }
 
 .gallery-card .text-container .more-info:hover {
-    color: #A3241E; /* Darker red on hover */
+    background-color: #DE4F3E; /* Background changes to red on hover */
+    color: white; /* Text changes to white on hover */
+    border-color: #DE4F3E; /* Border matches the hover background */
 }
 
 /* Filter Bar */
@@ -313,16 +320,10 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
                 <!-- Text Section -->
                 <div class="text-container">
                     <!-- Car Brand and Model -->
-                    <h2 class="testbericht">
-                        <?php 
-                            $car_brand = esc_html(get_post_meta(get_the_ID(), 'car_brand', true));
-                            $car_model = esc_html(get_post_meta(get_the_ID(), 'car_model', true));
-                            echo $car_brand . ' ' . $car_model;
-                        ?>
-                    </h2>
+                  
 
                     <!-- Post Title -->
-                    <h3><?php the_title(); ?></h3>
+                    <h2><?php the_title(); ?></h2>
 
                     <!-- Excerpt -->
                     <p class="excerpt">
