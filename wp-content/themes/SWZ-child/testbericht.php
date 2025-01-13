@@ -126,25 +126,24 @@ article p {
     font-weight: 700;
 }
 .back-button {
-    display: flex;
-    justify-content: center;  
-    align-items: center;  
-    margin: 0 auto;  
-    background-color: #DE4F3E;
-    color: white;
-    border-radius: 12px;
-    padding-left: 40px;
-    padding-right: 40px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 20px;
-    font-weight: bold;
-    border: solid 2px;
+    display: flex !important;
+    justify-content: center!important; 
+    align-items: center!important;  
+    margin: 0 auto!important;  
+    background-color: #DE4F3E!important;
+    color: white!important;
+    border-radius: 12px!important;
+    padding-left: 40px!important;
+    padding-right: 40px!important;
+    font-family: 'Poppins', sans-serif!important;
+    font-size: 20px!important;
+    border: solid 2px!important;
 }
 .back-button:hover {
-    background-color: transparent;
-    color: #DE4F3E;
-    border-color: #DE4F3E;
-    border: solid 2px;
+    background-color: transparent!important;
+    color: #DE4F3E!important;
+    border-color: #DE4F3E!important;
+    border: solid 2px!important;
 }   
         </style>
 
