@@ -1,89 +1,77 @@
-
 <?php
-// Database connection
-$servername = "localhost";
-$username = "aaedwdrcxz";
-$password = "4zzHJ93zcm";
-$dbname = "aaedwdrcxz";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+function createPostFromDb(localhost, aaedwdrcxz, 4zzHJ93zcm, aaedwdrcxz, $table_name = 'wp_html_pages') {
+    // Database connection
+    $conn = new mysqli($db_host, $db_user, $db_password, $db_name);
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Function to extract testReport container
-function extractTestReport($html) {
-    $dom = new DOMDocument();
-    @$dom->loadHTML($html); // Suppress warnings for invalid HTML
-    $xpath = new DOMXPath($dom);
-
-    // Find the div with the testReport container
-    $nodes = $xpath->query('//div[input[@name="fieldname" and @value="testReport"]]');
-
-    if ($nodes->length > 0) {
-        $container = $dom->saveHTML($nodes->item(0));
-        return $container;
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
     }
-    return null;
-}
 
-// Function to check if a post exists
-function postExists($conn, $id) {
-    $stmt = $conn->prepare("SELECT id FROM wp_posts WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $stmt->store_result();
-    return $stmt->num_rows > 0;
-}
+    // Query to fetch rows where post hasn't been created
+    $query = "SELECT * FROM $table_name WHERE status = 'draft'";
+    $result = $conn->query($query);
 
-// Function to create a post
-function createPost($conn, $id, $title, $slug, $content, $image) {
-    // Insert into wp_posts table
-    $stmt = $conn->prepare("INSERT INTO wp_posts (id, post_title, post_name, post_content, post_status, post_date, post_date_gmt, post_modified, post_modified_gmt) VALUES (?, ?, ?, ?, 'publish', NOW(), NOW(), NOW(), NOW())");
-    $stmt->bind_param("isss", $id, $title, $slug, $content);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $id = $row['id'];
+            $title = $row['title'];
+            $slug = $row['slug'];
+            $content = $row['content'];
+            $image_url = $row['image']; // Image URL for hero/thumbnail
 
-    if ($stmt->execute()) {
-        // Insert the image as a featured image (thumbnail) in wp_postmeta
-        $meta_key = '_thumbnail_id';
-        $meta_value = $image; // Assuming the image column contains the attachment ID or URL
-        $stmt_meta = $conn->prepare("INSERT INTO wp_postmeta (post_id, meta_key, meta_value) VALUES (?, ?, ?)");
-        $stmt_meta->bind_param("iss", $id, $meta_key, $meta_value);
-        $stmt_meta->execute();
-        return true;
-    }
-    return false;
-}
+            // Check if "testReport" exists in the HTML content
+            if (strpos($content, 'testReport') !== false) {
+                // Extract the container with "testReport"
+                $dom = new DOMDocument();
+                @$dom->loadHTML($content);
+                $xpath = new DOMXPath($dom);
 
-// Fetch rows from the wp_html_pages table
-$sql = "SELECT id, title, slug, content, image FROM wp_html_pages WHERE content LIKE '%testReport%'";
-$result = $conn->query($sql);
+                // Extract the "testReport" container
+                $container = $xpath->query("//div[input[@value='testReport']]");
 
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $id = $row['id'];
-        $title = $row['title'];
-        $slug = $row['slug'];
-        $content = $row['content'];
-        $image = $row['image'];
+                if ($container->length > 0) {
+                    $testReportHtml = $dom->saveHTML($container->item(0));
 
-        // Extract the testReport container
-        $testReportContent = extractTestReport($content);
+                    // Create post template with extracted content
+                    $post_content = "
+                    <div class='post-hero'>
+                        <img src='$image_url' alt='$title' />
+                    </div>
+                    <div class='post-content'>
+                        $testReportHtml
+                    </div>
+                    ";
 
-        if ($testReportContent && !postExists($conn, $id)) {
-            // Create the post
-            if (createPost($conn, $id, $title, $slug, $testReportContent, $image)) {
-                echo "Post created for ID: $id\n";
-            } else {
-                echo "Failed to create post for ID: $id\n";
+                    // Insert post into WordPress (assuming wp_insert_post function is available)
+                    $post_data = [
+                        'post_title'   => $title,
+                        'post_content' => $post_content,
+                        'post_status'  => 'publish',
+                        'post_type'    => 'post',
+                        'post_name'    => $slug,
+                    ];
+
+                    $post_id = wp_insert_post($post_data);
+
+                    // Set the featured image for the post
+                    if ($post_id && !is_wp_error($post_id)) {
+                        // Download image and attach it as featured image
+                        $image_id = media_sideload_image($image_url, $post_id, null, 'id');
+                        if (!is_wp_error($image_id)) {
+                            set_post_thumbnail($post_id, $image_id);
+                        }
+
+                        // Update the status in the database to avoid duplicate posts
+                        $update_query = "UPDATE $table_name SET status = 'published' WHERE id = $id";
+                        $conn->query($update_query);
+                    }
+                }
             }
-        } else {
-            echo "Post already exists or no testReport found for ID: $id\n";
         }
+    } else {
+        echo "No new posts to create.";
     }
-} else {
-    echo "No rows found with testReport content.\n";
-}
 
-$conn->close();
-?>
+    $conn->close();
+}
