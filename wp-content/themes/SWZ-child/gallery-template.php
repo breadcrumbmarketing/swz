@@ -334,9 +334,9 @@ body.gallery-template-page {
     position: fixed;
     bottom: 0;
     left: 0;
-    background-color: rgba(37, 37, 37, 0.9); /* Semi-transparent background */
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    z-index: 1000; /* Ensure it stays above other content */
+    background-color: rgba(37, 37, 37, 0.9);  
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);  
+    z-index: 1000;  
 }
 
 /* Pagination Links */
