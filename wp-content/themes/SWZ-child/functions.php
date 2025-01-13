@@ -228,6 +228,94 @@ if (!function_exists('create_html_pages_from_database')) {
 // Immediate execution to process new and unprocessed rows
 add_action('init', 'create_html_pages_from_database');
 
+// -------------------------------- Dynamic Post Creation -------------------------------- //
+
+
+function create_post_from_html_pages() {
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'html_pages'; // Custom table name
+
+    // Fetch rows where status is 'draft'
+    $rows = $wpdb->get_results("SELECT * FROM $table_name WHERE status = 'draft'");
+
+    foreach ($rows as $row) {
+        $id = $row->id;
+        $title = $row->title;
+        $slug = $row->slug;
+        $content = $row->content;
+        $image_url = $row->image;
+
+        // Check if "testReport" exists in the HTML content
+        if (strpos($content, 'testReport') !== false) {
+            // Extract the "testReport" container
+            $dom = new DOMDocument();
+            @$dom->loadHTML($content);
+            $xpath = new DOMXPath($dom);
+            $container = $xpath->query("//div[input[@value='testReport']]");
+
+            if ($container->length > 0) {
+                $testReportHtml = $dom->saveHTML($container->item(0));
+
+                // Build post content
+                $post_content = "
+                <div class='post-hero'>
+                    <img src='$image_url' alt='$title' />
+                </div>
+                <div class='post-content'>
+                    $testReportHtml
+                </div>
+                ";
+
+                // Check if a post with this slug already exists
+                $existing_post = get_page_by_path($slug, OBJECT, 'post');
+                if (!$existing_post) {
+                    // Insert the post
+                    $post_data = [
+                        'post_title'   => $title,
+                        'post_content' => $post_content,
+                        'post_status'  => 'publish',
+                        'post_type'    => 'post',
+                        'post_name'    => $slug,
+                        'meta_input'   => ['_wp_page_template' => 'testbericht.php'], // Assign the template
+                    ];
+
+                    $post_id = wp_insert_post($post_data);
+
+                    // Set the featured image
+                    if ($post_id && !is_wp_error($post_id)) {
+                        // Download image and attach it
+                        $image_id = media_sideload_image($image_url, $post_id, null, 'id');
+                        if (!is_wp_error($image_id)) {
+                            set_post_thumbnail($post_id, $image_id);
+                        }
+
+                        // Update the status to 'published'
+                        $wpdb->update(
+                            $table_name,
+                            ['status' => 'published'],
+                            ['id' => $id]
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
+add_action('init', 'create_post_from_html_pages');
+// -------------------------------- Admin Dashboard Button for post creation -------------------------------- //
+
+add_action('admin_post_create_posts_from_html', 'create_post_from_html_pages');
+
+function display_manual_trigger() {
+    if (is_admin()) {
+        echo '<a href="' . admin_url('admin-post.php?action=create_posts_from_html') . '">Run Post Creation</a>';
+    }
+}
+add_action('admin_notices', 'display_manual_trigger');
+
+
 // -------------------------------- Admin Dashboard Button -------------------------------- //
 
 function add_create_pages_menu() {
