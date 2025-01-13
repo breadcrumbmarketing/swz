@@ -231,75 +231,48 @@ if (!function_exists('create_html_pages_from_database')) {
 add_action('init', 'create_html_pages_from_database');
 
 // -------------------------------- Dynamic Post Creation -------------------------------- //
-function create_post_from_testbericht_column() {
+function create_post_from_testbericht_simple() {
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'html_pages'; // Custom table name
     $row_id = 136; // ID of the row to fetch for testing
 
-    // Include WordPress media functions
-    if (!function_exists('media_sideload_image')) {
-        require_once ABSPATH . 'wp-admin/includes/file.php';
-        require_once ABSPATH . 'wp-admin/includes/media.php';
-        require_once ABSPATH . 'wp-admin/includes/image.php';
-    }
-
     // Fetch the row with ID 100
-    $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $row_id));
+    $row = $wpdb->get_row($wpdb->prepare("SELECT testbericht FROM $table_name WHERE id = %d", $row_id));
 
-    if ($row) {
-        $title = $row->title;
-        $slug = $row->slug;
-        $testbericht_content = $row->testbericht; // Use the 'testbericht' column
-        $image_url = $row->image;
+    if ($row && !empty($row->testbericht)) {
+        $testbericht_content = $row->testbericht; // Use only the 'testbericht' column
 
-        // Ensure 'testbericht' content is available
-        if (!empty($testbericht_content)) {
-            // Build the post content using the 'testbericht' data
-            $post_content = "
-            <div class='post-hero'>
-                <img src='$image_url' alt='$title' />
-            </div>
-            <div class='post-content'>
-                $testbericht_content
-            </div>
-            ";
+        // Check if a post with this test content already exists (optional - can be skipped for testing)
+        $existing_post = get_posts([
+            'post_type'  => 'post',
+            'meta_key'   => '_testbericht_hash',
+            'meta_value' => md5($testbericht_content),
+            'fields'     => 'ids',
+        ]);
 
-            // Check if a post with this slug already exists
-            $existing_post = get_page_by_path($slug, OBJECT, 'post');
-            if (!$existing_post) {
-                // Insert the post
-                $post_data = [
-                    'post_title'   => $title,
-                    'post_content' => $post_content,
-                    'post_status'  => 'publish',
-                    'post_type'    => 'post',
-                    'post_name'    => $slug,
-                    'meta_input'   => ['_wp_page_template' => 'testbericht.php'], // Assign the custom template
-                ];
+        if (empty($existing_post)) {
+            // Create the post with only the 'testbericht' content
+            $post_data = [
+                'post_title'   => 'Testbericht Post', // Temporary title for testing
+                'post_content' => $testbericht_content,
+                'post_status'  => 'publish',
+                'post_type'    => 'post',
+                'meta_input'   => ['_testbericht_hash' => md5($testbericht_content)], // Optional metadata to prevent duplicates
+            ];
 
-                $post_id = wp_insert_post($post_data);
+            $post_id = wp_insert_post($post_data);
 
-                if (!is_wp_error($post_id)) {
-                    // Download and set the featured image
-                    $image_id = media_sideload_image($image_url, $post_id, null, 'id');
-                    if (!is_wp_error($image_id)) {
-                        set_post_thumbnail($post_id, $image_id);
-                        error_log("Post created successfully with ID $post_id and featured image.");
-                    } else {
-                        error_log('Error in media_sideload_image: ' . $image_id->get_error_message());
-                    }
-                } else {
-                    error_log('Error in wp_insert_post: ' . $post_id->get_error_message());
-                }
+            if (!is_wp_error($post_id)) {
+                error_log("Post created successfully with ID $post_id.");
             } else {
-                error_log("Post with slug '$slug' already exists.");
+                error_log("Error in wp_insert_post: " . $post_id->get_error_message());
             }
         } else {
-            error_log("The 'testbericht' column is empty for row ID $row_id.");
+            error_log("A post with this 'testbericht' content already exists.");
         }
     } else {
-        error_log("No row found with ID $row_id.");
+        error_log("The 'testbericht' column is empty or no row found with ID $row_id.");
     }
 }
 
@@ -311,9 +284,10 @@ add_action('init', 'create_post_from_html_pages');
 
 add_action('init', function () {
     if (is_admin() && current_user_can('manage_options')) {
-        create_post_from_testbericht_column();
+        create_post_from_testbericht_simple();
     }
 });
+
 
 
 
