@@ -160,12 +160,15 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 .gallery-card .text-container h3 {
-    font-size: 16px;
-    color: black;
-    font-weight: 600;
-    line-height: 1.4;
-    margin: 0;
+    font-family: 'Poppins', sans-serif !important; 
+    font-size: 1.5rem !important; 
+    color: black !important; 
+    margin-bottom: 5px !important; 
+    text-align: left !important; 
+    margin-left: 15px !important; 
+    font-weight: bold !important; 
 }
+
 
 .gallery-card .text-container .excerpt {
     margin: 15px 0; /* Adds spacing above and below the excerpt */
@@ -351,15 +354,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     }
 }
 
-.h3 {
-    font-family: 'Poppins', sans-serif !important; 
-    font-size: 1.5rem !important; 
-    color: black !important; 
-    margin-bottom: 5px !important; 
-    text-align: left !important; 
-    margin-left: 15px !important; 
-    font-weight: bold !important; 
-}
+
 </style>
 <div class="gallery-container">
     <!-- Filter Bar -->
