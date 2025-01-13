@@ -248,7 +248,7 @@ function create_post_from_testbericht_with_title_and_image() {
     $row = $wpdb->get_row($wpdb->prepare("SELECT testbericht, car_brand, car_model, image FROM $table_name WHERE id = %d", $row_id));
 
     if ($row && !empty($row->testbericht)) {
-        $testbericht_content = $row->testbericht; // Content from 'testbericht' column
+        $testbericht_content = $row->testbericht; 
         $car_brand = $row->car_brand;
         $car_model = $row->car_model;
         $image_url = $row->image;
@@ -256,7 +256,7 @@ function create_post_from_testbericht_with_title_and_image() {
         // Generate the title
         $post_title = "Testbericht: $car_brand $car_model";
 
-        // Check if a post with this title already exists (optional)
+        // Check if a post with this title already exists
         $existing_post = get_posts([
             'post_type'  => 'post',
             'title'      => $post_title,
@@ -264,7 +264,7 @@ function create_post_from_testbericht_with_title_and_image() {
         ]);
 
         if (empty($existing_post)) {
-            // Build the post content
+            // Build the post content (keep all <h2> tags in the content)
             $post_content = "
             <div class='post-hero'>
                 <img src='$image_url' alt='$post_title' />

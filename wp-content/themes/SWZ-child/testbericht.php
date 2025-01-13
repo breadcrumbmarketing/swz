@@ -107,7 +107,7 @@ article p {
 <div class="testbericht-container">
     <?php while (have_posts()) : the_post(); ?>
 
-        <!-- Post Title -->
+        <!-- Render Post Title as H1 -->
         <h1 class="post-title"><?php the_title(); ?></h1>
 
         <!-- Hero Image -->
@@ -117,13 +117,14 @@ article p {
             <?php endif; ?>
         </div>
 
-        <!-- Post Content -->
+        <!-- Post Content (including <h2> tags) -->
         <div class="post-content">
             <?php the_content(); ?>
         </div>
 
     <?php endwhile; ?>
 </div>
+
 
 
 <?php get_footer(); ?>
