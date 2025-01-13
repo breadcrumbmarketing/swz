@@ -140,25 +140,25 @@ article p {
     border: solid 2px!important;
 }
 .back-button:hover {
-    background-color: transparent!important;
-    color: #DE4F3E!important;
-    border-color: #DE4F3E!important;
-    border: solid 2px!important;
+    background-color: transparent!important !important;
+    color: #DE4F3E!important !important;
+    border-color: #DE4F3E!important !important;
+    border: solid 2px!important !important;
 }   
 
 .nav.elementor-pagination{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 20px 0;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    background-color: rgba(37, 37, 37, 0.9);  
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);  
-    z-index: 1000;  
-    gap:10px; 
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 20px 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    background-color: rgba(37, 37, 37, 0.9) !important; 
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important; 
+    z-index: 1000 !important;  
+    gap:10px !important;!important; 
 }
 
 
@@ -166,51 +166,54 @@ article p {
 
 .nav.elementor-pagination a,
 .nav.elementor-pagination span {
-    display: inline-block;
-    padding: 8px 12px;
-    text-decoration: none;
-    color: #333;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    color: white;
+    display: inline-block !important;
+    padding: 8px 12px !important;
+    text-decoration: none !important;
+    color: #333 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    border-radius: 4px !important;
+    transition: all 0.3s ease !important;
+    color: white !important;
 }
 
 /* Current Page */
 .nav.elementor-pagination span.current {
-  /*  background-color: #DE4F3E!important; /* Highlight color for current page */
-  border: solid 2px  #DE4F3E;
-    color: white;
-    border-radius: 4px;
+  border: solid 2px  #DE4F3E !important;
+    color: white !important;
+    border-radius: 4px !important;
 }
 
 /* Hover Effect */
 .nav.elementor-pagination a:hover {
-    background-color: #f0f0f0; /* Light background on hover */
-    color: #DE4F3E !important; /* Change text color on hover */
+    background-color: #f0f0f0 !important;
+    color: #DE4F3E !important;  
 }
 
 /* Previous and Next Buttons */
 .nav.elementor-pagination .prev,
 .nav.elementor-pagination .next {
-    font-weight: 600;
-    background-color: #f0f0f0; /* Light background for prev/next buttons */
-    border-radius: 4px;
-    color:  #DE4F3E;
+    font-weight: 600 !important;
+    background-color: #f0f0f0 !important;
+    border-radius: 4px !important;
+    color:  #DE4F3E  !important;
 }
 
 .nav.elementor-pagination .prev:hover,
 .nav.elementor-pagination .next:hover {
-    background-color: #DE4F3E !important; /* Highlight on hover */
+    background-color: #DE4F3E !important;  
     color: #fff !important;
 }
 
 /* Disabled Buttons (if applicable) */
 .nav.elementor-pagination .disabled {
-    color: #ccc;
-    pointer-events: none;
-    cursor: not-allowed;
+    color: #ccc !important;
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+}
+
+a.custom-logo-link {
+    display: none !important;
 }
         </style>
 
