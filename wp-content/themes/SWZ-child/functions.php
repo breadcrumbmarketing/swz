@@ -99,6 +99,7 @@ function handle_write_html_page($data) {
     $co2 = sanitize_text_field($data['co2']);
     $power = sanitize_text_field($data['power']);
     $image = esc_url_raw($data['image']);
+    $testbericht = $data ['testbericht'];
 
     // Check if the slug already exists in the table
     $existing_page = $wpdb->get_var($wpdb->prepare(
