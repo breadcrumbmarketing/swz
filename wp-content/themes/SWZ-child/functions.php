@@ -124,6 +124,7 @@ function handle_write_html_page($data) {
             'co2'       => $co2,
             'power'     => $power,
             'image'     => $image,
+            'testbericht'   => $testbericht,
         )
     );
 
