@@ -10,12 +10,7 @@ get_header(); ?>
 /* General Body Styling */
 
 
-</style>
-<div class="testbericht-container">
-    <?php while (have_posts()) : the_post(); ?>
 
-        <!-- Hide Default Title -->
-        <style>
             .entry-title { /* Adjust the selector as per your theme */
                 display: none;
             }
@@ -119,13 +114,17 @@ article p {
 
         </style>
 
+
+<div class="testbericht-container">
+    <?php while (have_posts()) : the_post(); ?>
+
         <!-- Custom Title as H1 -->
-        <h1 class="post-title"><?php echo esc_html(get_the_title()); ?></h1>
+        <h1 class="post-title"><?php the_title(); ?></h1>
 
         <!-- Hero Image -->
         <div class="post-hero">
             <?php if (has_post_thumbnail()) : ?>
-                <img src="<?php the_post_thumbnail_url('full'); ?>" alt="<?php echo esc_attr(get_the_title()); ?>">
+                <img src="<?php the_post_thumbnail_url('full'); ?>" alt="<?php the_title(); ?>">
             <?php endif; ?>
         </div>
 
