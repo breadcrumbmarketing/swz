@@ -8,7 +8,22 @@ get_header(); ?>
 <style>
 
 /* General Body Styling */
-body {
+
+
+</style>
+<div class="testbericht-container">
+    <?php while (have_posts()) : the_post(); ?>
+
+        <!-- Hide Default Title -->
+        <style>
+            .entry-title { /* Adjust the selector as per your theme */
+                display: none;
+            }
+
+
+
+            /* rest */
+            body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
     margin: 0;
@@ -102,12 +117,9 @@ article p {
 }
 
 
+        </style>
 
-</style>
-<div class="testbericht-container">
-    <?php while (have_posts()) : the_post(); ?>
-
-        <!-- Manually Add the Post Title as H1 -->
+        <!-- Custom Title as H1 -->
         <h1 class="post-title"><?php echo esc_html(get_the_title()); ?></h1>
 
         <!-- Hero Image -->
@@ -124,6 +136,7 @@ article p {
 
     <?php endwhile; ?>
 </div>
+
 
 
 
