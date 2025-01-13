@@ -304,16 +304,6 @@ function create_post_from_html_pages() {
 }
 
 add_action('init', 'create_post_from_html_pages');
-// -------------------------------- Admin Dashboard Button for post creation -------------------------------- //
-
-add_action('admin_post_create_posts_from_html', 'create_post_from_html_pages');
-
-function display_manual_trigger() {
-    if (is_admin()) {
-        echo '<a href="' . admin_url('admin-post.php?action=create_posts_from_html') . '">Run Post Creation</a>';
-    }
-}
-add_action('admin_notices', 'display_manual_trigger');
 
 
 // -------------------------------- Admin Dashboard Button -------------------------------- //
