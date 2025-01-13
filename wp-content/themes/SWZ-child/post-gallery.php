@@ -344,6 +344,12 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 .h2 {
     font-family: 'Poppins', sans-serif; 
+    font-size: 1.5em;
+    color: black;
+    margin-bottom: 5px;
+    text-align: left;
+    margin-left: 15px;
+    font-weight: bold;
 }
 </style>
 <div class="gallery-container">
