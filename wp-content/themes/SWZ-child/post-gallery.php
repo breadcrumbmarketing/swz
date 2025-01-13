@@ -79,29 +79,6 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     font-family: 'Poppins', sans-serif;
 }
 
-.text-container .excerpt {
-    margin: 10px 0; /* Adds spacing above and below the excerpt */
-    font-size: 14px; /* Font size for better readability */
-    line-height: 1.5; /* Improves text readability */
-    color: #666; /* Sets a softer color for the excerpt */
-    overflow: hidden; /* Ensures no overflow */
-    text-overflow: ellipsis; /* Adds ellipsis for overflow */
-    -webkit-line-clamp: 3; /* Limit excerpt to 3 lines */
-    -webkit-box-orient: vertical;
-    display: -webkit-box;
-    height: auto; /* Automatically adjust height based on content */
-    max-height: 4.5em; /* Adjust height for 3 lines */
-}
-/* Override background for the Gallery Template page */
-body.gallery-template-page {
-    margin: 0;
-    height: 100vh;
-    
-      /* background: linear-gradient(180deg, #ffffff, rgb(238, 247, 252)) !important;*/
-}
-.copyright.show {
-    display: none !important ;
-}
 /* General Styling for Gallery */
 .gallery-container {
     padding: 35px;
@@ -115,21 +92,22 @@ body.gallery-template-page {
 .gallery-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* Three columns layout */
-    gap: 10px; /* Minimal gap between cards */
-    justify-content: center; /* Centers cards in the grid when fewer items */
+    gap: 20px; /* Gap between cards */
+    justify-content: center;
 }
 
 .gallery-card {
     display: flex;
     flex-direction: column;
+    justify-content: space-between; /* Space out sections inside the card */
     background-color: #fff; /* White background */
     border: 1px solid #ddd;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 450px; /* Adjusted fixed height for consistency */
-    width: 100%; /* Adjust width as per grid column width */
+    height: 100%; /* Ensures all cards are the same height */
+    text-decoration: none; /* Remove link styles */
 }
 
 .gallery-card:hover {
@@ -137,43 +115,39 @@ body.gallery-template-page {
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Top Section for Image */
+/* Image Section */
 .gallery-card .image-container {
-    height: 45%; /* Adjusted to 60% of the card's height */
+    height: 200px; /* Fixed height for image */
     background-size: cover;
     background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Prevent image repetition */
-    background-color: #fff;
+    background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
     border-bottom: 1px solid #ddd;
 }
 
-/* Fallback for no images */
 .gallery-card .image-container img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
 }
 
-
-.text-container {
-    padding: 10px 15px;  /* Check if padding is too much */
-    align-items: start;  /* Align items to the start to reduce vertical space usage */
-}
-
-/* Bottom Section for Text */
+/* Text Section */
 .gallery-card .text-container {
-    position: relative; /* Establishes a positioning context for absolutely positioned children */
-    flex: 1; /* Takes up the remaining space in the flex container */
-    padding: 10px 15px; /* Consistent padding around the content */
-    text-align: left; /* Text aligned to the left */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Space distribution for inner items */
-    height: auto; /* Adjusted for content size */
-    overflow: hidden; /* Hides anything out of the bound */
+    justify-content: space-between;
+    padding: 15px;
+    text-align: left;
+    height: 100%;
+}
+
+.gallery-card .text-container h2.testbericht {
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 8px; /* Space below the brand/model title */
 }
 
 .gallery-card .text-container h3 {
@@ -182,56 +156,35 @@ body.gallery-template-page {
     font-weight: 600;
     line-height: 1.4;
     margin: 0;
+}
+
+.gallery-card .text-container .excerpt {
+    margin: 15px 0; /* Adds spacing above and below the excerpt */
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    overflow: hidden; /* Hides overflowing content */
+    text-overflow: ellipsis; /* Adds "..." for overflowing text */
     display: -webkit-box;
-    -webkit-line-clamp: 4; /* Display a maximum of 4 lines */
+    -webkit-line-clamp: 3; /* Limits text to 3 lines */
     -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-.gallery-card .text-container p {
-    font-size: 12px;
-    color: black;
-    position: absolute; /* Absolutely positioned relative to the nearest positioned ancestor */
-    bottom: 10px; /* 10px from the bottom of the container */
-    left: 15px; /* 15px from the left of the container */
-    margin: 0; /* Resets any default margin */
-    color: black; /* Text color */
-    font-size: 12px; /* Font size */
-    visibility: visible; /* Always visible */
-    opacity: 1; /* Full opacity */
+/* CTA (Mehr lesen) Button */
+.gallery-card .text-container .more-info {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: #DE4F3E;
+    cursor: pointer;
     transition: color 0.3s ease;
-    background-color: transparent;
 }
 
-.gallery-card .text-container p:hover {
-   color: #DE4F3E !important;
-   
-   
+.gallery-card .text-container .more-info:hover {
+    color: #A3241E; /* Darker red on hover */
 }
 
-
-
-
-
-.gallery-card {
-    text-decoration: none; /* Ensure no underline by default */
-}
-
-.gallery-card:hover {
-    text-decoration: none; /* Ensure no underline on hover */
-}
-
-
-
-
-
-
-
-
-
-
-
+/* Filter Bar */
 .filter-bar {
     margin-bottom: 20px;
 }
@@ -240,9 +193,7 @@ body.gallery-template-page {
     display: flex;
     justify-content: center;
     gap: 10px;
-    
 }
-
 
 .filter-bar select,
 .filter-bar button {
@@ -250,115 +201,35 @@ body.gallery-template-page {
     font-size: 16px;
     border-radius: 5px;
     border: 1px solid #ddd;
-   
 }
 
-.filter-but {
+.clear-filter-button {
     color: white;
-    
+    background-color: #DE4F3E;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
+
 .clear-filter-button:hover {
-  /* Hover state changes */
-  background-color: #DE4F3E !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)!important;
-  color: white!important;
-}
-.clear-filter-button 
-{
-    color: white;
+    background-color: #A3241E;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-
-
-
-
-
-
-/* Responsive Adjustments */
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .gallery-grid {
-        grid-template-columns: 1fr; /* Display only one card per row on mobile */
-        gap: 20px; /* Add some spacing between cards */
-    }
-
-    .gallery-card {
-        height: 420px; /* Allow the card height to adjust based on content */
-        width: 100%; /* Ensure the card takes up the full width */
-    }
-
-    .gallery-card .text-container {
-        padding: 10px 15px; /* Adjust padding for better spacing */
-    }
-
-    .gallery-card .text-container h3 {
-        font-size: 14px; /* Slightly larger font size for better readability */
-    }
-
-    .gallery-card .text-container p {
-        font-size: 12px; /* Adjust font size for mobile */
-        bottom: 10px; /* Position the "Mehr lesen" text */
-    }
-
-    .testbericht {
-        font-size: 1.2em; /* Adjust font size for mobile */
-    }
-
-    .filter-bar form {
-        flex-direction: column; /* Stack filter dropdowns vertically on mobile */
-        gap: 10px; /* Add spacing between dropdowns */
-    }
-
-    .filter-bar select,
-    .filter-bar button {
-        width: 100%; /* Make dropdowns and buttons full width */
-        font-size: 14px; /* Adjust font size for mobile */
-      
-    }
-}
-
-.testbericht {
-    font-size: 1.5em;  
-    color: black;  
-    margin-bottom: 5px;  
-    text-align: left;
-    margin-left: 15px;
-    font-weight: bold;
-}
-
-.text-container h2.testbericht {
-    margin-bottom: 0; /* Reduces the space between the 'Testbericht' and the title */
-    font-size: 1.5em; /* Adjust the font size if needed */
-    font-weight: bold;
-}
-
-.text-container h3 {
-    font-size: 1em;
-    margin-top: 5px; /* Removes space above the h3 */
-    margin-bottom: 10px; /* Adjusts space between the title and the paragraph */
-}
-
-
-
-/* Pagination Container */
+/* Pagination */
 .pagination-container {
     display: flex;
     justify-content: center;
-    align-items: center;
-    width: 100%;
     padding: 20px 0;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    background-color: rgba(37, 37, 37, 0.9);  
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);  
-    z-index: 1000;  
 }
 
-/* Pagination Links */
 .paginationgswz {
     display: flex;
-    gap: 10px; /* Space between pagination items */
+    gap: 10px;
 }
 
 .paginationgswz a,
@@ -366,55 +237,45 @@ body.gallery-template-page {
     display: inline-block;
     padding: 8px 12px;
     text-decoration: none;
-    color: #333;
     font-size: 14px;
     font-weight: 500;
     border-radius: 4px;
-    transition: all 0.3s ease;
-    color: white;
+    background-color: #f0f0f0;
+    color: #DE4F3E;
+    transition: background-color 0.3s ease;
 }
 
-/* Current Page */
+.paginationgswz a:hover,
 .paginationgswz span.current {
-  /*  background-color: #DE4F3E!important; /* Highlight color for current page */
-  border: solid 2px  #DE4F3E;
+    background-color: #DE4F3E;
     color: white;
-    border-radius: 4px;
 }
 
-/* Hover Effect */
-.paginationgswz a:hover {
-    background-color: #f0f0f0; /* Light background on hover */
-    color: #DE4F3E !important; /* Change text color on hover */
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: 1fr; /* Single column on smaller screens */
+        gap: 20px;
+    }
+
+    .gallery-card .image-container {
+        height: 150px; /* Adjust image height */
+    }
+
+    .gallery-card .text-container {
+        padding: 10px;
+    }
+
+    .gallery-card .text-container h3 {
+        font-size: 14px; /* Smaller font size for mobile */
+    }
+
+    .gallery-card .text-container .excerpt {
+        font-size: 13px; /* Smaller excerpt font size */
+    }
 }
 
-/* Previous and Next Buttons */
-.paginationgswz .prev,
-.paginationgswz .next {
-    font-weight: 600;
-    background-color: #f0f0f0; /* Light background for prev/next buttons */
-    border-radius: 4px;
-    color:  #DE4F3E;
-}
-
-.paginationgswz .prev:hover,
-.paginationgswz .next:hover {
-    background-color: #DE4F3E !important; /* Highlight on hover */
-    color: #fff !important;
-}
-
-/* Disabled Buttons (if applicable) */
-.paginationgswz .disabled {
-    color: #ccc;
-    pointer-events: none;
-    cursor: not-allowed;
-}
-
-.custom-logo-link {
-    display: none !important;
-}
 </style>
-
 <div class="gallery-container">
     <!-- Filter Bar -->
     <div class="filter-bar">
@@ -443,23 +304,39 @@ body.gallery-template-page {
     <!-- Gallery Grid -->
     <div class="gallery-grid">
         <?php if ($query->have_posts()) : while ($query->have_posts()) : $query->the_post(); ?>
-            <a href="<?php the_permalink(); ?>" class="gallery-card">
-                <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');">
+            <div class="gallery-card">
+                <!-- Image Section -->
+                <div class="image-container" 
+                     style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');">
                 </div>
-                <h2 class="testbericht">
-                    <?php 
-                        $car_brand = esc_html(get_post_meta(get_the_ID(), 'car_brand', true));
-                        $car_model = esc_html(get_post_meta(get_the_ID(), 'car_model', true));
-                        echo $car_brand . ' ' . $car_model;
-                    ?>
-                </h2>
+
+                <!-- Text Section -->
                 <div class="text-container">
+                    <!-- Car Brand and Model -->
+                    <h2 class="testbericht">
+                        <?php 
+                            $car_brand = esc_html(get_post_meta(get_the_ID(), 'car_brand', true));
+                            $car_model = esc_html(get_post_meta(get_the_ID(), 'car_model', true));
+                            echo $car_brand . ' ' . $car_model;
+                        ?>
+                    </h2>
+
+                    <!-- Post Title -->
                     <h3><?php the_title(); ?></h3>
-                    <p class="excerpt"><?php echo wp_trim_words(get_the_content(), 20, '...'); ?></p>
-                    <p class="more-info">Mehr lesen</p>
+
+                    <!-- Excerpt -->
+                    <p class="excerpt">
+                        <?php echo wp_trim_words(get_the_content(), 20, '...'); ?>
+                    </p>
+
+                    <!-- Read More Button -->
+                    <p class="more-info">
+                        <a href="<?php the_permalink(); ?>">Mehr lesen</a>
+                    </p>
                 </div>
-            </a>
+            </div>
         <?php endwhile; ?>
+
         <!-- Pagination -->
         <div class="pagination-container">
             <div class="paginationgswz">
@@ -493,5 +370,6 @@ body.gallery-template-page {
         window.location.href = url.toString();
     }
 </script>
+
 
 <?php get_footer(); ?>
