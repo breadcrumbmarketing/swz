@@ -117,7 +117,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 /* Image Section */
 .gallery-card .image-container {
-    height: 200px; /* Fixed height for image */
+    height: 350px; /* Fixed height for image */
     background-size: cover;
     background-position: center; /* Center the image */
     background-repeat: no-repeat;
