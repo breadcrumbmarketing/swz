@@ -229,18 +229,23 @@ if (!function_exists('create_html_pages_from_database')) {
 add_action('init', 'create_html_pages_from_database');
 
 // -------------------------------- Dynamic Post Creation -------------------------------- //
-
-
-function create_post_from_html_pages() {
+function test_create_single_post() {
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'html_pages'; // Custom table name
+    $row_id = 100; // ID of the row to fetch for testing
 
-    // Fetch rows where status is 'draft'
-    $rows = $wpdb->get_results("SELECT * FROM $table_name WHERE status = 'draft'");
+    // Include WordPress media functions
+    if (!function_exists('media_sideload_image')) {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/media.php';
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+    }
 
-    foreach ($rows as $row) {
-        $id = $row->id;
+    // Fetch the row with ID 100
+    $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $row_id));
+
+    if ($row) {
         $title = $row->title;
         $slug = $row->slug;
         $content = $row->content;
@@ -277,29 +282,34 @@ function create_post_from_html_pages() {
                         'post_status'  => 'publish',
                         'post_type'    => 'post',
                         'post_name'    => $slug,
-                        'meta_input'   => ['_wp_page_template' => 'testbericht.php'], // Assign the template
+                        'meta_input'   => ['_wp_page_template' => 'testbericht.php'], // Assign the custom template
                     ];
 
                     $post_id = wp_insert_post($post_data);
 
-                    // Set the featured image
-                    if ($post_id && !is_wp_error($post_id)) {
-                        // Download image and attach it
+                    if (!is_wp_error($post_id)) {
+                        // Download and set the featured image
                         $image_id = media_sideload_image($image_url, $post_id, null, 'id');
                         if (!is_wp_error($image_id)) {
                             set_post_thumbnail($post_id, $image_id);
+                            error_log("Post created successfully with ID $post_id and featured image.");
+                        } else {
+                            error_log('Error in media_sideload_image: ' . $image_id->get_error_message());
                         }
-
-                        // Update the status to 'published'
-                        $wpdb->update(
-                            $table_name,
-                            ['status' => 'published'],
-                            ['id' => $id]
-                        );
+                    } else {
+                        error_log('Error in wp_insert_post: ' . $post_id->get_error_message());
                     }
+                } else {
+                    error_log("Post with slug '$slug' already exists.");
                 }
+            } else {
+                error_log('No "testReport" container found in the content.');
             }
+        } else {
+            error_log('"testReport" not found in the content.');
         }
+    } else {
+        error_log("No row found with ID $row_id.");
     }
 }
 
