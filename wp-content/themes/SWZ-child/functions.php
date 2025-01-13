@@ -237,7 +237,7 @@ function create_post_from_testbericht_with_title_and_image() {
     $table_name = $wpdb->prefix . 'html_pages'; // Custom table name
     $row_id = 136; // ID of the row to fetch for testing
 
-    // Include WordPress media functions
+    // Include WordPress media functions if not already included
     if (!function_exists('media_sideload_image')) {
         require_once ABSPATH . 'wp-admin/includes/file.php';
         require_once ABSPATH . 'wp-admin/includes/media.php';
@@ -267,7 +267,7 @@ function create_post_from_testbericht_with_title_and_image() {
             // Build the post content (keep all <h2> tags in the content)
             $post_content = "
             <div class='post-hero'>
-                <img src='$image_url' alt='$post_title' />
+                " . (!empty($image_url) ? "<img src='$image_url' alt='" . esc_attr($post_title) . "' />" : "") . "
             </div>
             <div class='post-content'>
                 $testbericht_content
@@ -307,10 +307,6 @@ function create_post_from_testbericht_with_title_and_image() {
         error_log("The 'testbericht' column is empty, or no row found with ID $row_id.");
     }
 }
-
-
-
-add_action('init', 'create_post_from_html_pages');
 
 // -------------------------------- Admin Dashboard Button for post testbericht -------------------------------- //
 

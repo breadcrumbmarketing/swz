@@ -107,23 +107,24 @@ article p {
 <div class="testbericht-container">
     <?php while (have_posts()) : the_post(); ?>
 
-        <!-- Render Post Title as H1 -->
-        <h1 class="post-title"><?php the_title(); ?></h1>
+        <!-- Manually Add the Post Title as H1 -->
+        <h1 class="post-title"><?php echo esc_html(get_the_title()); ?></h1>
 
         <!-- Hero Image -->
         <div class="post-hero">
             <?php if (has_post_thumbnail()) : ?>
-                <img src="<?php the_post_thumbnail_url('full'); ?>" alt="<?php the_title(); ?>">
+                <img src="<?php the_post_thumbnail_url('full'); ?>" alt="<?php echo esc_attr(get_the_title()); ?>">
             <?php endif; ?>
         </div>
 
-        <!-- Post Content (including <h2> tags) -->
+        <!-- Post Content -->
         <div class="post-content">
             <?php the_content(); ?>
         </div>
 
     <?php endwhile; ?>
 </div>
+
 
 
 
