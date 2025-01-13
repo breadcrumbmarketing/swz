@@ -149,6 +149,15 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     font-weight: bold;
     margin-bottom: 8px; /* Space below the brand/model title */
 }
+.gallery-container .text-container .h2 {
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 1.5rem !important;
+    color: black !important;
+    margin-bottom: 5px !important;
+    text-align: left !important;
+    margin-left: 15px !important;
+    font-weight: bold !important;
+}
 
 .gallery-card .text-container h3 {
     font-size: 16px;
