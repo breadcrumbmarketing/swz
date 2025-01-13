@@ -15,7 +15,6 @@ get_header(); ?>
         </div>
 
         <div class="post-content">
-            <h1><?php the_title(); ?></h1>
             <?php the_content(); ?>
         </div>
     <?php endwhile; ?>

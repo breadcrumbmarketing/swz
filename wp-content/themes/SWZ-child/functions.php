@@ -231,7 +231,7 @@ if (!function_exists('create_html_pages_from_database')) {
 add_action('init', 'create_html_pages_from_database');
 
 // -------------------------------- Dynamic Post Creation -------------------------------- //
-function test_create_single_post() {
+function create_post_from_testbericht_column() {
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'html_pages'; // Custom table name
@@ -250,36 +250,18 @@ function test_create_single_post() {
     if ($row) {
         $title = $row->title;
         $slug = $row->slug;
-        $content = $row->content;
+        $testbericht_content = $row->testbericht; // Fetch content from the new 'testbericht' column
         $image_url = $row->image;
 
-        // Parse the content with DOMDocument
-        $dom = new DOMDocument();
-        @$dom->loadHTML($content);
-        $xpath = new DOMXPath($dom);
-
-        // Locate the <div> containing "testReport_title"
-        $container = $xpath->query("//div[input[@name='fieldname' and @value='testReport_title']]");
-
-        if ($container->length > 0) {
-            // Extract the content of the <div>
-            $start_div = $container->item(0);
-            $testReportHtml = $dom->saveHTML($start_div);
-
-            // Append subsequent sibling elements (if needed)
-            $currentNode = $start_div->nextSibling;
-            while ($currentNode) {
-                $testReportHtml .= $dom->saveHTML($currentNode);
-                $currentNode = $currentNode->nextSibling;
-            }
-
-            // Build post content
+        // Check if the 'testbericht' column has content
+        if (!empty($testbericht_content)) {
+            // Build the post content using the 'testbericht' data
             $post_content = "
             <div class='post-hero'>
                 <img src='$image_url' alt='$title' />
             </div>
             <div class='post-content'>
-                $testReportHtml
+                $testbericht_content
             </div>
             ";
 
@@ -314,12 +296,13 @@ function test_create_single_post() {
                 error_log("Post with slug '$slug' already exists.");
             }
         } else {
-            error_log('No container with "testReport_title" found in the content.');
+            error_log("The 'testbericht' column is empty for row ID $row_id.");
         }
     } else {
         error_log("No row found with ID $row_id.");
     }
 }
+
 
 add_action('init', 'create_post_from_html_pages');
 
