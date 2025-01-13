@@ -343,13 +343,13 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 .h2 {
-    font-family: 'Poppins', sans-serif; 
-    font-size: 1.5em;
-    color: black;
-    margin-bottom: 5px;
-    text-align: left;
-    margin-left: 15px;
-    font-weight: bold;
+    font-family: 'Poppins', sans-serif !important; 
+    font-size: 1.5em !important; 
+    color: black !important; 
+    margin-bottom: 5px !important; 
+    text-align: left !important; 
+    margin-left: 15px !important; 
+    font-weight: bold !important; 
 }
 </style>
 <div class="gallery-container">
