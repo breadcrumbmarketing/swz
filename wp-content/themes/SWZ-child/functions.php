@@ -244,13 +244,16 @@ function create_posts_from_testbericht_with_title_and_image() {
     }
 
     // Fetch all rows with non-empty testbericht column
-    $rows = $wpdb->get_results("SELECT id, testbericht, car_brand, car_model, image FROM $table_name WHERE testbericht IS NOT NULL");
+    $rows = $wpdb->get_results("SELECT id, testbericht, car_brand, car_model, price, co2, power, image FROM $table_name WHERE testbericht IS NOT NULL");
 
     if ($rows) {
         foreach ($rows as $row) {
             $testbericht_content = $row->testbericht; 
             $car_brand = $row->car_brand;
             $car_model = $row->car_model;
+            $price = $row->price;
+            $co2 = $row->co2;
+            $power = $row->power;
             $image_url = $row->image;
 
             // Generate the title
@@ -279,6 +282,11 @@ function create_posts_from_testbericht_with_title_and_image() {
                     'post_type'      => 'post',
                     'meta_input'     => [
                         '_wp_page_template' => 'testbericht.php', // Assign the Testbericht template
+                        'car_brand'         => $car_brand,
+                        'car_model'         => $car_model,
+                        'price'             => $price,
+                        'co2'               => $co2,
+                        'power'             => $power,
                     ],
                 ];
 
@@ -324,6 +332,7 @@ add_action('init', function () {
         create_posts_from_testbericht_with_title_and_image();
     }
 });
+
 
 // -------------------------------- Admin Dashboard Button -------------------------------- //
 
