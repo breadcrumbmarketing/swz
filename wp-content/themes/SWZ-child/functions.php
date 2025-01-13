@@ -309,10 +309,11 @@ add_action('init', 'create_post_from_html_pages');
 // -------------------------------- Admin Dashboard Button for post testbericht -------------------------------- //
 
 add_action('init', function () {
-    if (is_admin() && current_user_can('manage_options')) { // Restrict execution to admin users
-        test_create_single_post();
+    if (is_admin() && current_user_can('manage_options')) { // Only allow admins
+        create_post_from_testbericht_column();
     }
 });
+
 
 
 // -------------------------------- Admin Dashboard Button -------------------------------- //
