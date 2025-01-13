@@ -19,9 +19,12 @@ $args = array(
     'posts_per_page' => 12,
     'paged'          => $current_page,
     'category_name'  => 'testbericht', // Only include posts from "Testbericht" category
+    'meta_query'     => array(
+        'relation' => 'AND', // Ensures multiple conditions work together
+    ),
 );
 
-// Add brand and model query if selected
+// Add brand and model filters if selected
 if (!empty($selected_brand)) {
     $args['meta_query'][] = array(
         'key'     => 'car_brand',
@@ -57,7 +60,7 @@ foreach ($all_posts as $post) {
     if (!empty($brand)) {
         $brands[$brand] = $brand;
     }
-    if (!empty($model)) {
+    if (!empty($model) && $selected_brand === $brand) { // Filter models based on the selected brand
         $models[$model] = $model;
     }
 }
@@ -74,6 +77,20 @@ asort($models); // Sort models alphabetically
 /* Apply Poppins font */
 body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p {
     font-family: 'Poppins', sans-serif;
+}
+
+.text-container .excerpt {
+    margin: 10px 0; /* Adds spacing above and below the excerpt */
+    font-size: 14px; /* Font size for better readability */
+    line-height: 1.5; /* Improves text readability */
+    color: #666; /* Sets a softer color for the excerpt */
+    overflow: hidden; /* Ensures no overflow */
+    text-overflow: ellipsis; /* Adds ellipsis for overflow */
+    -webkit-line-clamp: 3; /* Limit excerpt to 3 lines */
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    height: auto; /* Automatically adjust height based on content */
+    max-height: 4.5em; /* Adjust height for 3 lines */
 }
 /* Override background for the Gallery Template page */
 body.gallery-template-page {
