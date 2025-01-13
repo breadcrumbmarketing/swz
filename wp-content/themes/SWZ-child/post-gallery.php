@@ -351,7 +351,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     }
 }
 
-.h2 {
+.h3 {
     font-family: 'Poppins', sans-serif !important; 
     font-size: 1.5rem !important; 
     color: black !important; 
