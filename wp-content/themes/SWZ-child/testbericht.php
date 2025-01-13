@@ -7,8 +7,7 @@ get_header(); ?>
 
 <style>
 
-/* General Body Styling */
-
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 
             .entry-title { /* Adjust the selector as per your theme */
@@ -18,18 +17,20 @@ get_header(); ?>
 
 
             /* rest */
-            body {
-    font-family: 'Arial', sans-serif;
+        html    body {
+            width: 100vw !important;
+            height: 100% !important;
+            font-family: 'Poppins', sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #f9f9f9; /* Light background for readability */
+    background-color: #ffffff !important; /* Light background for readability */
     color: #333; /* Dark gray for text */
 }
 
 /* Container for Post Content */
 .testbericht-container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 40px auto;
     padding: 20px;
     background-color: #ffffff; /* White background */
@@ -50,11 +51,11 @@ get_header(); ?>
 .temp-content-section-heading3 {
     font-size: 24px;
     font-weight: bold;
-    color: #0073aa; /* WordPress blue for emphasis */
+    color: #DE4F3E; /* WordPress blue for emphasis */
     border-bottom: 2px solid #e0e0e0; /* Subtle underline */
     margin-bottom: 15px;
     padding-bottom: 5px;
-}
+    font-family: 'Poppins', sans-serif;}
 
 /* Background-Colored Sections */
 .edit-bgcolor {
@@ -62,6 +63,7 @@ get_header(); ?>
     padding: 15px;
     border-radius: 6px;
     margin-bottom: 20px;
+    margin-top: -70px;
 }
 
 /* Article Styling */
@@ -72,8 +74,11 @@ article {
     border-radius: 8px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
 }
-
+.temp-content-section-heading3.edit-bgcolor {
+    display: none !Important;
+}
 /* Subheadings (H3) Styling */
 article h3 {
     font-size: 20px;
@@ -81,8 +86,9 @@ article h3 {
     color: #333;
     margin-top: 20px;
     margin-bottom: 10px;
-    border-left: 4px solid #0073aa; /* Blue accent for subheadings */
+    border-left: 4px solid #DE4F3E; /* Blue accent for subheadings */
     padding-left: 10px;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* Paragraph Styling */
@@ -90,30 +96,57 @@ article p {
     font-size: 16px;
     color: #555; /* Medium gray for readability */
     margin-bottom: 15px;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* Responsive Design */
 @media screen and (max-width: 768px) {
     .testbericht-container {
         padding: 15px;
+        
     }
 
     .temp-content-section-heading3 {
         font-size: 20px;
+      
     }
 
     article h3 {
         font-size: 18px;
+       
     }
 
     article p {
         font-size: 15px;
+      
     }
 }
-
-
+.post-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+.back-button {
+    display: flex;
+    justify-content: center;  
+    align-items: center;  
+    margin: 0 auto;  
+    background-color: #DE4F3E;
+    color: white;
+    border-radius: 12px;
+    padding-left: 40px;
+    padding-right: 40px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    border: solid 2px;
+}
+.back-button:hover {
+    background-color: transparent;
+    color: #DE4F3E;
+    border-color: #DE4F3E;
+    border: solid 2px;
+}   
         </style>
-
 
 <div class="testbericht-container">
     <?php while (have_posts()) : the_post(); ?>
@@ -132,6 +165,7 @@ article p {
         <div class="post-content">
             <?php the_content(); ?>
         </div>
+        <button onclick="window.history.back();" class="back-button">Zurück</button>
 
     <?php endwhile; ?>
 </div>
