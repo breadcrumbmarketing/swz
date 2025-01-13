@@ -138,7 +138,7 @@ function handle_write_html_page($data) {
 // Function to check API key permission
 function check_api_key_permission($request) {
     $api_key = $request->get_header('API-Key');
-    if ($api_key === 'swz_aschaffenburg_breadcrumb_hamy') { // Replace with your secure API key
+    if ($api_key === 'swz_aschaffenburg_breadcrumb_hamy') { 
         return true;
     }
     return new WP_REST_Response('Unauthorized', 401);
