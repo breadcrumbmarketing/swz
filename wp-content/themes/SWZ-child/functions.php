@@ -235,7 +235,7 @@ function create_post_from_testbericht_column() {
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'html_pages'; // Custom table name
-    $row_id = 100; // ID of the row to fetch for testing
+    $row_id = 136; // ID of the row to fetch for testing
 
     // Include WordPress media functions
     if (!function_exists('media_sideload_image')) {
