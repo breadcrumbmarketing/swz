@@ -428,8 +428,8 @@ body.gallery-template-page {
             <a href="<?php the_permalink(); ?>" class="gallery-card">
                 <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');">
                 </div>
-                <h2 class="testbericht">
-    Testbericht: 
+               <!-- <h2 class="testbericht">
+    Testbericht: -->
     <?php 
         // Get the car brand and car model from the database
         $car_brand = esc_html(get_post_meta(get_the_ID(), 'car_brand', true));
