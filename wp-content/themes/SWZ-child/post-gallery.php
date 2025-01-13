@@ -165,7 +165,6 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     color: black !important; 
     margin-bottom: 5px !important; 
     text-align: left !important; 
-    margin-left: 15px !important; 
     font-weight: bold !important; 
 }
 
