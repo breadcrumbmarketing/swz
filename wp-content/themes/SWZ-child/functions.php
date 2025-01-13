@@ -251,62 +251,68 @@ function test_create_single_post() {
         $content = $row->content;
         $image_url = $row->image;
 
-        // Check if "testReport" exists in the HTML content
-        if (strpos($content, 'testReport') !== false) {
-            // Extract the "testReport" container
-            $dom = new DOMDocument();
-            @$dom->loadHTML($content);
-            $xpath = new DOMXPath($dom);
-            $container = $xpath->query("//div[input[@value='testReport']]");
+        // Parse the content with DOMDocument
+        $dom = new DOMDocument();
+        @$dom->loadHTML($content);
+        $xpath = new DOMXPath($dom);
 
-            if ($container->length > 0) {
-                $testReportHtml = $dom->saveHTML($container->item(0));
+        // Locate the <div> containing "testReport_title"
+        $container = $xpath->query("//div[input[@name='fieldname' and @value='testReport_title']]");
 
-                // Build post content
-                $post_content = "
-                <div class='post-hero'>
-                    <img src='$image_url' alt='$title' />
-                </div>
-                <div class='post-content'>
-                    $testReportHtml
-                </div>
-                ";
+        if ($container->length > 0) {
+            // Extract the content of the <div>
+            $start_div = $container->item(0);
+            $testReportHtml = $dom->saveHTML($start_div);
 
-                // Check if a post with this slug already exists
-                $existing_post = get_page_by_path($slug, OBJECT, 'post');
-                if (!$existing_post) {
-                    // Insert the post
-                    $post_data = [
-                        'post_title'   => $title,
-                        'post_content' => $post_content,
-                        'post_status'  => 'publish',
-                        'post_type'    => 'post',
-                        'post_name'    => $slug,
-                        'meta_input'   => ['_wp_page_template' => 'testbericht.php'], // Assign the custom template
-                    ];
+            // Append subsequent sibling elements (if needed)
+            $currentNode = $start_div->nextSibling;
+            while ($currentNode) {
+                $testReportHtml .= $dom->saveHTML($currentNode);
+                $currentNode = $currentNode->nextSibling;
+            }
 
-                    $post_id = wp_insert_post($post_data);
+            // Build post content
+            $post_content = "
+            <div class='post-hero'>
+                <img src='$image_url' alt='$title' />
+            </div>
+            <div class='post-content'>
+                $testReportHtml
+            </div>
+            ";
 
-                    if (!is_wp_error($post_id)) {
-                        // Download and set the featured image
-                        $image_id = media_sideload_image($image_url, $post_id, null, 'id');
-                        if (!is_wp_error($image_id)) {
-                            set_post_thumbnail($post_id, $image_id);
-                            error_log("Post created successfully with ID $post_id and featured image.");
-                        } else {
-                            error_log('Error in media_sideload_image: ' . $image_id->get_error_message());
-                        }
+            // Check if a post with this slug already exists
+            $existing_post = get_page_by_path($slug, OBJECT, 'post');
+            if (!$existing_post) {
+                // Insert the post
+                $post_data = [
+                    'post_title'   => $title,
+                    'post_content' => $post_content,
+                    'post_status'  => 'publish',
+                    'post_type'    => 'post',
+                    'post_name'    => $slug,
+                    'meta_input'   => ['_wp_page_template' => 'testbericht.php'], // Assign the custom template
+                ];
+
+                $post_id = wp_insert_post($post_data);
+
+                if (!is_wp_error($post_id)) {
+                    // Download and set the featured image
+                    $image_id = media_sideload_image($image_url, $post_id, null, 'id');
+                    if (!is_wp_error($image_id)) {
+                        set_post_thumbnail($post_id, $image_id);
+                        error_log("Post created successfully with ID $post_id and featured image.");
                     } else {
-                        error_log('Error in wp_insert_post: ' . $post_id->get_error_message());
+                        error_log('Error in media_sideload_image: ' . $image_id->get_error_message());
                     }
                 } else {
-                    error_log("Post with slug '$slug' already exists.");
+                    error_log('Error in wp_insert_post: ' . $post_id->get_error_message());
                 }
             } else {
-                error_log('No "testReport" container found in the content.');
+                error_log("Post with slug '$slug' already exists.");
             }
         } else {
-            error_log('"testReport" not found in the content.');
+            error_log('No container with "testReport_title" found in the content.');
         }
     } else {
         error_log("No row found with ID $row_id.");
