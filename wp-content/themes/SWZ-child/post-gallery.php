@@ -106,7 +106,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     overflow: hidden;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%; /* Ensures all cards are the same height */
+    height: 500px; /* Ensures all cards are the same height */
     text-decoration: none; /* Remove link styles */
 }
 
@@ -321,9 +321,12 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
         grid-template-columns: 1fr; /* Single column on smaller screens */
         gap: 20px;
     }
+    .gallery-card {
+        height:400px;
+    }
 
     .gallery-card .image-container {
-        height: 150px; /* Adjust image height */
+        height: 250px; /* Adjust image height */
     }
 
     .gallery-card .text-container {
