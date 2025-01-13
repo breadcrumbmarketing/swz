@@ -310,7 +310,6 @@ body.gallery-template-page {
     font-weight: bold;
 }
 
-
 .text-container h2.testbericht {
     margin-bottom: 0; /* Reduces the space between the 'Testbericht' and the title */
     font-size: 1.5em; /* Adjust the font size if needed */
@@ -428,8 +427,7 @@ body.gallery-template-page {
             <a href="<?php the_permalink(); ?>" class="gallery-card">
                 <div class="image-container" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large') ?: 'https://via.placeholder.com/300'; ?>');">
                 </div>
-               <!-- <h2 class="testbericht">
-    Testbericht: -->
+                <h2 class="testbericht">
     <?php 
         // Get the car brand and car model from the database
         $car_brand = esc_html(get_post_meta(get_the_ID(), 'car_brand', true));
@@ -438,6 +436,7 @@ body.gallery-template-page {
         // Concatenate the car brand and car model with a space in between
         echo $car_brand . ' ' . $car_model;
     ?>
+</h2>
 </h2>                <div class="text-container">
                     <h3><?php the_title(); ?></h3>
                     <p class="more-info">Mehr lesen</p>
