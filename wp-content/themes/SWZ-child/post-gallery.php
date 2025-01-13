@@ -227,16 +227,26 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Pagination */
+
+/* Pagination Container */
 .pagination-container {
     display: flex;
     justify-content: center;
+    align-items: center;
+    width: 100%;
     padding: 20px 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(37, 37, 37, 0.9);  
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);  
+    z-index: 1000;  
 }
 
+/* Pagination Links */
 .paginationgswz {
     display: flex;
-    gap: 10px;
+    gap: 10px; /* Space between pagination items */
 }
 
 .paginationgswz a,
@@ -244,20 +254,53 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     display: inline-block;
     padding: 8px 12px;
     text-decoration: none;
+    color: #333;
     font-size: 14px;
     font-weight: 500;
     border-radius: 4px;
-    background-color: #f0f0f0;
-    color: #DE4F3E;
-    transition: background-color 0.3s ease;
-}
-
-.paginationgswz a:hover,
-.paginationgswz span.current {
-    background-color: #DE4F3E;
+    transition: all 0.3s ease;
     color: white;
 }
 
+/* Current Page */
+.paginationgswz span.current {
+  /*  background-color: #DE4F3E!important; /* Highlight color for current page */
+  border: solid 2px  #DE4F3E;
+    color: white;
+    border-radius: 4px;
+}
+
+/* Hover Effect */
+.paginationgswz a:hover {
+    background-color: #f0f0f0; /* Light background on hover */
+    color: #DE4F3E !important; /* Change text color on hover */
+}
+
+/* Previous and Next Buttons */
+.paginationgswz .prev,
+.paginationgswz .next {
+    font-weight: 600;
+    background-color: #f0f0f0; /* Light background for prev/next buttons */
+    border-radius: 4px;
+    color:  #DE4F3E;
+}
+
+.paginationgswz .prev:hover,
+.paginationgswz .next:hover {
+    background-color: #DE4F3E !important; /* Highlight on hover */
+    color: #fff !important;
+}
+
+/* Disabled Buttons (if applicable) */
+.paginationgswz .disabled {
+    color: #ccc;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.custom-logo-link {
+    display: none !important;
+}
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .gallery-grid {
