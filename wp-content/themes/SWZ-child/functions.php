@@ -235,7 +235,7 @@ function create_post_from_testbericht_column() {
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'html_pages'; // Custom table name
-    $row_id = 136; // ID of the row to fetch for testing
+    $row_id = 100; // ID of the row to fetch for testing
 
     // Include WordPress media functions
     if (!function_exists('media_sideload_image')) {
@@ -250,10 +250,10 @@ function create_post_from_testbericht_column() {
     if ($row) {
         $title = $row->title;
         $slug = $row->slug;
-        $testbericht_content = $row->testbericht; // Fetch content from the new 'testbericht' column
+        $testbericht_content = $row->testbericht; // Use the 'testbericht' column
         $image_url = $row->image;
 
-        // Check if the 'testbericht' column has content
+        // Ensure 'testbericht' content is available
         if (!empty($testbericht_content)) {
             // Build the post content using the 'testbericht' data
             $post_content = "
@@ -302,6 +302,7 @@ function create_post_from_testbericht_column() {
         error_log("No row found with ID $row_id.");
     }
 }
+
 
 
 add_action('init', 'create_post_from_html_pages');
