@@ -144,7 +144,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 }
 
 .gallery-card .text-container h2.testbericht {
-    font-size: 1em;
+    font-size: 1.5rem;
     color: #333;
     font-weight: bold;
     margin-bottom: 8px; /* Space below the brand/model title */
@@ -344,7 +344,7 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
 
 .h2 {
     font-family: 'Poppins', sans-serif !important; 
-    font-size: 1.5em !important; 
+    font-size: 1.5rem !important; 
     color: black !important; 
     margin-bottom: 5px !important; 
     text-align: left !important; 
