@@ -220,6 +220,13 @@ background-color: transparent !important ;
     .accordion-tab-title-wrapper {
         font-size: 0.85rem !important; /* Adjust font size for mobile */
     }
+    h1 {
+    font-family: 'Poppins', sans-serif!important;
+    font-size: 1.1rem!important;
+    font-weight: 600 !important; 
+    justify-content: left !important;
+
+}
 }
 .back-button {
     display: block;
@@ -272,6 +279,7 @@ h1 {
     justify-content: left !important;
 
 }
+
 </style>
 </head>
 <body>
