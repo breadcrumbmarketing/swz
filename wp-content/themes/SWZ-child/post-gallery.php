@@ -352,6 +352,17 @@ body, .filter-bar select, .filter-bar button, .gallery-card h3, .gallery-card p 
     .gallery-card .text-container .excerpt {
         font-size: 13px; /* Smaller excerpt font size */
     }
+    .filter-bar form {
+        flex-direction: column; /* Stack filter dropdowns vertically on mobile */
+        gap: 10px; /* Add spacing between dropdowns */
+    }
+
+    .filter-bar select,
+    .filter-bar button {
+        width: 100%; /* Make dropdowns and buttons full width */
+        font-size: 14px; /* Adjust font size for mobile */
+      
+    }
 }
 
 
