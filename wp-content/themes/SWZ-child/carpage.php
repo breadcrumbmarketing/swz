@@ -224,7 +224,8 @@ background-color: transparent !important ;
     font-family: 'Poppins', sans-serif!important;
     font-size: 1.1rem!important;
     font-weight: 600 !important; 
-    justify-content: left !important;
+    text-align:left  !important;
+    
 
 }
 }
@@ -276,7 +277,8 @@ h1 {
     font-family: 'Poppins', sans-serif!important;
     font-size: 1.7rem!important;
     font-weight: 700 !important; 
-    justify-content: left !important;
+    text-align:left  !important;
+
 
 }
 
