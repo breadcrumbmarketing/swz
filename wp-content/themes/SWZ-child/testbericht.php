@@ -124,6 +124,7 @@ article p {
 .post-title {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
+    font-size: 2rem; 
 }
 .back-button {
     display: flex !important;
