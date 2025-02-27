@@ -35,10 +35,10 @@
                             <div class="aci-form-row">
                                 <label for="upload_delimiter"><?php _e('CSV-Trennzeichen:', 'auto-car-importer'); ?></label>
                                 <select name="delimiter" id="upload_delimiter">
-                                    <option value=","><?php _e('Komma (,)', 'auto-car-importer'); ?></option>
-                                    <option value=";"><?php _e('Semikolon (;)', 'auto-car-importer'); ?></option>
-                                    <option value="\t"><?php _e('Tabulator (Tab)', 'auto-car-importer'); ?></option>
-                                </select>
+    <option value=";"><?php _e('Semikolon (;)', 'auto-car-importer'); ?></option>
+    <option value=","><?php _e('Komma (,)', 'auto-car-importer'); ?></option>
+    <option value="\t"><?php _e('Tabulator (Tab)', 'auto-car-importer'); ?></option>
+</select>
                             </div>
                             
                             <div class="aci-form-row">

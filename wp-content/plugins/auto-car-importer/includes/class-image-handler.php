@@ -223,4 +223,77 @@ class ACI_Image_Handler {
         
         return array_values($car_images); // Indizes zurücksetzen, damit wir ein sequentielles Array zurückgeben
     }
+
+
+    /**
+ * Wandelt CSV-Daten in das richtige Format für ACF-Felder um und überspringt fehlende Felder
+ * 
+ * @param array $csv_data Die Rohdaten aus der CSV
+ * @return array Konvertierte Daten für ACF-Felder
+ */
+public function convert_csv_data_for_acf($csv_data) {
+    $mapping = $this->get_csv_field_mapping();
+    $converted_data = array();
+    
+    foreach ($csv_data as $key => $value) {
+        // Prüfen, ob ein Mapping für dieses Feld existiert
+        if (isset($mapping[$key])) {
+            $acf_field = $mapping[$key];
+            
+            // Prüfen, ob das ACF-Feld existiert
+            if (!$this->acf_field_exists($acf_field)) {
+                $this->logger->log('ACF-Feld nicht gefunden, wird übersprungen: ' . $acf_field, 'warning');
+                continue; // Feld überspringen
+            }
+            
+            // Spezielle Konvertierungen für bestimmte Feldtypen
+            switch ($acf_field) {
+                // Boolesche Felder (0/1 zu true/false)
+                case 'mwst':
+                case 'oldtimer':
+                case 'beschaedigtes_fahrzeug':
+                case 'metallic':
+                case 'jahreswagen':
+                case 'neufahrzeug':
+                case 'unsere_empfehlung':
+                // Hier können weitere boolesche Felder hinzugefügt werden
+                    $converted_data[$acf_field] = ($value == '1');
+                    break;
+                
+                // Numerische Felder
+                case 'leistung':
+                case 'ccm':
+                case 'kilometer':
+                case 'preis':
+                // Hier können weitere numerische Felder hinzugefügt werden
+                    $converted_data[$acf_field] = is_numeric($value) ? (float)$value : $value;
+                    break;
+                
+                // Textfelder bleiben unverändert
+                default:
+                    $converted_data[$acf_field] = $value;
+                    break;
+            }
+        }
+    }
+    
+    return $converted_data;
+}
+
+/**
+ * Prüft, ob ein ACF-Feld existiert
+ * 
+ * @param string $field_name Der Name des ACF-Feldes
+ * @return bool True, wenn das Feld existiert, ansonsten False
+ */
+private function acf_field_exists($field_name) {
+    // Wenn ACF nicht aktiv ist, immer false zurückgeben
+    if (!function_exists('acf_get_field')) {
+        return false;
+    }
+    
+    // Prüfen, ob das Feld existiert
+    $field = acf_get_field("field_" . $field_name);
+    return !empty($field);
+}
 }
