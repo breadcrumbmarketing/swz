@@ -28,6 +28,7 @@ require_once ACI_PLUGIN_DIR . 'includes/class-image-handler.php';
 require_once ACI_PLUGIN_DIR . 'includes/class-sync-manager.php';
 require_once ACI_PLUGIN_DIR . 'includes/class-logger.php';
 require_once ACI_PLUGIN_DIR . 'includes/class-ftp-handler.php';
+require_once ACI_PLUGIN_DIR . 'includes/class-acf-manager.php';
 
 /**
  * Hauptklasse für das Plugin
@@ -44,6 +45,7 @@ class Auto_Car_Importer {
     private $sync_manager;
     private $logger;
     private $ftp_handler;
+    private $acf_manager;
     
     /**
      * Konstruktor
@@ -63,6 +65,9 @@ class Auto_Car_Importer {
         // Custom Post Type Manager initialisieren
         $this->cpt_manager = new ACI_CPT_Manager();
         
+        // ACF Manager initialisieren
+        $this->acf_manager = new ACI_ACF_Manager($this->logger);
+        
         // FTP-Handler initialisieren
         $this->ftp_handler = new ACI_FTP_Handler($this->logger);
         
@@ -80,7 +85,8 @@ class Auto_Car_Importer {
         // Sync-Manager initialisieren
         $this->sync_manager = new ACI_Sync_Manager(
             $this->csv_processor, 
-            $this->image_handler, 
+            $this->image_handler,
+            $this->acf_manager,
             $this->logger
         );
         

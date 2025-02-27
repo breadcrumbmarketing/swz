@@ -92,40 +92,91 @@ class ACI_CSV_Processor {
     }
     
     /**
-     * Prüfen, ob die CSV Daten gültige Sportwagen-Daten enthalten
-     * 
-     * @param array $data Die CSV-Daten
-     * @return bool|WP_Error True wenn gültig, WP_Error bei Fehler
-     */
-    public function validate_car_data($data) {
-        if (!is_array($data) || empty($data)) {
-            return new WP_Error('invalid_data', __('Keine gültigen CSV-Daten vorhanden.', 'auto-car-importer'));
+ * Prüfen, ob die CSV Daten gültige Sportwagen-Daten enthalten
+ * 
+ * @param array $data Die CSV-Daten
+ * @return bool|WP_Error True wenn gültig, WP_Error bei Fehler
+ */
+public function validate_car_data($data) {
+    if (!is_array($data) || empty($data)) {
+        return new WP_Error('invalid_data', __('Keine gültigen CSV-Daten vorhanden.', 'auto-car-importer'));
+    }
+    
+    $required_fields = array('interne_nummer');
+    $validation_errors = array();
+    
+    // Allgemeine Struktur der Daten prüfen
+    foreach ($data as $index => $car) {
+        $row_number = $index + 2; // +2 wegen Header-Zeile und 0-basiertem Index
+        
+        // Prüfen, ob mindestens eine der Identifikationsnummern vorhanden ist
+        if (empty($car['interne_nummer']) && empty($car['bild_id'])) {
+            $validation_errors[] = sprintf(
+                __('Zeile %d: Weder interne_nummer noch bild_id ist angegeben.', 'auto-car-importer'),
+                $row_number
+            );
+            continue;
         }
         
-        $required_fields = array('interne_nummer');
-        $validation_errors = array();
-        
-        foreach ($data as $index => $car) {
-            $row_number = $index + 2; // +2 wegen Header-Zeile und 0-basiertem Index
-            
-            // Prüfen, ob mindestens eine der Identifikationsnummern vorhanden ist
-            if (empty($car['interne_nummer']) && empty($car['bild_id'])) {
+        // Pflichtfelder prüfen
+        foreach ($required_fields as $field) {
+            if (!isset($car[$field]) || $car[$field] === '') {
                 $validation_errors[] = sprintf(
-                    __('Zeile %d: Weder interne_nummer noch bild_id ist angegeben.', 'auto-car-importer'),
-                    $row_number
+                    __('Zeile %d: Pflichtfeld "%s" fehlt oder ist leer.', 'auto-car-importer'),
+                    $row_number,
+                    $field
                 );
             }
         }
         
-        if (!empty($validation_errors)) {
-            $error_message = implode("\n", $validation_errors);
-            $this->logger->log('Validierungsfehler: ' . $error_message, 'error');
-            return new WP_Error('validation_error', $error_message);
+        // Gültigkeit der Daten prüfen
+        if (isset($car['kilometer']) && !empty($car['kilometer']) && !is_numeric($car['kilometer'])) {
+            $validation_errors[] = sprintf(
+                __('Zeile %d: Kilometerwert "%s" ist keine gültige Zahl.', 'auto-car-importer'),
+                $row_number,
+                $car['kilometer']
+            );
         }
         
-        return true;
+        if (isset($car['preis']) && !empty($car['preis']) && !is_numeric($car['preis'])) {
+            $validation_errors[] = sprintf(
+                __('Zeile %d: Preiswert "%s" ist keine gültige Zahl.', 'auto-car-importer'),
+                $row_number,
+                $car['preis']
+            );
+        }
+        
+        if (isset($car['leistung']) && !empty($car['leistung']) && !is_numeric($car['leistung'])) {
+            $validation_errors[] = sprintf(
+                __('Zeile %d: Leistungswert "%s" ist keine gültige Zahl.', 'auto-car-importer'),
+                $row_number,
+                $car['leistung']
+            );
+        }
+        
+        // Boolean-Felder prüfen
+        $boolean_fields = array('mwst', 'oldtimer', 'beschaedigtes_fahrzeug', 'metallic', 'jahreswagen', 'neufahrzeug');
+        foreach ($boolean_fields as $field) {
+            if (isset($car[$field]) && !empty($car[$field]) && !in_array($car[$field], array('0', '1', ''), true)) {
+                $validation_errors[] = sprintf(
+                    __('Zeile %d: Feld "%s" muss 0 oder 1 sein, ist aber "%s".', 'auto-car-importer'),
+                    $row_number,
+                    $field,
+                    $car[$field]
+                );
+            }
+        }
     }
     
+    // Wenn Fehler gefunden wurden, diese zurückgeben
+    if (!empty($validation_errors)) {
+        $error_message = implode("\n", $validation_errors);
+        $this->logger->log('Validierungsfehler: ' . $error_message, 'error');
+        return new WP_Error('validation_error', $error_message);
+    }
+    
+    return true;
+} 
  /**
  * CSV-Datei aus einer ZIP-Datei extrahieren
  * 

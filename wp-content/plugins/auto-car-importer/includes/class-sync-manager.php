@@ -15,6 +15,11 @@ class ACI_Sync_Manager {
     private $image_handler;
     
     /**
+     * ACF Manager Instanz
+     */
+    private $acf_manager;
+    
+    /**
      * Logger Instanz
      */
     private $logger;
@@ -37,110 +42,14 @@ class ACI_Sync_Manager {
      * 
      * @param ACI_CSV_Processor $csv_processor CSV Processor Instanz
      * @param ACI_Image_Handler $image_handler Image Handler Instanz
+     * @param ACI_ACF_Manager $acf_manager ACF Manager Instanz
      * @param ACI_Logger $logger Logger Instanz
      */
-    public function __construct($csv_processor, $image_handler, $logger) {
+    public function __construct($csv_processor, $image_handler, $acf_manager, $logger) {
         $this->csv_processor = $csv_processor;
         $this->image_handler = $image_handler;
+        $this->acf_manager = $acf_manager;
         $this->logger = $logger;
-    }
-    
-    /**
-     * Fahrzeugdaten aus CSV-Datei importieren
-     * 
-     * @param string $csv_path Pfad zur CSV-Datei
-     * @param array $options Import-Optionen
-     * @return array Statistiken des Import-Vorgangs
-     */
-    public function import_cars_from_csv($csv_path, $options = array()) {
-        // Standardoptionen
-        $default_options = array(
-            'delimiter' => ',',
-            'enclosure' => '"',
-            'update_existing' => true,
-            'skip_without_images' => false,
-        );
-        
-        $options = wp_parse_args($options, $default_options);
-        
-        // CSV-Daten verarbeiten
-        $car_data = $this->csv_processor->process_csv($csv_path, $options['delimiter'], $options['enclosure']);
-        
-        if (is_wp_error($car_data)) {
-            $this->logger->log('Fehler bei der CSV-Verarbeitung: ' . $car_data->get_error_message(), 'error');
-            $this->stats['errors']++;
-            return $this->stats;
-        }
-        
-        // Daten validieren
-        $validation = $this->csv_processor->validate_car_data($car_data);
-        
-        if (is_wp_error($validation)) {
-            $this->logger->log('Validierungsfehler: ' . $validation->get_error_message(), 'error');
-            $this->stats['errors']++;
-            return $this->stats;
-        }
-        
-        $this->stats['total'] = count($car_data);
-        $this->logger->log('Start des Imports von ' . $this->stats['total'] . ' Fahrzeugen', 'info');
-        
-        // CPT Manager initialisieren
-        $cpt_manager = new ACI_CPT_Manager();
-        
-        // Bilder nach ID mappieren
-        $upload_dir = wp_upload_dir();
-        $extract_dir = $upload_dir['basedir'] . '/aci-temp/images';
-        
-        // Jedes Fahrzeug importieren
-        foreach ($car_data as $car) {
-            // Eindeutige Kennung ermitteln (bild_id hat Priorität, dann interne_nummer)
-            $car_identifier = !empty($car['bild_id']) ? $car['bild_id'] : $car['interne_nummer'];
-            
-            // Vorhandenes Fahrzeug suchen
-            $existing_car_id = null;
-            
-            if (!empty($car['bild_id'])) {
-                $existing_car_id = $cpt_manager->get_car_by_bild_id($car['bild_id']);
-            }
-            
-            if (!$existing_car_id && !empty($car['interne_nummer'])) {
-                $existing_car_id = $cpt_manager->get_car_by_interne_nummer($car['interne_nummer']);
-            }
-            
-            // Entscheiden, ob wir aktualisieren oder neu erstellen
-            if ($existing_car_id) {
-                if ($options['update_existing']) {
-                    $result = $this->update_car($existing_car_id, $car);
-                    
-                    if (is_wp_error($result)) {
-                        $this->logger->log('Fehler beim Aktualisieren des Fahrzeugs ' . $car_identifier . ': ' . $result->get_error_message(), 'error');
-                        $this->stats['errors']++;
-                    } else {
-                        $this->stats['updated']++;
-                    }
-                } else {
-                    $this->logger->log('Fahrzeug übersprungen (bereits vorhanden): ' . $car_identifier, 'info');
-                    $this->stats['skipped']++;
-                }
-            } else {
-                $result = $this->create_car($car);
-                
-                if (is_wp_error($result)) {
-                    $this->logger->log('Fehler beim Erstellen des Fahrzeugs ' . $car_identifier . ': ' . $result->get_error_message(), 'error');
-                    $this->stats['errors']++;
-                } else {
-                    $this->stats['created']++;
-                }
-            }
-        }
-        
-        $this->logger->log('Import abgeschlossen. ' . 
-            'Erstellt: ' . $this->stats['created'] . ', ' . 
-            'Aktualisiert: ' . $this->stats['updated'] . ', ' . 
-            'Übersprungen: ' . $this->stats['skipped'] . ', ' . 
-            'Fehler: ' . $this->stats['errors'], 'info');
-        
-        return $this->stats;
     }
     
     /**
@@ -153,6 +62,9 @@ class ACI_Sync_Manager {
     public function process_zip_file($zip_path, $options = array()) {
         $this->logger->log('Verarbeite ZIP-Datei: ' . $zip_path, 'info');
         
+        // Debug-Informationen zur ZIP-Datei anzeigen
+        $this->debug_zip_contents($zip_path);
+        
         // Upload-Verzeichnis vorbereiten
         $upload_dir = wp_upload_dir();
         $extract_dir = $upload_dir['basedir'] . '/aci-temp';
@@ -163,14 +75,17 @@ class ACI_Sync_Manager {
         wp_mkdir_p($csv_extract_dir);
         wp_mkdir_p($images_extract_dir);
         
-        // CSV-Datei extrahieren
-        $csv_path = $this->csv_processor->extract_csv_from_zip($zip_path, $csv_extract_dir);
+        // CSV-Datei extrahieren, mit Option für Dateinamen
+        $csv_filename = isset($options['csv_filename']) ? $options['csv_filename'] : '';
+        $csv_path = $this->csv_processor->extract_csv_from_zip($zip_path, $csv_extract_dir, $csv_filename);
         
         if (is_wp_error($csv_path)) {
             $this->logger->log('Fehler beim Extrahieren der CSV-Datei: ' . $csv_path->get_error_message(), 'error');
             $this->stats['errors']++;
             return $this->stats;
         }
+        
+        $this->logger->log('CSV-Datei gefunden und extrahiert: ' . $csv_path, 'info');
         
         // Bilder extrahieren
         $image_paths = $this->image_handler->extract_images_from_zip($zip_path, $images_extract_dir);
@@ -181,10 +96,12 @@ class ACI_Sync_Manager {
             // Trotzdem mit dem CSV-Import fortfahren
         } else {
             $this->stats['images_total'] = count($image_paths);
+            $this->logger->log($this->stats['images_total'] . ' Bilder erfolgreich extrahiert', 'info');
         }
         
         // Bilder zu Fahrzeugen zuordnen
         $image_map = $this->image_handler->map_images_to_cars($image_paths);
+        $this->logger->log('Bilder zu ' . count($image_map) . ' Fahrzeugen zugeordnet', 'info');
         
         // CSV-Daten importieren
         $csv_data = $this->csv_processor->process_csv($csv_path, $options['delimiter'] ?? ',', $options['enclosure'] ?? '"');
@@ -194,6 +111,8 @@ class ACI_Sync_Manager {
             $this->stats['errors']++;
             return $this->stats;
         }
+        
+        $this->logger->log('CSV-Verarbeitung abgeschlossen. ' . count($csv_data) . ' Datensätze gefunden.', 'info');
         
         // Daten validieren
         $validation = $this->csv_processor->validate_car_data($csv_data);
@@ -306,8 +225,8 @@ class ACI_Sync_Manager {
         );
         
         // Beschreibung als Inhalt, falls vorhanden
-        if (!empty($car_data['beschreibung'])) {
-            $post_data['post_content'] = $car_data['beschreibung'];
+        if (!empty($car_data['bemerkung'])) {
+            $post_data['post_content'] = $car_data['bemerkung'];
         }
         
         // Post erstellen
@@ -318,7 +237,11 @@ class ACI_Sync_Manager {
         }
         
         // ACF-Felder aktualisieren
-        $this->update_acf_fields($post_id, $car_data);
+        $result = $this->acf_manager->update_car_acf_fields($post_id, $car_data);
+        
+        if (is_wp_error($result)) {
+            $this->logger->log('Fehler beim Aktualisieren der ACF-Felder: ' . $result->get_error_message(), 'error');
+        }
         
         // Bilder importieren, falls vorhanden
         if (!empty($car_data['_image_paths'])) {
@@ -360,8 +283,8 @@ class ACI_Sync_Manager {
         );
         
         // Beschreibung als Inhalt, falls vorhanden
-        if (!empty($car_data['beschreibung'])) {
-            $post_data['post_content'] = $car_data['beschreibung'];
+        if (!empty($car_data['bemerkung'])) {
+            $post_data['post_content'] = $car_data['bemerkung'];
         }
         
         // Post aktualisieren
@@ -372,7 +295,11 @@ class ACI_Sync_Manager {
         }
         
         // ACF-Felder aktualisieren
-        $this->update_acf_fields($post_id, $car_data);
+        $result = $this->acf_manager->update_car_acf_fields($post_id, $car_data);
+        
+        if (is_wp_error($result)) {
+            $this->logger->log('Fehler beim Aktualisieren der ACF-Felder: ' . $result->get_error_message(), 'error');
+        }
         
         // Bilder importieren, falls vorhanden
         if (!empty($car_data['_image_paths'])) {
@@ -386,37 +313,52 @@ class ACI_Sync_Manager {
     }
     
     /**
-     * Aktualisiert ACF-Felder für ein Fahrzeug
+     * Den Inhalt einer ZIP-Datei protokollieren
      * 
-     * @param int $post_id Die Post-ID des Fahrzeugs
-     * @param array $car_data Die Fahrzeugdaten
+     * @param string $zip_path Pfad zur ZIP-Datei
+     * @return void
      */
-    private function update_acf_fields($post_id, $car_data) {
-        // Prüfen, ob ACF aktiv ist
-        if (!function_exists('update_field')) {
-            $this->logger->log('ACF ist nicht aktiv, überspringe Feld-Updates', 'warning');
+    private function debug_zip_contents($zip_path) {
+        if (!file_exists($zip_path)) {
+            $this->logger->log('Fehler: ZIP-Datei für Debug nicht gefunden: ' . $zip_path, 'error');
             return;
         }
         
-        // Alle Schlüssel aus den CSV-Daten durchlaufen und als ACF-Felder speichern
-        foreach ($car_data as $key => $value) {
-            // Spezielle Schlüssel überspringen
-            if (in_array($key, array('_image_paths'))) {
-                continue;
+        try {
+            $zip = new ZipArchive();
+            if ($zip->open($zip_path) === TRUE) {
+                $this->logger->log('=== ZIP-Datei Inhalt Debug ===', 'info');
+                $this->logger->log('ZIP-Datei: ' . $zip_path, 'info');
+                $this->logger->log('Anzahl Dateien: ' . $zip->numFiles, 'info');
+                
+                // Alle Dateien auflisten
+                $files_by_type = array();
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    $filename = $zip->getNameIndex($i);
+                    $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                    
+                    if (!isset($files_by_type[$ext])) {
+                        $files_by_type[$ext] = array();
+                    }
+                    
+                    $files_by_type[$ext][] = $filename;
+                }
+                
+                // Nach Dateityp gruppiert loggen
+                foreach ($files_by_type as $ext => $files) {
+                    $this->logger->log('Typ ".' . $ext . '": ' . count($files) . ' Dateien', 'info');
+                    // Maximal 10 Dateien pro Typ anzeigen, um das Log nicht zu überfüllen
+                    $sample_files = array_slice($files, 0, 10);
+                    $this->logger->log('Beispiele: ' . implode(', ', $sample_files), 'info');
+                }
+                
+                $zip->close();
+                $this->logger->log('=== Ende ZIP-Datei Debug ===', 'info');
+            } else {
+                $this->logger->log('Konnte ZIP-Datei für Debug nicht öffnen: ' . $zip_path, 'error');
             }
-            
-            // Feld aktualisieren
-            update_field($key, $value, $post_id);
-        }
-        
-        // Interne Nummer als Metadaten speichern (für schnelle Suche)
-        if (!empty($car_data['interne_nummer'])) {
-            update_post_meta($post_id, 'interne_nummer', $car_data['interne_nummer']);
-        }
-        
-        // Bild-ID als Metadaten speichern (für schnelle Suche)
-        if (!empty($car_data['bild_id'])) {
-            update_post_meta($post_id, 'bild_id', $car_data['bild_id']);
+        } catch (Exception $e) {
+            $this->logger->log('Fehler beim Debug der ZIP-Datei: ' . $e->getMessage(), 'error');
         }
     }
     
