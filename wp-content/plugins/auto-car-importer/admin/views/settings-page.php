@@ -58,7 +58,11 @@
                     </div>
                 </div>
             </div>
-            
+            <div class="aci-form-row">
+    <label for="aci_csv_filename"><?php _e('CSV-Dateiname:', 'auto-car-importer'); ?></label>
+    <input type="text" id="aci_csv_filename" name="aci_csv_filename" value="<?php echo esc_attr(get_option('aci_csv_filename', '')); ?>" class="regular-text">
+    <p class="description"><?php _e('Optional: Geben Sie den Namen der CSV-Datei im ZIP-Archiv an. Lassen Sie das Feld leer, um automatisch nach CSV-Dateien zu suchen.', 'auto-car-importer'); ?></p>
+</div>
             <div class="aci-card">
                 <div class="aci-card-header">
                     <h2><?php _e('Import-Einstellungen', 'auto-car-importer'); ?></h2>

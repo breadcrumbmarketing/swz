@@ -9,6 +9,15 @@
             </div>
             <div class="aci-card-content">
                 <p><?php _e('Wählen Sie eine ZIP-Datei mit CSV-Daten und Bildern zum Importieren aus oder führen Sie einen Import über FTP durch.', 'auto-car-importer'); ?></p>
+
+                <!-- Für das Upload-Tab einfügen, nach den Einstellungen für CSV-Trennzeichen und Textbegrenzungszeichen -->
+<div class="aci-form-row">
+    <label for="upload_csv_filename"><?php _e('CSV-Dateiname (optional):', 'auto-car-importer'); ?></label>
+    <input type="text" name="csv_filename" id="upload_csv_filename" placeholder="<?php _e('Automatisch erkennen', 'auto-car-importer'); ?>">
+    <p class="description"><?php _e('Wenn die ZIP-Datei mehrere CSV-Dateien enthält, können Sie den genauen Dateinamen angeben.', 'auto-car-importer'); ?></p>
+</div>
+
+
                 
                 <div class="aci-tabs">
                     <div class="aci-tab-headers">
@@ -77,6 +86,7 @@
                             <p><?php _e('FTP-Einstellungen sind nicht vollständig konfiguriert. Bitte gehen Sie zur Einstellungsseite, um die FTP-Verbindung zu konfigurieren.', 'auto-car-importer'); ?></p>
                             <p><a href="<?php echo admin_url('admin.php?page=auto-car-importer-settings'); ?>" class="button"><?php _e('Zur Einstellungsseite', 'auto-car-importer'); ?></a></p>
                         </div>
+                        
                         <?php else: ?>
                         <form id="aci-ftp-form" method="post">
                             <div class="aci-form-row">
@@ -124,6 +134,13 @@
                                     <?php _e('Fahrzeuge ohne Bilder überspringen', 'auto-car-importer'); ?>
                                 </label>
                             </div>
+
+                            <!-- Für das FTP-Tab einfügen, nach den Einstellungen für CSV-Trennzeichen und Textbegrenzungszeichen -->
+<div class="aci-form-row">
+    <label for="ftp_csv_filename"><?php _e('CSV-Dateiname (optional):', 'auto-car-importer'); ?></label>
+    <input type="text" name="csv_filename" id="ftp_csv_filename" placeholder="<?php _e('Automatisch erkennen', 'auto-car-importer'); ?>" value="<?php echo esc_attr(get_option('aci_csv_filename', '')); ?>">
+    <p class="description"><?php _e('Wenn die ZIP-Datei mehrere CSV-Dateien enthält, können Sie den genauen Dateinamen angeben.', 'auto-car-importer'); ?></p>
+</div>
                             
                             <div class="aci-form-row aci-buttons">
                                 <button type="submit" class="button button-primary">

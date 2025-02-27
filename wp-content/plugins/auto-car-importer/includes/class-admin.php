@@ -82,6 +82,7 @@ class ACI_Admin {
         register_setting('aci_settings', 'aci_csv_enclosure');
         register_setting('aci_settings', 'aci_update_existing');
         register_setting('aci_settings', 'aci_skip_without_images');
+        register_setting('aci_settings', 'aci_csv_filename');
     }
     
     /**
@@ -154,81 +155,82 @@ class ACI_Admin {
         include ACI_PLUGIN_DIR . 'admin/views/logs-page.php';
     }
     
-    /**
-     * AJAX-Handler für Upload-Import
-     */
-    public function ajax_import_from_upload() {
-        // Nonce prüfen
-        check_ajax_referer('aci_ajax_nonce', 'nonce');
-        
-        // Berechtigungen prüfen
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('Keine Berechtigung');
-        }
-        
-        // Prüfen, ob eine Datei hochgeladen wurde
-        if (!isset($_FILES['import_file']) || $_FILES['import_file']['error'] !== UPLOAD_ERR_OK) {
-            wp_send_json_error('Keine gültige Datei hochgeladen');
-        }
-        
-        $file = $_FILES['import_file'];
-        
-        // Prüfen, ob es sich um eine ZIP-Datei handelt
-        $file_ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-        if (strtolower($file_ext) !== 'zip') {
-            wp_send_json_error('Die Datei muss im ZIP-Format sein');
-        }
-        
-        // Temporären Pfad speichern
-        $temp_file = $file['tmp_name'];
-        
-        // Optionen aus dem Formular holen
-        $options = array(
-            'delimiter' => isset($_POST['delimiter']) ? sanitize_text_field($_POST['delimiter']) : ',',
-            'enclosure' => isset($_POST['enclosure']) ? sanitize_text_field($_POST['enclosure']) : '"',
-            'update_existing' => isset($_POST['update_existing']) && $_POST['update_existing'] === 'yes',
-            'skip_without_images' => isset($_POST['skip_without_images']) && $_POST['skip_without_images'] === 'yes',
-        );
-        
-        // Upload-Verzeichnis vorbereiten
-        $upload_dir = wp_upload_dir();
-        $dest_path = $upload_dir['basedir'] . '/aci-temp/' . $file['name'];
-        
-        // Sicherstellen, dass das Zielverzeichnis existiert
-        wp_mkdir_p(dirname($dest_path));
-        
-        // Datei verschieben
-        if (!move_uploaded_file($temp_file, $dest_path)) {
-            wp_send_json_error('Fehler beim Verschieben der Datei');
-        }
-        
-        // Sync Manager initialisieren
-        $csv_processor = new ACI_CSV_Processor($this->logger);
-        $image_handler = new ACI_Image_Handler($this->logger);
-        $sync_manager = new ACI_Sync_Manager($csv_processor, $image_handler, $this->logger);
-        
-        // Import starten
-        $stats = $sync_manager->process_zip_file($dest_path, $options);
-        
-        // Import-Status speichern
-        update_option('aci_current_import_status', $stats);
-        update_option('aci_last_import_time', current_time('mysql'));
-        
-        // Erfolg melden
-        wp_send_json_success(array(
-            'stats' => $stats,
-            'message' => sprintf(
-                __('%d Fahrzeuge importiert (%d neu, %d aktualisiert, %d übersprungen, %d Fehler)', 'auto-car-importer'),
-                $stats['total'],
-                $stats['created'],
-                $stats['updated'],
-                $stats['skipped'],
-                $stats['errors']
-            )
-        ));
+ /**
+ * AJAX-Handler für Upload-Import
+ */
+public function ajax_import_from_upload() {
+    // Nonce prüfen
+    check_ajax_referer('aci_ajax_nonce', 'nonce');
+    
+    // Berechtigungen prüfen
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error('Keine Berechtigung');
     }
     
-    /**
+    // Prüfen, ob eine Datei hochgeladen wurde
+    if (!isset($_FILES['import_file']) || $_FILES['import_file']['error'] !== UPLOAD_ERR_OK) {
+        wp_send_json_error('Keine gültige Datei hochgeladen');
+    }
+    
+    $file = $_FILES['import_file'];
+    
+    // Prüfen, ob es sich um eine ZIP-Datei handelt
+    $file_ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+    if (strtolower($file_ext) !== 'zip') {
+        wp_send_json_error('Die Datei muss im ZIP-Format sein');
+    }
+    
+    // Temporären Pfad speichern
+    $temp_file = $file['tmp_name'];
+    
+    // Optionen aus dem Formular holen
+    $options = array(
+        'delimiter' => isset($_POST['delimiter']) ? sanitize_text_field($_POST['delimiter']) : ',',
+        'enclosure' => isset($_POST['enclosure']) ? sanitize_text_field($_POST['enclosure']) : '"',
+        'update_existing' => isset($_POST['update_existing']) && $_POST['update_existing'] === 'yes',
+        'skip_without_images' => isset($_POST['skip_without_images']) && $_POST['skip_without_images'] === 'yes',
+        'csv_filename' => isset($_POST['csv_filename']) ? sanitize_text_field($_POST['csv_filename']) : '',
+    );
+    
+    // Upload-Verzeichnis vorbereiten
+    $upload_dir = wp_upload_dir();
+    $dest_path = $upload_dir['basedir'] . '/aci-temp/' . $file['name'];
+    
+    // Sicherstellen, dass das Zielverzeichnis existiert
+    wp_mkdir_p(dirname($dest_path));
+    
+    // Datei verschieben
+    if (!move_uploaded_file($temp_file, $dest_path)) {
+        wp_send_json_error('Fehler beim Verschieben der Datei');
+    }
+    
+    // Sync Manager initialisieren
+    $csv_processor = new ACI_CSV_Processor($this->logger);
+    $image_handler = new ACI_Image_Handler($this->logger);
+    $sync_manager = new ACI_Sync_Manager($csv_processor, $image_handler, $this->logger);
+    
+    // Import starten
+    $stats = $sync_manager->process_zip_file($dest_path, $options);
+    
+    // Import-Status speichern
+    update_option('aci_current_import_status', $stats);
+    update_option('aci_last_import_time', current_time('mysql'));
+    
+    // Erfolg melden
+    wp_send_json_success(array(
+        'stats' => $stats,
+        'message' => sprintf(
+            __('%d Fahrzeuge importiert (%d neu, %d aktualisiert, %d übersprungen, %d Fehler)', 'auto-car-importer'),
+            $stats['total'],
+            $stats['created'],
+            $stats['updated'],
+            $stats['skipped'],
+            $stats['errors']
+        )
+    ));
+}
+
+/**
  * AJAX-Handler für FTP-Import
  */
 public function ajax_import_from_ftp() {
@@ -257,6 +259,7 @@ public function ajax_import_from_ftp() {
         'enclosure' => isset($_POST['enclosure']) ? sanitize_text_field($_POST['enclosure']) : get_option('aci_csv_enclosure', '"'),
         'update_existing' => isset($_POST['update_existing']) ? ($_POST['update_existing'] === 'yes') : (get_option('aci_update_existing', 'yes') === 'yes'),
         'skip_without_images' => isset($_POST['skip_without_images']) ? ($_POST['skip_without_images'] === 'yes') : (get_option('aci_skip_without_images', 'no') === 'yes'),
+        'csv_filename' => isset($_POST['csv_filename']) ? sanitize_text_field($_POST['csv_filename']) : get_option('aci_csv_filename', ''),
     );
     
     // FTP-Handler initialisieren

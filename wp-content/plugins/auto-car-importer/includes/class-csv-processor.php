@@ -126,14 +126,15 @@ class ACI_CSV_Processor {
         return true;
     }
     
-    /**
+ /**
  * CSV-Datei aus einer ZIP-Datei extrahieren
  * 
  * @param string $zip_path Pfad zur ZIP-Datei
  * @param string $extract_dir Zielverzeichnis für die extrahierten Dateien
+ * @param string $csv_filename Optional: Name der CSV-Datei im ZIP-Archiv
  * @return string|WP_Error Pfad zur extrahierten CSV-Datei oder WP_Error bei Fehler
  */
-public function extract_csv_from_zip($zip_path, $extract_dir) {
+public function extract_csv_from_zip($zip_path, $extract_dir, $csv_filename = '') {
     if (!file_exists($zip_path)) {
         $this->logger->log('Fehler: ZIP-Datei nicht gefunden: ' . $zip_path, 'error');
         return new WP_Error('file_not_found', __('Die ZIP-Datei wurde nicht gefunden.', 'auto-car-importer'));
@@ -154,32 +155,61 @@ public function extract_csv_from_zip($zip_path, $extract_dir) {
         return new WP_Error('zip_open_error', __('Die ZIP-Datei konnte nicht geöffnet werden.', 'auto-car-importer'));
     }
     
-    // Nach CSV-Dateien suchen
-    $csv_files = array();
-    for ($i = 0; $i < $zip->numFiles; $i++) {
-        $filename = $zip->getNameIndex($i);
-        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    // Wenn ein Dateiname angegeben wurde, direkt nach dieser Datei suchen
+    if (!empty($csv_filename)) {
+        $this->logger->log('Suche nach angegebener CSV-Datei: ' . $csv_filename, 'info');
         
-        if ($ext === 'csv') {
-            $csv_files[] = $filename;
+        // Prüfen, ob die Datei mit exaktem Namen existiert
+        if ($zip->locateName($csv_filename) !== false) {
+            $csv_file = $csv_filename;
+        } 
+        // Prüfen, ob die Datei in einem Unterverzeichnis existiert
+        else {
+            $found = false;
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $filename = $zip->getNameIndex($i);
+                if (basename($filename) === $csv_filename) {
+                    $csv_file = $filename;
+                    $found = true;
+                    break;
+                }
+            }
+            
+            if (!$found) {
+                $zip->close();
+                $this->logger->log('Fehler: Angegebene CSV-Datei nicht gefunden: ' . $csv_filename, 'error');
+                return new WP_Error('csv_not_found', __('Die angegebene CSV-Datei wurde nicht im ZIP-Archiv gefunden.', 'auto-car-importer'));
+            }
         }
-    }
-    
-    // Keine CSV-Datei gefunden
-    if (empty($csv_files)) {
-        $zip->close();
-        $file_list = array();
+    } 
+    // Ansonsten nach allen CSV-Dateien suchen
+    else {
+        $csv_files = array();
         for ($i = 0; $i < $zip->numFiles; $i++) {
-            $file_list[] = $zip->getNameIndex($i);
+            $filename = $zip->getNameIndex($i);
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            
+            if ($ext === 'csv') {
+                $csv_files[] = $filename;
+            }
         }
-        $this->logger->log('Fehler: Keine CSV-Datei in der ZIP-Datei gefunden. Enthaltene Dateien: ' . implode(', ', $file_list), 'error');
-        return new WP_Error('no_csv_found', __('Keine CSV-Datei in der ZIP-Datei gefunden.', 'auto-car-importer'));
-    }
-    
-    // Wenn mehrere CSV-Dateien gefunden wurden, nehmen wir die erste
-    $csv_file = $csv_files[0];
-    if (count($csv_files) > 1) {
-        $this->logger->log('Hinweis: Mehrere CSV-Dateien gefunden, verwende: ' . $csv_file, 'info');
+        
+        // Keine CSV-Datei gefunden
+        if (empty($csv_files)) {
+            $file_list = array();
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $file_list[] = $zip->getNameIndex($i);
+            }
+            $zip->close();
+            $this->logger->log('Fehler: Keine CSV-Datei in der ZIP-Datei gefunden. Enthaltene Dateien: ' . implode(', ', $file_list), 'error');
+            return new WP_Error('no_csv_found', __('Keine CSV-Datei in der ZIP-Datei gefunden.', 'auto-car-importer'));
+        }
+        
+        // Wenn mehrere CSV-Dateien gefunden wurden, nehmen wir die erste
+        $csv_file = $csv_files[0];
+        if (count($csv_files) > 1) {
+            $this->logger->log('Hinweis: Mehrere CSV-Dateien gefunden (' . implode(', ', $csv_files) . '), verwende: ' . $csv_file, 'info');
+        }
     }
     
     // Vollständigen Dateinamen extrahieren (inklusive Unterverzeichnis)
@@ -198,8 +228,6 @@ public function extract_csv_from_zip($zip_path, $extract_dir) {
     $this->logger->log('CSV-Datei erfolgreich extrahiert: ' . $csv_path, 'info');
     return $csv_path;
 }
-
-
 /**
  * Verarbeitet eine ZIP-Datei, extrahiert CSV und Bilder, und importiert die Daten
  * 
@@ -209,6 +237,9 @@ public function extract_csv_from_zip($zip_path, $extract_dir) {
  */
 public function process_zip_file($zip_path, $options = array()) {
     $this->logger->log('Verarbeite ZIP-Datei: ' . $zip_path, 'info');
+    
+    // Debug-Informationen zur ZIP-Datei anzeigen
+    $this->debug_zip_contents($zip_path);
     
     // Upload-Verzeichnis vorbereiten
     $upload_dir = wp_upload_dir();
@@ -220,25 +251,9 @@ public function process_zip_file($zip_path, $options = array()) {
     wp_mkdir_p($csv_extract_dir);
     wp_mkdir_p($images_extract_dir);
     
-    // Zinhalte auflisten, um bei Problemen zu helfen
-    try {
-        $zip = new ZipArchive();
-        if ($zip->open($zip_path) === TRUE) {
-            $file_list = array();
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-                $file_list[] = $zip->getNameIndex($i);
-            }
-            $this->logger->log('ZIP-Inhalt: ' . implode(', ', $file_list), 'info');
-            $zip->close();
-        } else {
-            $this->logger->log('Konnte ZIP-Inhalt nicht auflisten', 'warning');
-        }
-    } catch (Exception $e) {
-        $this->logger->log('Fehler beim Auflisten des ZIP-Inhalts: ' . $e->getMessage(), 'error');
-    }
-    
-    // CSV-Datei extrahieren
-    $csv_path = $this->csv_processor->extract_csv_from_zip($zip_path, $csv_extract_dir);
+    // CSV-Datei extrahieren, mit Option für Dateinamen
+    $csv_filename = isset($options['csv_filename']) ? $options['csv_filename'] : '';
+    $csv_path = $this->csv_processor->extract_csv_from_zip($zip_path, $csv_extract_dir, $csv_filename);
     
     if (is_wp_error($csv_path)) {
         $this->logger->log('Fehler beim Extrahieren der CSV-Datei: ' . $csv_path->get_error_message(), 'error');
@@ -287,19 +302,76 @@ public function process_zip_file($zip_path, $options = array()) {
     $this->stats['total'] = count($csv_data);
     $this->logger->log('Start des Imports von ' . $this->stats['total'] . ' Fahrzeugen mit ' . $this->stats['images_total'] . ' Bildern', 'info');
     
-    // Rest der Funktion wie zuvor...
+    // CPT Manager initialisieren
+    $cpt_manager = new ACI_CPT_Manager();
     
-    // Nach dem Import: Logge den Status
+    // Jedes Fahrzeug importieren
+    foreach ($csv_data as $car) {
+        // Eindeutige Kennung ermitteln (bild_id hat Priorität, dann interne_nummer)
+        $car_identifier = !empty($car['bild_id']) ? $car['bild_id'] : $car['interne_nummer'];
+        
+        // Bilder für dieses Fahrzeug finden
+        $car_images = $this->image_handler->get_car_images($car, $image_map);
+        
+        // Option zum Überspringen von Fahrzeugen ohne Bilder
+        if ($options['skip_without_images'] && empty($car_images)) {
+            $this->logger->log('Fahrzeug übersprungen (keine Bilder): ' . $car_identifier, 'info');
+            $this->stats['skipped']++;
+            continue;
+        }
+        
+        // Anreichern der Fahrzeugdaten mit Bildpfaden
+        $car['_image_paths'] = $car_images;
+        
+        // Vorhandenes Fahrzeug suchen
+        $existing_car_id = null;
+        
+        if (!empty($car['bild_id'])) {
+            $existing_car_id = $cpt_manager->get_car_by_bild_id($car['bild_id']);
+        }
+        
+        if (!$existing_car_id && !empty($car['interne_nummer'])) {
+            $existing_car_id = $cpt_manager->get_car_by_interne_nummer($car['interne_nummer']);
+        }
+        
+        // Entscheiden, ob wir aktualisieren oder neu erstellen
+        if ($existing_car_id) {
+            if ($options['update_existing']) {
+                $result = $this->update_car($existing_car_id, $car);
+                
+                if (is_wp_error($result)) {
+                    $this->logger->log('Fehler beim Aktualisieren des Fahrzeugs ' . $car_identifier . ': ' . $result->get_error_message(), 'error');
+                    $this->stats['errors']++;
+                } else {
+                    $this->stats['updated']++;
+                }
+            } else {
+                $this->logger->log('Fahrzeug übersprungen (bereits vorhanden): ' . $car_identifier, 'info');
+                $this->stats['skipped']++;
+            }
+        } else {
+            $result = $this->create_car($car);
+            
+            if (is_wp_error($result)) {
+                $this->logger->log('Fehler beim Erstellen des Fahrzeugs ' . $car_identifier . ': ' . $result->get_error_message(), 'error');
+                $this->stats['errors']++;
+            } else {
+                $this->stats['created']++;
+            }
+        }
+    }
+    
     $this->logger->log('Import abgeschlossen. ' . 
         'Erstellt: ' . $this->stats['created'] . ', ' . 
         'Aktualisiert: ' . $this->stats['updated'] . ', ' . 
         'Übersprungen: ' . $this->stats['skipped'] . ', ' . 
         'Fehler: ' . $this->stats['errors'], 'info');
     
+    // Temporäre Dateien aufräumen
+    $this->cleanup_temp_files($extract_dir);
+    
     return $this->stats;
 }
-
-
 /**
  * Den Inhalt einer ZIP-Datei protokollieren
  * 
