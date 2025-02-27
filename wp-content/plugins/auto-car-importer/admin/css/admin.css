@@ -1,0 +1,175 @@
+/**
+ * Auto Car Importer Admin CSS
+ */
+
+/* Dashboard Cards */
+.aci-dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+    margin-top: 20px;
+}
+
+@media screen and (max-width: 782px) {
+    .aci-dashboard {
+        grid-template-columns: 1fr;
+    }
+}
+
+.aci-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    margin-bottom: 20px;
+}
+
+.aci-card-header {
+    border-bottom: 1px solid #e5e5e5;
+    padding: 15px;
+}
+
+.aci-card-header h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.aci-card-content {
+    padding: 15px;
+}
+
+/* Tabs */
+.aci-tabs {
+    margin-top: 15px;
+}
+
+.aci-tab-headers {
+    display: flex;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 15px;
+}
+
+.aci-tab-header {
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    margin-right: 10px;
+    cursor: pointer;
+    outline: none;
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+}
+
+.aci-tab-header.active {
+    border-bottom-color: #007cba;
+    color: #007cba;
+}
+
+.aci-tab-content {
+    display: none;
+}
+
+.aci-tab-content.active {
+    display: block;
+}
+
+/* Form Styles */
+.aci-form-row {
+    margin-bottom: 15px;
+}
+
+.aci-form-row label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.aci-form-row input[type="text"],
+.aci-form-row input[type="password"],
+.aci-form-row select {
+    width: 100%;
+    max-width: 400px;
+}
+
+.aci-form-row input[type="checkbox"],
+.aci-form-row input[type="radio"] {
+    margin-right: 5px;
+}
+
+.aci-buttons {
+    margin-top: 20px;
+}
+
+/* Progress Bar */
+.aci-progress {
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    height: 20px;
+    margin-bottom: 10px;
+}
+
+.aci-progress-bar {
+    background-color: #007cba;
+    height: 100%;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.aci-progress-text {
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* Statistics Table */
+.aci-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.aci-stats-table th,
+.aci-stats-table td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.aci-stats-table th {
+    font-weight: 600;
+    width: 40%;
+}
+
+/* Log Levels */
+.aci-log-level {
+    display: inline-block;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    color: #fff;
+}
+
+.aci-log-level-info {
+    background-color: #2271b1;
+}
+
+.aci-log-level-warning {
+    background-color: #dba617;
+}
+
+.aci-log-level-error {
+    background-color: #d63638;
+}
+
+/* Settings Container */
+.aci-settings-container {
+    max-width: 800px;
+}
+
+/* Logs Actions */
+.aci-logs-actions {
+    margin-bottom: 20px;
+}
+
+.aci-logs-actions .button {
+    margin-right: 10px;
+}
