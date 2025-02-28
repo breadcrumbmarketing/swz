@@ -1,0 +1,58 @@
+.sportwagen-importer-card {
+    background: #fff;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.sportwagen-progress-bar {
+    height: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.sportwagen-progress-bar-fill {
+    height: 100%;
+    background-color: #0073aa;
+    width: 0;
+    transition: width 0.3s ease;
+}
+
+.sportwagen-options-section {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f9f9f9;
+    border-left: 4px solid #0073aa;
+}
+
+.sportwagen-info-section {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f7fcff;
+    border-left: 4px solid #2271b1;
+}
+
+.sportwagen-info-section ol {
+    margin-left: 20px;
+}
+
+.sportwagen-info-section li {
+    margin-bottom: 8px;
+}
+
+#sportwagen-import-results {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-left: 4px solid #46b450;
+}
+
+.sportwagen-error-log {
+    margin-top: 10px;
+    padding: 10px;
+    background: #fbeaea;
+    border-left: 4px solid #dc3232;
+}

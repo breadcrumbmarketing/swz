@@ -93,8 +93,9 @@ class Sportwagen_Importer {
         $zip->extractTo($this->temp_dir);
         $zip->close();
         
-        // Find CSV file
-        $csv_files = glob($this->temp_dir . '*.csv');
+        // Suche rekursiv nach CSV-Dateien (auch in Unterordnern)
+        $csv_files = $this->find_files_recursive($this->temp_dir, '*.csv');
+        
         if (empty($csv_files)) {
             throw new Exception('Keine CSV-Datei in der ZIP gefunden');
         }
@@ -103,16 +104,45 @@ class Sportwagen_Importer {
         $this->csv_processor->set_csv_file($csv_files[0]);
         
         // Process CSV data
-        $processed_vehicles = array();
         $csv_results = $this->csv_processor->process($update_existing);
         
         // Process images if required
-        if ($import_images) {
-            $this->image_processor->set_base_dir($this->temp_dir);
+        if ($import_images && isset($csv_results['vehicles'])) {
+            // Finde alle Bildordner in der ZIP
+            $image_dirs = array();
             
-            // Assuming csv_processor has stored the vehicles it processed somewhere we can access
-            // This implementation will depend on how csv_processor is designed
-            $processed_vehicles = $csv_results;
+            // Zuerst das Hauptverzeichnis prüfen
+            $jpg_files = glob($this->temp_dir . '*.jpg');
+            if (!empty($jpg_files)) {
+                $image_dirs[] = $this->temp_dir;
+            }
+            
+            // Dann Unterordner prüfen
+            $dirs = glob($this->temp_dir . '*', GLOB_ONLYDIR);
+            foreach ($dirs as $dir) {
+                $jpg_files = glob($dir . '/*.jpg');
+                if (!empty($jpg_files)) {
+                    $image_dirs[] = $dir . '/';
+                }
+            }
+            
+            // Verarbeite Bilder für jedes Fahrzeug
+            $images_imported = 0;
+            
+            foreach ($csv_results['vehicles'] as $vehicle) {
+                // Für jedes Verzeichnis mit Bildern prüfen, ob passende Bilder vorhanden sind
+                foreach ($image_dirs as $dir) {
+                    $this->image_processor->set_base_dir($dir);
+                    $image_result = $this->image_processor->import_images($vehicle['post_id'], $vehicle);
+                    
+                    if ($image_result['status'] === 'success') {
+                        $images_imported += $image_result['count'];
+                        break; // Breche ab, wenn Bilder gefunden wurden
+                    }
+                }
+            }
+            
+            $csv_results['images_imported'] = $images_imported;
         }
         
         // Cleanup temporary directory
@@ -123,9 +153,26 @@ class Sportwagen_Importer {
             'processed' => $csv_results['processed'],
             'created' => $csv_results['created'],
             'updated' => $csv_results['updated'],
+            'images_imported' => isset($csv_results['images_imported']) ? $csv_results['images_imported'] : 0,
             'errors' => $csv_results['errors'],
             'error_count' => count($csv_results['errors'])
         );
+    }
+    
+    /**
+     * Find files recursively using a pattern
+     */
+    private function find_files_recursive($dir, $pattern) {
+        $files = glob($dir . $pattern);
+        
+        // Suche in Unterordnern
+        $dirs = glob($dir . '*', GLOB_ONLYDIR);
+        foreach ($dirs as $subdir) {
+            $subdir_files = $this->find_files_recursive($subdir . '/', $pattern);
+            $files = array_merge($files, $subdir_files);
+        }
+        
+        return $files;
     }
     
     /**

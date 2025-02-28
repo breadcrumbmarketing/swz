@@ -80,15 +80,35 @@ class Sportwagen_Image_Processor {
      * Find images for a vehicle
      */
     private function find_images($image_id) {
-        // Search for pattern image_id_1.jpg, image_id_2.jpg, etc.
-        $pattern = $this->base_dir . $image_id . '_*.jpg';
-        $images = glob($pattern);
+        $images = array();
         
-        // Also try with padded numbers (01, 02, etc.)
-        if (empty($images)) {
-            $pattern = $this->base_dir . $image_id . '_??.jpg';
-            $images = array_merge($images, glob($pattern));
+        // Häufigste Benennungsmuster prüfen
+        $patterns = array(
+            // Standard Muster: ID_1.jpg, ID_2.jpg, etc.
+            $this->base_dir . $image_id . '_*.jpg',
+            
+            // Muster mit führenden Nullen: ID_01.jpg, ID_02.jpg, etc.
+            $this->base_dir . $image_id . '_??.jpg',
+            
+            // Weitere mögliche Muster je nach Kundenerfordernissen
+            $this->base_dir . $image_id . '*.jpg',  // ID gefolgt von beliebigen Zeichen
+            $this->base_dir . '*' . $image_id . '*.jpg', // ID irgendwo im Dateinamen
+            
+            // Unterstütze auch andere Bildformate
+            $this->base_dir . $image_id . '_*.jpeg',
+            $this->base_dir . $image_id . '_*.png',
+            $this->base_dir . $image_id . '_*.gif'
+        );
+        
+        foreach ($patterns as $pattern) {
+            $found_images = glob($pattern);
+            if (!empty($found_images)) {
+                $images = array_merge($images, $found_images);
+            }
         }
+        
+        // Entferne doppelte Einträge
+        $images = array_unique($images);
         
         return $images;
     }

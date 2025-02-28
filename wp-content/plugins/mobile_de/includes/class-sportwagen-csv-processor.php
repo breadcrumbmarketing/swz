@@ -63,17 +63,35 @@ class Sportwagen_CSV_Processor {
             'processed' => 0,
             'created' => 0,
             'updated' => 0,
-            'errors' => array()
+            'errors' => array(),
+            'vehicles' => array() // Speichert die verarbeiteten Fahrzeuge für Bildzuordnung
         );
         
         // Skip header row if present
         $header = fgetcsv($handle, 0, ';');
         
+        // Verarbeite jede Zeile als ein Fahrzeug
         while (($data = fgetcsv($handle, 0, ';')) !== false) {
             $this->stats['processed']++;
             
             try {
+                // Hole Kundenummer (oder interne Nummer, falls Kundenummer fehlt)
+                $kunde_idx = $this->field_mapper->column_to_index('A'); // Kundenummer (Spalte A)
+                $interne_idx = $this->field_mapper->column_to_index('B'); // Interne Nummer (Spalte B)
+                
+                $kundenummer = !empty($data[$kunde_idx]) ? trim($data[$kunde_idx]) : null;
+                $interne_nummer = !empty($data[$interne_idx]) ? trim($data[$interne_idx]) : null;
+                
+                // Überprüfe, ob wir eine gültige Identifikation haben
+                if (empty($interne_nummer)) {
+                    throw new Exception('Interne Nummer fehlt - kann keinen Eintrag erstellen');
+                }
+                
+                // Erstelle oder aktualisiere den Post für diese Zeile
                 $result = $this->process_row($data, $update_existing);
+                
+                // Speichere das Ergebnis für die spätere Bildverarbeitung
+                $this->stats['vehicles'][] = $result;
                 
                 if ($result['action'] === 'created') {
                     $this->stats['created']++;

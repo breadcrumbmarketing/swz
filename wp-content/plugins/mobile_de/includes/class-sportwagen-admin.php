@@ -65,9 +65,20 @@ class Sportwagen_Admin {
                 <h2>Daten importieren</h2>
                 <p>Bitte wählen Sie eine ZIP-Datei aus, die CSV-Daten und Bilder enthält.</p>
                 
+                <div class="sportwagen-info-section">
+                    <h3>Hinweise zum Import</h3>
+                    <ol>
+                        <li>Die ZIP-Datei kann entweder die CSV-Datei und Bilder direkt enthalten oder einen Ordner mit diesen Dateien.</li>
+                        <li>Die CSV-Datei sollte alle Fahrzeugdaten gemäß dem vorgegebenen Format enthalten.</li>
+                        <li>Die Bilder sollten nach dem Schema "INTERNE_NUMMER_1.jpg", "INTERNE_NUMMER_2.jpg" usw. benannt sein.</li>
+                        <li>Alternativ können Bilder auch mit der BILD_ID referenziert werden, wenn diese in der CSV angegeben ist.</li>
+                        <li>Der Import erstellt für jede Zeile in der CSV-Datei einen eigenen Sportwagen-Eintrag.</li>
+                    </ol>
+                </div>
+                
                 <form id="sportwagen-import-form" method="post" enctype="multipart/form-data">
                     <input type="file" name="import_file" id="import_file" accept=".zip" required>
-                    <p class="description">Die ZIP-Datei sollte eine CSV-Datei mit Fahrzeugdaten und Bilder enthalten.</p>
+                    <p class="description">Wählen Sie die ZIP-Datei mit den zu importierenden Daten aus.</p>
                     
                     <div class="sportwagen-options-section">
                         <h3>Import-Optionen</h3>
