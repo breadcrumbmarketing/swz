@@ -1,31 +1,26 @@
 <?php
 /**
- * Sync Manager für Import und Aktualisierung von Fahrzeugdaten
+ * Sync Manager برای Import و آپدیت داده‌های خودرو
  */
 class ACI_Sync_Manager {
     
     /**
-     * CSV Processor Instanz
+     * CSV Processor نمونه
      */
     private $csv_processor;
     
     /**
-     * Image Handler Instanz
+     * Image Handler نمونه
      */
     private $image_handler;
     
     /**
-     * ACF Manager Instanz
-     */
-    private $acf_manager;
-    
-    /**
-     * Logger Instanz
+     * Logger نمونه
      */
     private $logger;
     
     /**
-     * Statistiken für den aktuellen Sync-Vorgang
+     * آمار برای عملیات sync فعلی
      */
     private $stats = array(
         'total' => 0,
@@ -38,116 +33,128 @@ class ACI_Sync_Manager {
     );
     
     /**
-     * Konstruktor
+     * سازنده
      * 
-     * @param ACI_CSV_Processor $csv_processor CSV Processor Instanz
-     * @param ACI_Image_Handler $image_handler Image Handler Instanz
-     * @param ACI_ACF_Manager $acf_manager ACF Manager Instanz
-     * @param ACI_Logger $logger Logger Instanz
+     * @param ACI_CSV_Processor $csv_processor CSV Processor نمونه
+     * @param ACI_Image_Handler $image_handler Image Handler نمونه
+     * @param ACI_Logger $logger Logger نمونه
      */
-    public function __construct($csv_processor, $image_handler, $acf_manager, $logger) {
+    public function __construct($csv_processor, $image_handler, $logger) {
         $this->csv_processor = $csv_processor;
         $this->image_handler = $image_handler;
-        $this->acf_manager = $acf_manager;
         $this->logger = $logger;
     }
     
     /**
-     * Verarbeitet eine ZIP-Datei, extrahiert CSV und Bilder, und importiert die Daten
+     * پردازش یک فایل ZIP، استخراج CSV و تصاویر، و ایمپورت داده‌ها
      * 
-     * @param string $zip_path Pfad zur ZIP-Datei
-     * @param array $options Import-Optionen
-     * @return array Statistiken des Import-Vorgangs
+     * @param string $zip_path مسیر به فایل ZIP
+     * @param array $options گزینه‌های ایمپورت
+     * @return array آمار عملیات ایمپورت
      */
     public function process_zip_file($zip_path, $options = array()) {
-        $this->logger->log('Verarbeite ZIP-Datei: ' . $zip_path, 'info');
+        // آمار را بازنشانی کنید
+        $this->stats = array(
+            'total' => 0,
+            'created' => 0,
+            'updated' => 0,
+            'skipped' => 0,
+            'errors' => 0,
+            'images_total' => 0,
+            'images_new' => 0,
+        );
         
-        // Debug-Informationen zur ZIP-Datei anzeigen
+        $this->logger->log('پردازش فایل ZIP: ' . $zip_path, 'info');
+        
+        // اطلاعات دیباگ برای محتوای فایل ZIP نمایش داده شود
         $this->debug_zip_contents($zip_path);
         
-        // Upload-Verzeichnis vorbereiten
+        // دایرکتوری آپلود را آماده کنید
         $upload_dir = wp_upload_dir();
         $extract_dir = $upload_dir['basedir'] . '/aci-temp';
         $csv_extract_dir = $extract_dir . '/csv';
         $images_extract_dir = $extract_dir . '/images';
         
-        // Verzeichnisse erstellen, falls sie nicht existieren
+        // دایرکتوری‌ها را ایجاد کنید اگر وجود ندارند
         wp_mkdir_p($csv_extract_dir);
         wp_mkdir_p($images_extract_dir);
         
-        // CSV-Datei extrahieren, mit Option für Dateinamen
+        // فایل CSV را استخراج کنید، با گزینه برای نام فایل
         $csv_filename = isset($options['csv_filename']) ? $options['csv_filename'] : '';
         $csv_path = $this->csv_processor->extract_csv_from_zip($zip_path, $csv_extract_dir, $csv_filename);
         
         if (is_wp_error($csv_path)) {
-            $this->logger->log('Fehler beim Extrahieren der CSV-Datei: ' . $csv_path->get_error_message(), 'error');
+            $this->logger->log('خطا در استخراج فایل CSV: ' . $csv_path->get_error_message(), 'error');
             $this->stats['errors']++;
             return $this->stats;
         }
         
-        $this->logger->log('CSV-Datei gefunden und extrahiert: ' . $csv_path, 'info');
+        $this->logger->log('فایل CSV پیدا شد و استخراج شد: ' . $csv_path, 'info');
         
-        // Bilder extrahieren
+        // تصاویر را استخراج کنید
         $image_paths = $this->image_handler->extract_images_from_zip($zip_path, $images_extract_dir);
         
         if (is_wp_error($image_paths)) {
-            $this->logger->log('Fehler beim Extrahieren der Bilder: ' . $image_paths->get_error_message(), 'error');
+            $this->logger->log('خطا در استخراج تصاویر: ' . $image_paths->get_error_message(), 'error');
             $this->stats['errors']++;
-            // Trotzdem mit dem CSV-Import fortfahren
+            // با این وجود با ایمپورت CSV ادامه دهید
         } else {
             $this->stats['images_total'] = count($image_paths);
-            $this->logger->log($this->stats['images_total'] . ' Bilder erfolgreich extrahiert', 'info');
+            $this->logger->log($this->stats['images_total'] . ' تصویر با موفقیت استخراج شد', 'info');
         }
         
-        // Bilder zu Fahrzeugen zuordnen
+        // تصاویر را به خودروها تخصیص دهید
         $image_map = $this->image_handler->map_images_to_cars($image_paths);
-        $this->logger->log('Bilder zu ' . count($image_map) . ' Fahrzeugen zugeordnet', 'info');
+        $this->logger->log('تصاویر به ' . count($image_map) . ' خودرو تخصیص داده شد', 'info');
         
-        // CSV-Daten importieren
-        $csv_data = $this->csv_processor->process_csv($csv_path, $options['delimiter'] ?? ',', $options['enclosure'] ?? '"');
+        // داده‌های CSV را ایمپورت کنید
+        $csv_data = $this->csv_processor->process_csv($csv_path, $options['delimiter'] ?? ';', $options['enclosure'] ?? '"');
         
         if (is_wp_error($csv_data)) {
-            $this->logger->log('Fehler bei der CSV-Verarbeitung: ' . $csv_data->get_error_message(), 'error');
+            $this->logger->log('خطا در پردازش CSV: ' . $csv_data->get_error_message(), 'error');
             $this->stats['errors']++;
             return $this->stats;
         }
         
-        $this->logger->log('CSV-Verarbeitung abgeschlossen. ' . count($csv_data) . ' Datensätze gefunden.', 'info');
+        $this->logger->log('پردازش CSV تکمیل شد. ' . count($csv_data) . ' رکورد یافت شد.', 'info');
         
-        // Daten validieren
+        // داده‌ها را اعتبارسنجی کنید
         $validation = $this->csv_processor->validate_car_data($csv_data);
         
         if (is_wp_error($validation)) {
-            $this->logger->log('Validierungsfehler: ' . $validation->get_error_message(), 'error');
+            $this->logger->log('خطای اعتبارسنجی: ' . $validation->get_error_message(), 'error');
             $this->stats['errors']++;
             return $this->stats;
         }
         
         $this->stats['total'] = count($csv_data);
-        $this->logger->log('Start des Imports von ' . $this->stats['total'] . ' Fahrzeugen mit ' . $this->stats['images_total'] . ' Bildern', 'info');
+        $this->logger->log('شروع ایمپورت ' . $this->stats['total'] . ' خودرو با ' . $this->stats['images_total'] . ' تصویر', 'info');
         
-        // CPT Manager initialisieren
+        // نمونه CPT Manager را ایجاد کنید
         $cpt_manager = new ACI_CPT_Manager();
         
-        // Jedes Fahrzeug importieren
+        // نمونه ACF Manager را ایجاد کنید
+        $acf_manager = new ACI_ACF_Manager($this->logger);
+        
+        // هر خودرو را ایمپورت کنید
         foreach ($csv_data as $car) {
-            // Eindeutige Kennung ermitteln (bild_id hat Priorität, dann interne_nummer)
+            // شناسه منحصر به فرد را تعیین کنید (bild_id اولویت دارد، سپس interne_nummer)
             $car_identifier = !empty($car['bild_id']) ? $car['bild_id'] : $car['interne_nummer'];
             
-            // Bilder für dieses Fahrzeug finden
+            // تصاویر برای این خودرو را پیدا کنید
             $car_images = $this->image_handler->get_car_images($car, $image_map);
             
-            // Option zum Überspringen von Fahrzeugen ohne Bilder
+            // گزینه برای رد کردن خودروهایی که تصویر ندارند
             if ($options['skip_without_images'] && empty($car_images)) {
-                $this->logger->log('Fahrzeug übersprungen (keine Bilder): ' . $car_identifier, 'info');
+                $this->logger->log('خودرو رد شد (بدون تصویر): ' . $car_identifier, 'info');
                 $this->stats['skipped']++;
                 continue;
             }
             
-            // Anreichern der Fahrzeugdaten mit Bildpfaden
+            // داده‌های خودرو را با مسیرهای تصاویر غنی کنید
             $car['_image_paths'] = $car_images;
             
-            // Vorhandenes Fahrzeug suchen
+            // خودرو موجود را جستجو کنید
             $existing_car_id = null;
             
             if (!empty($car['bild_id'])) {
@@ -158,26 +165,26 @@ class ACI_Sync_Manager {
                 $existing_car_id = $cpt_manager->get_car_by_interne_nummer($car['interne_nummer']);
             }
             
-            // Entscheiden, ob wir aktualisieren oder neu erstellen
+            // تصمیم بگیرید که به‌روزرسانی کنیم یا جدید ایجاد کنیم
             if ($existing_car_id) {
                 if ($options['update_existing']) {
-                    $result = $this->update_car($existing_car_id, $car);
+                    $result = $this->update_car($existing_car_id, $car, $acf_manager);
                     
                     if (is_wp_error($result)) {
-                        $this->logger->log('Fehler beim Aktualisieren des Fahrzeugs ' . $car_identifier . ': ' . $result->get_error_message(), 'error');
+                        $this->logger->log('خطا در به‌روزرسانی خودرو ' . $car_identifier . ': ' . $result->get_error_message(), 'error');
                         $this->stats['errors']++;
                     } else {
                         $this->stats['updated']++;
                     }
                 } else {
-                    $this->logger->log('Fahrzeug übersprungen (bereits vorhanden): ' . $car_identifier, 'info');
+                    $this->logger->log('خودرو رد شد (از قبل وجود دارد): ' . $car_identifier, 'info');
                     $this->stats['skipped']++;
                 }
             } else {
-                $result = $this->create_car($car);
+                $result = $this->create_car($car, $acf_manager);
                 
                 if (is_wp_error($result)) {
-                    $this->logger->log('Fehler beim Erstellen des Fahrzeugs ' . $car_identifier . ': ' . $result->get_error_message(), 'error');
+                    $this->logger->log('خطا در ایجاد خودرو ' . $car_identifier . ': ' . $result->get_error_message(), 'error');
                     $this->stats['errors']++;
                 } else {
                     $this->stats['created']++;
@@ -185,26 +192,27 @@ class ACI_Sync_Manager {
             }
         }
         
-        $this->logger->log('Import abgeschlossen. ' . 
-            'Erstellt: ' . $this->stats['created'] . ', ' . 
-            'Aktualisiert: ' . $this->stats['updated'] . ', ' . 
-            'Übersprungen: ' . $this->stats['skipped'] . ', ' . 
-            'Fehler: ' . $this->stats['errors'], 'info');
+        $this->logger->log('ایمپورت تکمیل شد. ' . 
+            'ایجاد شده: ' . $this->stats['created'] . ', ' . 
+            'به‌روزرسانی شده: ' . $this->stats['updated'] . ', ' . 
+            'رد شده: ' . $this->stats['skipped'] . ', ' . 
+            'خطاها: ' . $this->stats['errors'], 'info');
         
-        // Temporäre Dateien aufräumen
+        // فایل‌های موقت را پاک کنید
         $this->cleanup_temp_files($extract_dir);
         
         return $this->stats;
     }
     
     /**
-     * Erstellt einen neuen Sportwagen-Eintrag
+     * یک ورودی جدید Sportwagen ایجاد کنید
      * 
-     * @param array $car_data Die Fahrzeugdaten
-     * @return int|WP_Error Post-ID bei Erfolg, WP_Error bei Fehler
+     * @param array $car_data داده‌های خودرو
+     * @param ACI_ACF_Manager $acf_manager نمونه ACF Manager
+     * @return int|WP_Error Post-ID در صورت موفقیت، WP_Error در صورت خطا
      */
-    private function create_car($car_data) {
-        // Titel aus den Daten generieren
+    private function create_car($car_data, $acf_manager) {
+        // عنوان را از داده‌ها تولید کنید
         $title = '';
         if (!empty($car_data['marke']) && !empty($car_data['modell'])) {
             $title = $car_data['marke'] . ' ' . $car_data['modell'];
@@ -216,7 +224,7 @@ class ACI_Sync_Manager {
             $title = 'Sportwagen ' . (!empty($car_data['interne_nummer']) ? $car_data['interne_nummer'] : uniqid());
         }
         
-        // Neues Fahrzeug erstellen
+        // خودرو جدید ایجاد کنید
         $post_data = array(
             'post_title'   => $title,
             'post_content' => '',
@@ -224,45 +232,46 @@ class ACI_Sync_Manager {
             'post_type'    => 'sportwagen',
         );
         
-        // Beschreibung als Inhalt, falls vorhanden
+        // توضیحات را به عنوان محتوا قرار دهید، اگر موجود است
         if (!empty($car_data['bemerkung'])) {
             $post_data['post_content'] = $car_data['bemerkung'];
         }
         
-        // Post erstellen
+        // پست را ایجاد کنید
         $post_id = wp_insert_post($post_data, true);
         
         if (is_wp_error($post_id)) {
             return $post_id;
         }
         
-        // ACF-Felder aktualisieren
-        $result = $this->acf_manager->update_car_acf_fields($post_id, $car_data);
+        // فیلدهای ACF را به‌روزرسانی کنید
+        $result = $acf_manager->update_car_acf_fields($post_id, $car_data);
         
         if (is_wp_error($result)) {
-            $this->logger->log('Fehler beim Aktualisieren der ACF-Felder: ' . $result->get_error_message(), 'error');
+            $this->logger->log('خطا در به‌روزرسانی فیلدهای ACF: ' . $result->get_error_message(), 'error');
         }
         
-        // Bilder importieren, falls vorhanden
+        // تصاویر را ایمپورت کنید، اگر موجود هستند
         if (!empty($car_data['_image_paths'])) {
             $attachment_ids = $this->image_handler->import_car_images($post_id, $car_data['_image_paths']);
             $this->stats['images_new'] += count($attachment_ids);
         }
         
-        $this->logger->log('Neues Fahrzeug erstellt: ' . $title . ' (ID: ' . $post_id . ')', 'info');
+        $this->logger->log('خودرو جدید ایجاد شد: ' . $title . ' (ID: ' . $post_id . ')', 'info');
         
         return $post_id;
     }
     
     /**
-     * Aktualisiert einen vorhandenen Sportwagen-Eintrag
+     * یک ورودی Sportwagen موجود را به‌روزرسانی کنید
      * 
-     * @param int $post_id Die Post-ID des zu aktualisierenden Fahrzeugs
-     * @param array $car_data Die neuen Fahrzeugdaten
-     * @return int|WP_Error Post-ID bei Erfolg, WP_Error bei Fehler
+     * @param int $post_id Post-ID خودرو برای به‌روزرسانی
+     * @param array $car_data داده‌های جدید خودرو
+     * @param ACI_ACF_Manager $acf_manager نمونه ACF Manager
+     * @return int|WP_Error Post-ID در صورت موفقیت، WP_Error در صورت خطا
      */
-    private function update_car($post_id, $car_data) {
-        // Titel aus den Daten generieren
+    private function update_car($post_id, $car_data, $acf_manager) {
+        // عنوان را از داده‌ها تولید کنید
         $title = '';
         if (!empty($car_data['marke']) && !empty($car_data['modell'])) {
             $title = $car_data['marke'] . ' ' . $car_data['modell'];
@@ -271,67 +280,67 @@ class ACI_Sync_Manager {
                 $title .= ' (' . $car_data['baujahr'] . ')';
             }
         } else {
-            // Bestehenden Titel beibehalten
+            // عنوان موجود را حفظ کنید
             $post = get_post($post_id);
             $title = $post->post_title;
         }
         
-        // Fahrzeugdaten aktualisieren
+        // داده‌های خودرو را به‌روزرسانی کنید
         $post_data = array(
             'ID'           => $post_id,
             'post_title'   => $title,
         );
         
-        // Beschreibung als Inhalt, falls vorhanden
+        // توضیحات را به عنوان محتوا قرار دهید، اگر موجود است
         if (!empty($car_data['bemerkung'])) {
             $post_data['post_content'] = $car_data['bemerkung'];
         }
         
-        // Post aktualisieren
+        // پست را به‌روزرسانی کنید
         $result = wp_update_post($post_data, true);
         
         if (is_wp_error($result)) {
             return $result;
         }
         
-        // ACF-Felder aktualisieren
-        $result = $this->acf_manager->update_car_acf_fields($post_id, $car_data);
+        // فیلدهای ACF را به‌روزرسانی کنید
+        $result = $acf_manager->update_car_acf_fields($post_id, $car_data);
         
         if (is_wp_error($result)) {
-            $this->logger->log('Fehler beim Aktualisieren der ACF-Felder: ' . $result->get_error_message(), 'error');
+            $this->logger->log('خطا در به‌روزرسانی فیلدهای ACF: ' . $result->get_error_message(), 'error');
         }
         
-        // Bilder importieren, falls vorhanden
+        // تصاویر را ایمپورت کنید، اگر موجود هستند
         if (!empty($car_data['_image_paths'])) {
             $attachment_ids = $this->image_handler->import_car_images($post_id, $car_data['_image_paths']);
             $this->stats['images_new'] += count($attachment_ids);
         }
         
-        $this->logger->log('Fahrzeug aktualisiert: ' . $title . ' (ID: ' . $post_id . ')', 'info');
+        $this->logger->log('خودرو به‌روزرسانی شد: ' . $title . ' (ID: ' . $post_id . ')', 'info');
         
         return $post_id;
     }
     
     /**
-     * Den Inhalt einer ZIP-Datei protokollieren
+     * محتوای یک فایل ZIP را ثبت کنید
      * 
-     * @param string $zip_path Pfad zur ZIP-Datei
+     * @param string $zip_path مسیر به فایل ZIP
      * @return void
      */
     private function debug_zip_contents($zip_path) {
         if (!file_exists($zip_path)) {
-            $this->logger->log('Fehler: ZIP-Datei für Debug nicht gefunden: ' . $zip_path, 'error');
+            $this->logger->log('خطا: فایل ZIP برای دیباگ پیدا نشد: ' . $zip_path, 'error');
             return;
         }
         
         try {
             $zip = new ZipArchive();
             if ($zip->open($zip_path) === TRUE) {
-                $this->logger->log('=== ZIP-Datei Inhalt Debug ===', 'info');
-                $this->logger->log('ZIP-Datei: ' . $zip_path, 'info');
-                $this->logger->log('Anzahl Dateien: ' . $zip->numFiles, 'info');
+                $this->logger->log('=== دیباگ محتوای فایل ZIP ===', 'info');
+                $this->logger->log('فایل ZIP: ' . $zip_path, 'info');
+                $this->logger->log('تعداد فایل‌ها: ' . $zip->numFiles, 'info');
                 
-                // Alle Dateien auflisten
+                // تمام فایل‌ها را لیست کنید
                 $files_by_type = array();
                 for ($i = 0; $i < $zip->numFiles; $i++) {
                     $filename = $zip->getNameIndex($i);
@@ -344,51 +353,51 @@ class ACI_Sync_Manager {
                     $files_by_type[$ext][] = $filename;
                 }
                 
-                // Nach Dateityp gruppiert loggen
+                // بر اساس نوع فایل گروه‌بندی و ثبت کنید
                 foreach ($files_by_type as $ext => $files) {
-                    $this->logger->log('Typ ".' . $ext . '": ' . count($files) . ' Dateien', 'info');
-                    // Maximal 10 Dateien pro Typ anzeigen, um das Log nicht zu überfüllen
+                    $this->logger->log('نوع ".' . $ext . '": ' . count($files) . ' فایل', 'info');
+                    // حداکثر 10 فایل در هر نوع نمایش دهید تا لاگ را پر نکنید
                     $sample_files = array_slice($files, 0, 10);
-                    $this->logger->log('Beispiele: ' . implode(', ', $sample_files), 'info');
+                    $this->logger->log('نمونه‌ها: ' . implode(', ', $sample_files), 'info');
                 }
                 
                 $zip->close();
-                $this->logger->log('=== Ende ZIP-Datei Debug ===', 'info');
+                $this->logger->log('=== پایان دیباگ فایل ZIP ===', 'info');
             } else {
-                $this->logger->log('Konnte ZIP-Datei für Debug nicht öffnen: ' . $zip_path, 'error');
+                $this->logger->log('نمی‌توان فایل ZIP را برای دیباگ باز کرد: ' . $zip_path, 'error');
             }
         } catch (Exception $e) {
-            $this->logger->log('Fehler beim Debug der ZIP-Datei: ' . $e->getMessage(), 'error');
+            $this->logger->log('خطا در دیباگ فایل ZIP: ' . $e->getMessage(), 'error');
         }
     }
     
     /**
-     * Räumt temporäre Dateien auf
+     * فایل‌های موقت را پاک کنید
      * 
-     * @param string $dir Das zu bereinigende Verzeichnis
+     * @param string $dir دایرکتوری برای پاک کردن
      */
     private function cleanup_temp_files($dir) {
         if (!is_dir($dir)) {
             return;
         }
         
-        // Verzeichnisinhalt auslesen
+        // محتوای دایرکتوری را بخوانید
         $files = glob($dir . '/{,.}*', GLOB_BRACE);
         
         foreach ($files as $file) {
             $basename = basename($file);
             
-            // '.' und '..' überspringen
+            // '.' و '..' را رد کنید
             if ($basename === '.' || $basename === '..') {
                 continue;
             }
             
             if (is_dir($file)) {
-                // Unterverzeichnis rekursiv löschen
+                // زیردایرکتوری را بازگشتی پاک کنید
                 $this->cleanup_temp_files($file);
                 @rmdir($file);
             } else {
-                // .htaccess nicht löschen
+                // .htaccess را پاک نکنید
                 if ($basename !== '.htaccess') {
                     @unlink($file);
                 }

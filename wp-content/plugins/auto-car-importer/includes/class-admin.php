@@ -155,72 +155,72 @@ class ACI_Admin {
         include ACI_PLUGIN_DIR . 'admin/views/logs-page.php';
     }
     
- /**
- * AJAX-Handler für Upload-Import
+/**
+ * AJAX-Handler برای ایمپورت آپلود
  */
 public function ajax_import_from_upload() {
-    // Nonce prüfen
+    // بررسی nonce
     check_ajax_referer('aci_ajax_nonce', 'nonce');
     
-    // Berechtigungen prüfen
+    // بررسی مجوزها
     if (!current_user_can('manage_options')) {
-        wp_send_json_error('Keine Berechtigung');
+        wp_send_json_error('مجوز ندارید');
     }
     
-    // Prüfen, ob eine Datei hochgeladen wurde
+    // بررسی کنید که آیا فایلی آپلود شده است
     if (!isset($_FILES['import_file']) || $_FILES['import_file']['error'] !== UPLOAD_ERR_OK) {
-        wp_send_json_error('Keine gültige Datei hochgeladen');
+        wp_send_json_error('فایل معتبری آپلود نشده است');
     }
     
     $file = $_FILES['import_file'];
     
-    // Prüfen, ob es sich um eine ZIP-Datei handelt
+    // بررسی کنید که آیا یک فایل ZIP است
     $file_ext = pathinfo($file['name'], PATHINFO_EXTENSION);
     if (strtolower($file_ext) !== 'zip') {
-        wp_send_json_error('Die Datei muss im ZIP-Format sein');
+        wp_send_json_error('فایل باید به فرمت ZIP باشد');
     }
     
-    // Temporären Pfad speichern
+    // مسیر موقت را ذخیره کنید
     $temp_file = $file['tmp_name'];
     
-    // Optionen aus dem Formular holen
+    // گزینه‌ها را از فرم دریافت کنید
     $options = array(
-        'delimiter' => isset($_POST['delimiter']) ? sanitize_text_field($_POST['delimiter']) : ',',
+        'delimiter' => isset($_POST['delimiter']) ? sanitize_text_field($_POST['delimiter']) : ';',
         'enclosure' => isset($_POST['enclosure']) ? sanitize_text_field($_POST['enclosure']) : '"',
         'update_existing' => isset($_POST['update_existing']) && $_POST['update_existing'] === 'yes',
         'skip_without_images' => isset($_POST['skip_without_images']) && $_POST['skip_without_images'] === 'yes',
         'csv_filename' => isset($_POST['csv_filename']) ? sanitize_text_field($_POST['csv_filename']) : '',
     );
     
-    // Upload-Verzeichnis vorbereiten
+    // دایرکتوری آپلود را آماده کنید
     $upload_dir = wp_upload_dir();
     $dest_path = $upload_dir['basedir'] . '/aci-temp/' . $file['name'];
     
-    // Sicherstellen, dass das Zielverzeichnis existiert
+    // اطمینان حاصل کنید که دایرکتوری مقصد وجود دارد
     wp_mkdir_p(dirname($dest_path));
     
-    // Datei verschieben
+    // انتقال فایل
     if (!move_uploaded_file($temp_file, $dest_path)) {
-        wp_send_json_error('Fehler beim Verschieben der Datei');
+        wp_send_json_error('خطا در انتقال فایل');
     }
     
-    // Sync Manager initialisieren
+    // پردازشگرهای موردنیاز را ایجاد کنید
     $csv_processor = new ACI_CSV_Processor($this->logger);
     $image_handler = new ACI_Image_Handler($this->logger);
     $sync_manager = new ACI_Sync_Manager($csv_processor, $image_handler, $this->logger);
     
-    // Import starten
+    // شروع ایمپورت
     $stats = $sync_manager->process_zip_file($dest_path, $options);
     
-    // Import-Status speichern
+    // ذخیره وضعیت ایمپورت
     update_option('aci_current_import_status', $stats);
     update_option('aci_last_import_time', current_time('mysql'));
     
-    // Erfolg melden
+    // گزارش موفقیت
     wp_send_json_success(array(
         'stats' => $stats,
         'message' => sprintf(
-            __('%d Fahrzeuge importiert (%d neu, %d aktualisiert, %d übersprungen, %d Fehler)', 'auto-car-importer'),
+            __('%d خودرو ایمپورت شد (%d جدید، %d به‌روزرسانی شد، %d رد شد، %d خطا)', 'auto-car-importer'),
             $stats['total'],
             $stats['created'],
             $stats['updated'],
@@ -231,41 +231,41 @@ public function ajax_import_from_upload() {
 }
 
 /**
- * AJAX-Handler für FTP-Import
+ * AJAX-Handler برای ایمپورت FTP
  */
 public function ajax_import_from_ftp() {
-    // Nonce prüfen
+    // بررسی nonce
     check_ajax_referer('aci_ajax_nonce', 'nonce');
     
-    // Berechtigungen prüfen
+    // بررسی مجوزها
     if (!current_user_can('manage_options')) {
-        wp_send_json_error('Keine Berechtigung');
+        wp_send_json_error('مجوز ندارید');
     }
     
-    // FTP-Einstellungen laden
+    // بارگذاری تنظیمات FTP
     $ftp_host = get_option('aci_ftp_host', '');
     $ftp_username = get_option('aci_ftp_username', '');
     $ftp_password = get_option('aci_ftp_password', '');
     $ftp_path = get_option('aci_ftp_path', '/');
     
-    // Prüfen, ob alle FTP-Einstellungen vorhanden sind
+    // بررسی کنید که آیا تمام تنظیمات FTP موجود هستند
     if (empty($ftp_host) || empty($ftp_username) || empty($ftp_password)) {
-        wp_send_json_error('FTP-Einstellungen unvollständig');
+        wp_send_json_error('تنظیمات FTP ناقص');
     }
     
-    // Optionen aus dem Formular holen oder Fallback auf Einstellungen
+    // گزینه‌ها را از فرم دریافت کنید یا به تنظیمات برگردید
     $options = array(
-        'delimiter' => isset($_POST['delimiter']) ? sanitize_text_field($_POST['delimiter']) : get_option('aci_csv_delimiter', ','),
+        'delimiter' => isset($_POST['delimiter']) ? sanitize_text_field($_POST['delimiter']) : get_option('aci_csv_delimiter', ';'),
         'enclosure' => isset($_POST['enclosure']) ? sanitize_text_field($_POST['enclosure']) : get_option('aci_csv_enclosure', '"'),
         'update_existing' => isset($_POST['update_existing']) ? ($_POST['update_existing'] === 'yes') : (get_option('aci_update_existing', 'yes') === 'yes'),
         'skip_without_images' => isset($_POST['skip_without_images']) ? ($_POST['skip_without_images'] === 'yes') : (get_option('aci_skip_without_images', 'no') === 'yes'),
         'csv_filename' => isset($_POST['csv_filename']) ? sanitize_text_field($_POST['csv_filename']) : get_option('aci_csv_filename', ''),
     );
     
-    // FTP-Handler initialisieren
+    // FTP-Handler را مقداردهی اولیه کنید
     $ftp_handler = new ACI_FTP_Handler($this->logger);
     
-    // ZIP-Dateien vom FTP-Server abrufen
+    // دریافت فایل‌های ZIP از سرور FTP
     $files = $ftp_handler->get_ftp_files($ftp_host, $ftp_username, $ftp_password, $ftp_path);
     
     if (is_wp_error($files)) {
@@ -273,17 +273,17 @@ public function ajax_import_from_ftp() {
     }
     
     if (empty($files)) {
-        wp_send_json_error(__('Keine ZIP-Dateien im FTP-Verzeichnis gefunden', 'auto-car-importer'));
+        wp_send_json_error(__('فایل ZIP در دایرکتوری FTP پیدا نشد', 'auto-car-importer'));
     }
     
-    // Upload-Verzeichnis vorbereiten
+    // دایرکتوری آپلود را آماده کنید
     $upload_dir = wp_upload_dir();
     $local_dir = $upload_dir['basedir'] . '/aci-temp/';
     
-    // Verzeichnis erstellen, falls es nicht existiert
+    // ایجاد دایرکتوری، اگر وجود ندارد
     wp_mkdir_p($local_dir);
     
-    // Statistiken für alle verarbeiteten Dateien
+    // آمار برای تمام فایل‌های پردازش شده
     $all_stats = array(
         'total' => 0,
         'created' => 0,
@@ -295,19 +295,19 @@ public function ajax_import_from_ftp() {
         'processed_files' => array(),
     );
     
-    // Sync Manager initialisieren
+    // Sync Manager را مقداردهی اولیه کنید
     $csv_processor = new ACI_CSV_Processor($this->logger);
     $image_handler = new ACI_Image_Handler($this->logger);
     $sync_manager = new ACI_Sync_Manager($csv_processor, $image_handler, $this->logger);
     
-    // Jede ZIP-Datei herunterladen und verarbeiten
+    // هر فایل ZIP را دانلود و پردازش کنید
     foreach ($files as $file_info) {
         $file_name = $file_info['name'];
         $remote_path = $ftp_path . '/' . $file_name;
         $local_path = $local_dir . $file_name;
         
-        // Datei herunterladen
-        $this->logger->log('Lade FTP-Datei herunter: ' . $remote_path, 'info');
+        // دانلود فایل
+        $this->logger->log('دانلود فایل FTP: ' . $remote_path, 'info');
         $download_result = $ftp_handler->download_file(
             $ftp_host, 
             $ftp_username, 
@@ -317,14 +317,14 @@ public function ajax_import_from_ftp() {
         );
         
         if (is_wp_error($download_result)) {
-            $this->logger->log('Fehler beim Herunterladen der Datei: ' . $remote_path, 'error');
+            $this->logger->log('خطا در دانلود فایل: ' . $remote_path, 'error');
             continue;
         }
         
-        // Datei verarbeiten
+        // پردازش فایل
         $stats = $sync_manager->process_zip_file($local_path, $options);
         
-        // Statistiken zusammenführen
+        // ترکیب آمار
         $all_stats['total'] += $stats['total'];
         $all_stats['created'] += $stats['created'];
         $all_stats['updated'] += $stats['updated'];
@@ -335,15 +335,15 @@ public function ajax_import_from_ftp() {
         $all_stats['processed_files'][] = $file_name;
     }
     
-    // Import-Status speichern
+    // ذخیره وضعیت ایمپورت
     update_option('aci_current_import_status', $all_stats);
     update_option('aci_last_import_time', current_time('mysql'));
     
-    // Erfolg melden
+    // گزارش موفقیت
     wp_send_json_success(array(
         'stats' => $all_stats,
         'message' => sprintf(
-            __('%d Fahrzeuge importiert (%d neu, %d aktualisiert, %d übersprungen, %d Fehler) aus %d Dateien', 'auto-car-importer'),
+            __('%d خودرو ایمپورت شد (%d جدید، %d به‌روزرسانی شد، %d رد شد، %d خطا) از %d فایل', 'auto-car-importer'),
             $all_stats['total'],
             $all_stats['created'],
             $all_stats['updated'],

@@ -9,18 +9,18 @@
  * Domain Path: /languages
  */
 
-// Exit if accessed directly
+// خروج اگر به صورت مستقیم دسترسی پیدا کردید
 if (!defined('ABSPATH')) {
     exit;
 }
 
-// Plugin-Konstanten definieren
+// ثابت‌های پلاگین را تعریف کنید
 define('ACI_VERSION', '1.0.0');
 define('ACI_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ACI_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('ACI_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
-// Klassen einbinden
+// کلاس‌ها را وارد کنید
 require_once ACI_PLUGIN_DIR . 'includes/class-admin.php';
 require_once ACI_PLUGIN_DIR . 'includes/class-cpt-manager.php';
 require_once ACI_PLUGIN_DIR . 'includes/class-csv-processor.php';
@@ -31,12 +31,12 @@ require_once ACI_PLUGIN_DIR . 'includes/class-ftp-handler.php';
 require_once ACI_PLUGIN_DIR . 'includes/class-acf-manager.php';
 
 /**
- * Hauptklasse für das Plugin
+ * کلاس اصلی برای پلاگین
  */
 class Auto_Car_Importer {
     
     /**
-     * Klassenmember
+     * اعضای کلاس
      */
     private $admin;
     private $cpt_manager;
@@ -48,92 +48,91 @@ class Auto_Car_Importer {
     private $acf_manager;
     
     /**
-     * Konstruktor
+     * سازنده
      */
     public function __construct() {
-        // Initialisierung Plugin
+        // پلاگین را مقداردهی اولیه کنید
         add_action('plugins_loaded', array($this, 'init'));
     }
     
     /**
-     * Plugin initialisieren
+     * پلاگین را مقداردهی اولیه کنید
      */
     public function init() {
-        // Logger initialisieren (als erstes, damit alle anderen Klassen ihn nutzen können)
+        // Logger را مقداردهی اولیه کنید (ابتدا، تا تمام کلاس‌های دیگر بتوانند از آن استفاده کنند)
         $this->logger = new ACI_Logger();
         
-        // Custom Post Type Manager initialisieren
+        // Custom Post Type Manager را مقداردهی اولیه کنید
         $this->cpt_manager = new ACI_CPT_Manager();
         
-        // ACF Manager initialisieren
+        // CSV-Processor را مقداردهی اولیه کنید
+        $this->csv_processor = new ACI_CSV_Processor($this->logger);
+        
+        // Image-Handler را مقداردهی اولیه کنید
+        $this->image_handler = new ACI_Image_Handler($this->logger);
+        
+        // ACF Manager را مقداردهی اولیه کنید
         $this->acf_manager = new ACI_ACF_Manager($this->logger);
         
-        // FTP-Handler initialisieren
+        // FTP-Handler را مقداردهی اولیه کنید
         $this->ftp_handler = new ACI_FTP_Handler($this->logger);
         
-        // Admin-Bereich initialisieren
+        // بخش مدیریت را مقداردهی اولیه کنید
         if (is_admin()) {
             $this->admin = new ACI_Admin($this->logger);
         }
         
-        // CSV-Processor initialisieren
-        $this->csv_processor = new ACI_CSV_Processor($this->logger);
-        
-        // Image-Handler initialisieren
-        $this->image_handler = new ACI_Image_Handler($this->logger);
-        
-        // Sync-Manager initialisieren
+        // Sync-Manager را مقداردهی اولیه کنید - اینجا اصلاح شده است
         $this->sync_manager = new ACI_Sync_Manager(
             $this->csv_processor, 
             $this->image_handler,
-            $this->acf_manager,
-            $this->logger
+            $this->logger  // اصلاح شد، نه $this->acf_manager
         );
         
-        // Hooks für die Aktivierung und Deaktivierung des Plugins registrieren
+        // هوک‌های فعال‌سازی و غیرفعال‌سازی پلاگین را ثبت کنید
         register_activation_hook(__FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
     }
     
     /**
-     * Plugin aktivieren
+     * پلاگین را فعال کنید
      */
     public function activate() {
-        // Custom Post Type registrieren
+        // Custom Post Type را ثبت کنید
         $this->cpt_manager->register_post_type();
         
-        // Rollen und Berechtigungen aktualisieren
+        // نقش‌ها و مجوزها را به‌روزرسانی کنید
         $this->update_roles_and_capabilities();
         
-        // Dateisystem initialisieren (Upload-Verzeichnis erstellen)
+        // سیستم فایل را مقداردهی اولیه کنید (دایرکتوری آپلود ایجاد کنید)
         $this->init_filesystem();
         
-        // Rewrite-Regeln aktualisieren
+        // قوانین rewrite را به‌روزرسانی کنید
         flush_rewrite_rules();
     }
     
     /**
-     * Plugin deaktivieren
+     * پلاگین را غیرفعال کنید
      */
     public function deactivate() {
-        // Rewrite-Regeln aktualisieren
+        // قوانین rewrite را به‌روزرسانی کنید
         flush_rewrite_rules();
     }
     
     /**
-     * Rollen und Berechtigungen aktualisieren
+     * نقش‌ها و مجوزها را به‌روزرسانی کنید
      */
     private function update_roles_and_capabilities() {
-        // Administrator-Rolle
+        // نقش مدیر
         $admin_role = get_role('administrator');
         $admin_role->add_cap('manage_car_importer');
     }
     
     /**
-     * Dateisystem initialisieren
+     * سیستم فایل را مقداردهی اولیه کنید
      */
     private function init_filesystem() {
-        // Upload-Verzeichnis für temporäre Dateien erstellen
+        // دایرکتوری آپلود برای فایل‌های موقت ایجاد کنید
         $upload_dir = wp_upload_dir();
         $aci_dir = $upload_dir['basedir'] . '/aci-temp';
         
@@ -141,7 +140,7 @@ class Auto_Car_Importer {
             wp_mkdir_p($aci_dir);
         }
         
-        // .htaccess-Datei erstellen zum Schutz des Verzeichnisses
+        // فایل .htaccess برای محافظت از دایرکتوری ایجاد کنید
         if (file_exists($aci_dir) && !file_exists($aci_dir . '/.htaccess')) {
             $htaccess_content = "Deny from all\n";
             @file_put_contents($aci_dir . '/.htaccess', $htaccess_content);
@@ -149,5 +148,5 @@ class Auto_Car_Importer {
     }
 }
 
-// Plugin-Instanz starten
+// نمونه پلاگین را شروع کنید
 $auto_car_importer = new Auto_Car_Importer();

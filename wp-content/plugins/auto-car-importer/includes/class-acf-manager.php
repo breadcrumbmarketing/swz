@@ -1,34 +1,34 @@
 <?php
 /**
- * ACF Manager für den Auto Car Importer
- * Verwaltet die ACF-Felder und die Zuordnung zu CSV-Spalten
+ * ACF Manager برای Auto Car Importer
+ * مدیریت فیلدهای ACF و نگاشت به ستون‌های CSV
  */
 class ACI_ACF_Manager {
     
     /**
-     * Logger Instanz
+     * نمونه Logger
      */
     private $logger;
     
     /**
-     * Konstruktor
+     * سازنده
      * 
-     * @param ACI_Logger $logger Logger Instanz
+     * @param ACI_Logger $logger نمونه Logger
      */
     public function __construct($logger) {
         $this->logger = $logger;
         
-        // ACF-Felder registrieren, wenn ACF aktiviert ist
+        // فیلدهای ACF را ثبت کنید، اگر ACF فعال است
         add_action('acf/init', array($this, 'register_acf_fields'));
     }
     
     /**
-     * ACF-Felder für den Custom Post Type 'Sportwagen' registrieren
+     * فیلدهای ACF را برای نوع پست سفارشی 'Sportwagen' ثبت کنید
      */
     public function register_acf_fields() {
-        // Prüfen, ob ACF aktiviert ist
+        // بررسی کنید که آیا ACF فعال است
         if (!function_exists('acf_add_local_field_group')) {
-            $this->logger->log('ACF ist nicht aktiviert, überspringe Feldregistrierung', 'warning');
+            $this->logger->log('ACF فعال نیست، ثبت فیلد را رد می‌کنیم', 'warning');
             return;
         }
         
@@ -2205,23 +2205,23 @@ public function get_csv_field_mapping() {
 }
     
     /**
-     * Wandelt CSV-Daten in das richtige Format für ACF-Felder um
+     * داده‌های CSV را به فرمت مناسب برای فیلدهای ACF تبدیل می‌کند
      * 
-     * @param array $csv_data Die Rohdaten aus der CSV
-     * @return array Konvertierte Daten für ACF-Felder
+     * @param array $csv_data داده‌های خام از CSV
+     * @return array داده‌های تبدیل شده برای فیلدهای ACF
      */
     public function convert_csv_data_for_acf($csv_data) {
         $mapping = $this->get_csv_field_mapping();
         $converted_data = array();
         
         foreach ($csv_data as $key => $value) {
-            // Prüfen, ob ein Mapping für dieses Feld existiert
+            // بررسی کنید که آیا نگاشتی برای این فیلد وجود دارد
             if (isset($mapping[$key])) {
                 $acf_field = $mapping[$key];
                 
-                // Spezielle Konvertierungen für bestimmte Feldtypen
+                // تبدیل‌های ویژه برای انواع فیلد خاص
                 switch ($acf_field) {
-                    // Boolesche Felder (0/1 zu true/false)
+                    // فیلدهای بولی (0/1 به true/false)
                     case 'mwst':
                     case 'oldtimer':
                     case 'beschaedigtes_fahrzeug':
@@ -2232,7 +2232,7 @@ public function get_csv_field_mapping() {
                         $converted_data[$acf_field] = ($value == '1');
                         break;
                     
-                    // Numerische Felder
+                    // فیلدهای عددی
                     case 'leistung':
                     case 'ccm':
                     case 'kilometer':
@@ -2240,7 +2240,7 @@ public function get_csv_field_mapping() {
                         $converted_data[$acf_field] = is_numeric($value) ? (float)$value : $value;
                         break;
                     
-                    // Textfelder bleiben unverändert
+                    // فیلدهای متنی بدون تغییر می‌مانند
                     default:
                         $converted_data[$acf_field] = $value;
                         break;
@@ -2252,29 +2252,29 @@ public function get_csv_field_mapping() {
     }
     
     /**
-     * Aktualisiert die ACF-Felder für ein Fahrzeug
+     * فیلدهای ACF را برای یک خودرو به‌روزرسانی می‌کند
      * 
-     * @param int $post_id Die Post-ID des Fahrzeugs
-     * @param array $car_data Die Fahrzeugdaten
-     * @return bool|WP_Error True bei Erfolg, WP_Error bei Fehler
+     * @param int $post_id Post-ID خودرو
+     * @param array $car_data داده‌های خودرو
+     * @return bool|WP_Error True در صورت موفقیت، WP_Error در صورت خطا
      */
     public function update_car_acf_fields($post_id, $car_data) {
-        // Prüfen, ob ACF aktiv ist
+        // بررسی کنید که آیا ACF فعال است
         if (!function_exists('update_field')) {
-            $this->logger->log('ACF ist nicht aktiv, überspringe Feld-Updates', 'warning');
-            return new WP_Error('acf_inactive', __('Advanced Custom Fields ist nicht aktiv.', 'auto-car-importer'));
+            $this->logger->log('ACF فعال نیست، به‌روزرسانی فیلد را رد می‌کنیم', 'warning');
+            return new WP_Error('acf_inactive', __('Advanced Custom Fields فعال نیست.', 'auto-car-importer'));
         }
         
         try {
-            // Daten für ACF konvertieren
+            // داده‌ها را برای ACF تبدیل کنید
             $acf_data = $this->convert_csv_data_for_acf($car_data);
             
-            // Alle ACF-Felder aktualisieren
+            // تمام فیلدهای ACF را به‌روزرسانی کنید
             foreach ($acf_data as $field_name => $value) {
                 update_field($field_name, $value, $post_id);
             }
             
-            // Zusätzlich als Post-Meta speichern für schnellere Suche
+            // همچنین به عنوان Post-Meta ذخیره کنید برای جستجوی سریع‌تر
             if (!empty($car_data['interne_nummer'])) {
                 update_post_meta($post_id, 'interne_nummer', $car_data['interne_nummer']);
             }
@@ -2285,7 +2285,7 @@ public function get_csv_field_mapping() {
             
             return true;
         } catch (Exception $e) {
-            $this->logger->log('Fehler beim Aktualisieren der ACF-Felder: ' . $e->getMessage(), 'error');
+            $this->logger->log('خطا در به‌روزرسانی فیلدهای ACF: ' . $e->getMessage(), 'error');
             return new WP_Error('acf_update_error', $e->getMessage());
         }
     }
