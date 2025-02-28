@@ -188,53 +188,67 @@ class ACI_CSV_Processor {
      */
     public function extract_csv_from_zip($zip_path, $extract_dir, $csv_filename = '') {
         if (!file_exists($zip_path)) {
-            $this->logger->log('خطا: فایل ZIP پیدا نشد: ' . $zip_path, 'error');
-            return new WP_Error('file_not_found', __('فایل ZIP پیدا نشد.', 'auto-car-importer'));
+            $this->logger->log('Fehler: ZIP-Datei nicht gefunden: ' . $zip_path, 'error');
+            return new WP_Error('file_not_found', __('Die ZIP-Datei wurde nicht gefunden.', 'auto-car-importer'));
         }
         
-        // بررسی کنید که آیا دایرکتوری مقصد وجود دارد، در غیر این صورت آن را ایجاد کنید
+        // Überprüfen, ob das Ziel-Verzeichnis existiert, sonst erstellen
         if (!file_exists($extract_dir)) {
             if (!wp_mkdir_p($extract_dir)) {
-                $this->logger->log('خطا: دایرکتوری مقصد را نمی‌توان ایجاد کرد: ' . $extract_dir, 'error');
-                return new WP_Error('dir_create_error', __('دایرکتوری مقصد را نمی‌توان ایجاد کرد.', 'auto-car-importer'));
+                $this->logger->log('Fehler: Zielverzeichnis konnte nicht erstellt werden: ' . $extract_dir, 'error');
+                return new WP_Error('dir_create_error', __('Das Zielverzeichnis konnte nicht erstellt werden.', 'auto-car-importer'));
             }
         }
         
-        // فایل ZIP را باز کنید
+        // ZIP-Datei öffnen
         $zip = new ZipArchive();
         if ($zip->open($zip_path) !== true) {
-            $this->logger->log('خطا: نمی‌توان فایل ZIP را باز کرد: ' . $zip_path, 'error');
-            return new WP_Error('zip_open_error', __('نمی‌توان فایل ZIP را باز کرد.', 'auto-car-importer'));
+            $this->logger->log('Fehler: ZIP-Datei konnte nicht geöffnet werden: ' . $zip_path, 'error');
+            return new WP_Error('zip_open_error', __('Die ZIP-Datei konnte nicht geöffnet werden.', 'auto-car-importer'));
         }
         
-        // اگر نام فایل ارائه شده است، مستقیماً به دنبال آن فایل بگردید
+        // Debug - Log alle Dateien im ZIP
+        $this->logger->log('ZIP-Inhalt (' . $zip->numFiles . ' Dateien):', 'info');
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $this->logger->log('  - ' . $zip->getNameIndex($i), 'info');
+        }
+        
+        // Wenn ein Dateiname angegeben wurde, direkt nach dieser Datei suchen
         if (!empty($csv_filename)) {
-            $this->logger->log('جستجو برای فایل CSV مشخص شده: ' . $csv_filename, 'info');
+            $this->logger->log('Suche nach angegebener CSV-Datei: ' . $csv_filename, 'info');
             
-            // بررسی کنید که آیا فایل با نام دقیق وجود دارد
-            if ($zip->locateName($csv_filename) !== false) {
-                $csv_file = $csv_filename;
-            } 
-            // بررسی کنید که آیا فایل در یک زیردایرکتوری وجود دارد
-            else {
-                $found = false;
-                for ($i = 0; $i < $zip->numFiles; $i++) {
-                    $filename = $zip->getNameIndex($i);
-                    if (basename($filename) === $csv_filename) {
-                        $csv_file = $filename;
-                        $found = true;
-                        break;
-                    }
+            // Prüfen, ob die Datei mit exaktem Namen existiert
+            $exact_match = false;
+            $matched_file = '';
+            
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $filename = $zip->getNameIndex($i);
+                
+                // Exakter Dateiname?
+                if ($filename === $csv_filename) {
+                    $matched_file = $filename;
+                    $exact_match = true;
+                    $this->logger->log('Exakte Übereinstimmung gefunden: ' . $filename, 'info');
+                    break;
                 }
                 
-                if (!$found) {
-                    $zip->close();
-                    $this->logger->log('خطا: فایل CSV مشخص شده پیدا نشد: ' . $csv_filename, 'error');
-                    return new WP_Error('csv_not_found', __('فایل CSV مشخص شده در آرشیو ZIP پیدا نشد.', 'auto-car-importer'));
+                // Nur Dateiname ohne Pfad?
+                if (basename($filename) === $csv_filename) {
+                    $matched_file = $filename;
+                    $this->logger->log('Dateiname-Übereinstimmung gefunden: ' . $filename, 'info');
+                    break;
                 }
             }
+            
+            if (!empty($matched_file)) {
+                $csv_file = $matched_file;
+            } else {
+                $zip->close();
+                $this->logger->log('Fehler: Angegebene CSV-Datei nicht gefunden: ' . $csv_filename, 'error');
+                return new WP_Error('csv_not_found', __('Die angegebene CSV-Datei wurde nicht im ZIP-Archiv gefunden.', 'auto-car-importer'));
+            }
         } 
-        // در غیر این صورت به دنبال تمام فایل‌های CSV بگردید
+        // Ansonsten nach allen CSV-Dateien suchen
         else {
             $csv_files = array();
             for ($i = 0; $i < $zip->numFiles; $i++) {
@@ -246,41 +260,56 @@ class ACI_CSV_Processor {
                 }
             }
             
-            // هیچ فایل CSV پیدا نشد
+            // Keine CSV-Datei gefunden
             if (empty($csv_files)) {
                 $file_list = array();
                 for ($i = 0; $i < $zip->numFiles; $i++) {
                     $file_list[] = $zip->getNameIndex($i);
                 }
                 $zip->close();
-                $this->logger->log('خطا: هیچ فایل CSV در فایل ZIP پیدا نشد. فایل‌های موجود: ' . implode(', ', $file_list), 'error');
-                return new WP_Error('no_csv_found', __('هیچ فایل CSV در فایل ZIP پیدا نشد.', 'auto-car-importer'));
+                $this->logger->log('Fehler: Keine CSV-Datei in der ZIP-Datei gefunden. Enthaltene Dateien: ' . implode(', ', $file_list), 'error');
+                return new WP_Error('no_csv_found', __('Keine CSV-Datei in der ZIP-Datei gefunden.', 'auto-car-importer'));
             }
             
-            // اگر چندین فایل CSV پیدا شد، اولی را انتخاب می‌کنیم
+            // Wenn mehrere CSV-Dateien gefunden wurden, nehmen wir die erste
             $csv_file = $csv_files[0];
             if (count($csv_files) > 1) {
-                $this->logger->log('توجه: چندین فایل CSV پیدا شد (' . implode(', ', $csv_files) . ')، استفاده از: ' . $csv_file, 'info');
+                $this->logger->log('Hinweis: Mehrere CSV-Dateien gefunden (' . implode(', ', $csv_files) . '), verwende: ' . $csv_file, 'info');
             }
         }
         
-        // نام کامل فایل را استخراج کنید (شامل زیردایرکتوری)
+        // Vollständigen Dateinamen extrahieren (inklusive Unterverzeichnis)
         $csv_filename = basename($csv_file);
         $csv_path = $extract_dir . '/' . $csv_filename;
         
-        // فایل را استخراج کنید
-        if (!$zip->extractTo($extract_dir, $csv_file)) {
+        // Datei extrahieren
+        if ($zip->extractTo($extract_dir, $csv_file)) {
+            $this->logger->log('CSV-Datei extrahiert zu: ' . $csv_path, 'info');
+            
+            // Überprüfen, ob die Datei tatsächlich existiert
+            if (file_exists($csv_path)) {
+                $this->logger->log('CSV-Datei existiert am Zielort: ' . $csv_path, 'info');
+            } else {
+                $this->logger->log('Warnung: CSV-Datei wurde extrahiert, existiert aber nicht am erwarteten Ort: ' . $csv_path, 'warning');
+                
+                // Versuchen, den Pfad anzupassen, falls die Datei in einem Unterverzeichnis extrahiert wurde
+                $adjusted_path = $extract_dir . '/' . $csv_file;
+                if (file_exists($adjusted_path)) {
+                    $this->logger->log('CSV-Datei an alternativem Ort gefunden: ' . $adjusted_path, 'info');
+                    $csv_path = $adjusted_path;
+                }
+            }
+        } else {
             $zip->close();
-            $this->logger->log('خطا: نمی‌توان فایل را استخراج کرد: ' . $csv_file, 'error');
-            return new WP_Error('extract_error', __('نمی‌توان فایل CSV را استخراج کرد.', 'auto-car-importer'));
+            $this->logger->log('Fehler: Datei konnte nicht extrahiert werden: ' . $csv_file, 'error');
+            return new WP_Error('extract_error', __('Die CSV-Datei konnte nicht extrahiert werden.', 'auto-car-importer'));
         }
         
         $zip->close();
         
-        $this->logger->log('فایل CSV با موفقیت استخراج شد: ' . $csv_path, 'info');
+        $this->logger->log('CSV-Datei erfolgreich extrahiert: ' . $csv_path, 'info');
         return $csv_path;
     }
-
 /**
  * Verarbeitet eine ZIP-Datei, extrahiert CSV und Bilder, und importiert die Daten
  * 
